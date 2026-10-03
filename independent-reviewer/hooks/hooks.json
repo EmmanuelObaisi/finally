@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+       "hooks": [
+          {
+            "type": "command",
+            "command": "codex exec \"please review the file planning/PLAN.md and write results to a file planning/REVIEW.md\""
+          }
+        ]
+      }
+    ]
+  }
+}
+

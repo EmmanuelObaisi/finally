@@ -454,3 +454,43 @@ The container is designed to deploy to AWS App Runner, Render, or any container 
 - Portfolio visualization: heatmap renders with correct colors, P&L chart has data points
 - AI chat (mocked): send a message, receive a response, trade execution appears inline
 - SSE resilience: disconnect and verify reconnection
+
+---
+
+## 13. Review: Questions, Clarifications and Feedback
+
+### Contract gaps (resolve before backend/frontend work starts)
+
+1. **Held tickers vs. watchlist.** Section 6 says streamed tickers equal the watchlist, but `SimulatorDataSource.remove_ticker` also evicts the ticker from the price cache. Removing a held ticker from the watchlist (or the AI buying an unwatched ticker) leaves a position with no price. Proposal: tracked tickers = watchlist ∪ open positions; stop tracking only when a ticker is in neither.
+2. **"Daily change %" has no source.** The simulator has no session open, and `change_percent` in the SSE payload is tick-over-tick (~500ms). Define it as change since the seed/start price, or drop "daily".
+3. **SSE payload shape.** Document the actual format: one event per tick carrying a dict of all tickers, `{"AAPL": {"ticker", "price", "previous_price", "timestamp", "change", "change_percent", "direction"}, ...}`. Events are sent only when the cache version changes, not on a fixed cadence.
+4. **REST shapes.** Section 8 lists no request/response bodies, status codes or error format. Define at least: `GET /api/portfolio` response, trade error response (e.g. 400 `{"error": "..."}`), `POST /api/chat` response including per-action success/failure, and `DELETE /api/watchlist/{ticker}` for an unknown ticker.
+
+### Questions
+
+5. **Trade validation.** How are quantity <= 0, unknown tickers (no cached price) and fractional precision handled? Is a position row deleted when quantity reaches 0? Does buying an unwatched ticker add it to the watchlist?
+6. **Watchlist validation.** The simulator accepts any string and invents a price; Massive never returns one for an invalid symbol. What should happen to an unknown ticker in each mode?
+7. **Chat history depth.** How many prior messages are sent to the LLM (e.g. last 20)?
+8. **LLM failures.** What does `/api/chat` return on timeout, malformed JSON, or a missing API key with `LLM_MOCK=false`?
+9. **Mock LLM behavior.** E2E tests need defined mock responses, e.g. a message containing "buy" returns a buy of 1 AAPL.
+10. **Snapshot retention.** 30s snapshots produce ~2,880 rows/day with no retention rule or query limit on `/api/portfolio/history`. Acceptable for a demo?
+11. **Local DB path.** Where is `finally.db` when running `uv run` from `backend/` outside Docker? Consider a `DB_PATH` env var.
+12. **`.env` source of truth.** Section 5 says the backend reads `.env` from the project root; Section 11 passes `--env-file`. Pick one, and state whether local dev loads `.env` itself.
+
+### Clarifications and corrections
+
+13. `users_profile` has no `user_id` column, contradicting "All tables include a `user_id` column".
+14. Section 3 lists one background task; the snapshot recorder is a second one.
+15. `docker-compose.yml` appears in the directory tree but is never described.
+16. Recharts is SVG-based, not canvas-based (Section 10). Lightweight Charts is canvas.
+17. Node 20 reached end-of-life in April 2026; use a current LTS (Node 22 or 24).
+18. Massive paid-tier polling is "2-15s" here but "2-5s" in `massive_client.py`.
+
+### Opportunities to simplify
+
+19. **Drop `id` UUIDs on tables with a natural key.** `watchlist` and `positions` are unique on `(user_id, ticker)`; use that as the primary key. Same for `users_profile` (just `user_id`).
+20. **Record snapshots only after trades, plus on each history request.** Removes the second background task; the P&L chart can append live points on the frontend from SSE prices.
+21. **One charting library.** Use Lightweight Charts for sparklines, the main chart and the P&L chart; only the treemap needs something else.
+22. **Collapse start/stop scripts.** `docker compose up -d` / `down` already are idempotent and cross-platform; four scripts could become two thin wrappers, or just documented commands.
+23. **Trim the E2E harness.** Run Playwright on the host against the running container instead of a dedicated `docker-compose.test.yml` with a Playwright container.
+24. **Return portfolio state from the trade and chat endpoints.** Avoids a follow-up `GET /api/portfolio` round-trip after every action.
