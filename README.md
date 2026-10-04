@@ -4,10 +4,10 @@ An AI-powered trading workstation: live market data, a simulated $10k portfolio,
 
 ## Status
 
-- **Done:** market data subsystem (GBM simulator, Massive API client, price cache, SSE stream) in `backend/app/market/`
-- **To do:** portfolio, watchlist and chat APIs, database, Next.js frontend, Docker packaging
+- **Designed:** market data subsystem (GBM simulator, Massive API client, price cache, SSE stream). Implementation-ready code and tests are in [planning/MARKET_DATA_DESIGN.md](planning/MARKET_DATA_DESIGN.md)
+- **To do:** everything else: implementing market data in `backend/app/market/`, portfolio, watchlist and chat APIs, database, Next.js frontend, Docker packaging
 
-The full specification is in [planning/PLAN.md](planning/PLAN.md).
+No application code has been written yet. The full specification is in [planning/PLAN.md](planning/PLAN.md).
 
 ## Architecture
 
@@ -21,11 +21,13 @@ One Docker container on port 8000:
 
 ## Development
 
+`backend/` does not exist yet. Once it is built from the design doc (see its implementation checklist):
+
 ```bash
 cd backend
 uv sync --extra dev
 uv run pytest                    # run tests
-uv run market_data_demo.py       # terminal demo of the simulator
+uv run python market_data_demo.py  # terminal demo of live prices
 ```
 
 ## Environment Variables
