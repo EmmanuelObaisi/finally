@@ -24,8 +24,8 @@ One Docker container on port 8000:
 ```bash
 cd backend
 uv sync --extra dev
-uv run pytest                    # run tests
-uv run market_data_demo.py       # terminal demo of the simulator
+uv run pytest                          # run tests
+uv run uvicorn app.main:app --reload   # serve on :8000; SSE at /api/stream/prices
 ```
 
 ## Environment Variables
