@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #0d1117;
+  --color-panel: #121821;
+  --color-raised: #19212c;
+  --color-line: #242e3b;
+  --color-text: #d6dde6;
+  --color-muted: #7b8796;
+  --color-accent: #ecad0a;
+  --color-blue: #209dd7;
+  --color-purple: #753991;
+  --color-up: #2bb673;
+  --color-down: #e5484d;
+
+  --font-sans: "IBM Plex Sans Variable", system-ui, sans-serif;
+  --font-display: "Barlow Condensed", "IBM Plex Sans Variable", sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 13px;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-blue);
+  outline-offset: 1px;
+}
+
+@keyframes flash-up {
+  from { background-color: rgb(43 182 115 / 0.35); }
+  to { background-color: transparent; }
+}
+
+@keyframes flash-down {
+  from { background-color: rgb(229 72 77 / 0.35); }
+  to { background-color: transparent; }
+}
+
+.flash-up { animation: flash-up 500ms ease-out; }
+.flash-down { animation: flash-down 500ms ease-out; }
+
+@keyframes pulse-dot {
+  50% { opacity: 0.35; }
+}
+
+.pulse { animation: pulse-dot 1s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .flash-up, .flash-down, .pulse { animation: none; }
+}

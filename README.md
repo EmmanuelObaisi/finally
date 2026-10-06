@@ -19,6 +19,16 @@ One Docker container on port 8000:
 - **AI:** LiteLLM → OpenRouter (Cerebras) with structured outputs
 - **Market data:** built-in simulator by default, Massive API if a key is set
 
+## Run with Docker
+
+```bash
+cp .env.example .env              # then set OPENROUTER_API_KEY
+./scripts/start_mac.sh            # macOS/Linux; add --build to rebuild
+./scripts/stop_mac.sh
+```
+
+On Windows use `.\scripts\start_windows.ps1` (`-Build` to rebuild) and `.\scripts\stop_windows.ps1`, or `docker compose up -d --build` / `docker compose down` anywhere. Open http://localhost:8000. Data lives in the `finally-data` volume and survives restarts; `docker volume rm finally-data` resets it.
+
 ## Development
 
 ```bash
