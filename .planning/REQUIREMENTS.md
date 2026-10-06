@@ -136,12 +136,77 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
+| FND-01 | Phase 1 | Pending |
+| FND-02 | Phase 1 | Pending |
+| FND-03 | Phase 1 | Pending |
+| FND-04 | Phase 1 | Pending |
+| FND-05 | Phase 1 | Pending |
+| FND-06 | Phase 1 | Pending |
+| MKT-01 | Phase 2 | Pending |
+| MKT-02 | Phase 2 | Pending |
+| MKT-03 | Phase 2 | Pending |
+| MKT-04 | Phase 2 | Pending |
+| MKT-05 | Phase 2 | Pending |
+| MKT-06 | Phase 2 | Pending |
+| MKT-07 | Phase 2 | Pending |
+| MKT-08 | Phase 3 | Pending |
+| MKT-09 | Phase 2 | Pending |
+| MKT-10 | Phase 2 | Pending |
+| DB-01 | Phase 2 | Pending |
+| DB-02 | Phase 2 | Pending |
+| DB-03 | Phase 2 | Pending |
+| WL-01 | Phase 2 | Pending |
+| WL-02 | Phase 3 | Pending |
+| WL-03 | Phase 3 | Pending |
+| PORT-01 | Phase 2 | Pending |
+| PORT-02 | Phase 3 | Pending |
+| PORT-03 | Phase 3 | Pending |
+| PORT-04 | Phase 3 | Pending |
+| PORT-05 | Phase 3 | Pending |
+| PORT-06 | Phase 3 | Pending |
+| PORT-07 | Phase 4 | Pending |
+| PORT-08 | Phase 1 | Pending |
+| CHAT-01 | Phase 5 | Pending |
+| CHAT-02 | Phase 5 | Pending |
+| CHAT-03 | Phase 5 | Pending |
+| CHAT-04 | Phase 5 | Pending |
+| CHAT-05 | Phase 5 | Pending |
+| CHAT-06 | Phase 5 | Pending |
+| CHAT-07 | Phase 5 | Pending |
+| CHAT-08 | Phase 5 | Pending |
+| CHAT-09 | Phase 5 | Pending |
+| UI-01 | Phase 2 | Pending |
+| UI-02 | Phase 2 | Pending |
+| UI-03 | Phase 2 | Pending |
+| UI-04 | Phase 2 | Pending |
+| UI-05 | Phase 2 | Pending |
+| UI-06 | Phase 3 | Pending |
+| UI-07 | Phase 4 | Pending |
+| UI-08 | Phase 2 | Pending |
+| PUI-01 | Phase 3 | Pending |
+| PUI-02 | Phase 3 | Pending |
+| PUI-03 | Phase 4 | Pending |
+| PUI-04 | Phase 4 | Pending |
+| PUI-05 | Phase 5 | Pending |
+| PUI-06 | Phase 5 | Pending |
+| PUI-07 | Phase 4 | Pending |
+| PUI-08 | Phase 6 | Pending |
+| PKG-01 | Phase 1 | Pending |
+| PKG-02 | Phase 6 | Pending |
+| PKG-03 | Phase 6 | Pending |
+| PKG-04 | Phase 6 | Pending |
+| TEST-01 | Phase 2 | Pending |
+| TEST-02 | Phase 3 | Pending |
+| TEST-03 | Phase 5 | Pending |
+| TEST-04 | Phase 6 | Pending |
+| TEST-05 | Phase 6 | Pending |
+| TEST-06 | Phase 6 | Pending |
 
 **Coverage:**
 - v1 requirements: 65 total
-- Mapped to phases: 0
-- Unmapped: 65 ⚠️
+- Mapped to phases: 65
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-10-06*
-*Last updated: 2026-10-06 after initial definition*
+*Last updated: 2026-10-06 after roadmap creation (traceability mapped)*
