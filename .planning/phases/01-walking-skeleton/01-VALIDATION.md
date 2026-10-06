@@ -38,19 +38,19 @@ created: "2026-10-06"
 
 ## Per-Task Verification Map
 
-Task IDs are filled in by the planner. Requirement-level commands:
+Requirement-level commands mapped to plan tasks. The exact `<automated>` commands and their `<fails_when>` statements live in each PLAN.md task.
 
-| Requirement | Test Type | Automated Command | File Exists | Status |
-|-------------|-----------|-------------------|-------------|--------|
-| FND-01 | shell | `test -z "$(git ls-files backend/static test/node_modules test/playwright-report test/test-results)" && git check-ignore -q backend/static/x && git check-ignore -q test/node_modules/x && ! git check-ignore -q frontend/src/lib/api.ts` plus `git check-attr eol -- scripts/start_mac.sh Dockerfile .env.example` showing `eol: lf` x3 | ❌ W0 | ⬜ pending |
-| FND-02 | unit | `cd backend && uv run python -m pytest -q` | ❌ W0 `tests/test_health.py` | ⬜ pending |
-| FND-03 | build | `cd frontend && npm ci && npm run build && test -f out/index.html` | ❌ W0 | ⬜ pending |
-| FND-04 | grep | every endpoint path + `change_percent` present in `planning/API_CONTRACT.md`; `! grep -rn "day_change_percent\|reference_price" planning backend/app frontend/src` | ❌ W0 | ⬜ pending |
-| FND-05 | unit | `cd backend && uv run python -m pytest -q tests/test_config.py` | ❌ W0 `tests/test_config.py` | ⬜ pending |
-| FND-06 | grep | `! grep -n -i -E "market_data_demo\|MARKET_DATA_SUMMARY\|planning/archive" README.md CLAUDE.md` | n/a | ⬜ pending |
-| PORT-08 | unit + live | `cd backend && uv run python -m pytest -q tests/test_health.py`; `curl -fsS localhost:8000/api/health` | ❌ W0 | ⬜ pending |
-| PKG-01 | docker | `docker build -t finally .` then `docker run -d -p 8000:8000 finally`, `curl -fsS localhost:8000/api/health`, `curl -fsS localhost:8000/ \| grep -q app-title`, `docker history finally \| grep -ci avast` = 0 | ❌ W0 `Dockerfile`, `.dockerignore` | ⬜ pending |
-| SC4 smoke | e2e | `cd test && BASE_URL=http://localhost:8000 npx playwright test` | ❌ W0 `playwright.config.ts`, `smoke.spec.ts` | ⬜ pending |
+| Requirement | Task(s) | Test Type | Automated Command (summary) | File Exists | Status |
+|-------------|---------|-----------|-----------------------------|-------------|--------|
+| FND-01 | 01-01 T1, T2 | shell | `git ls-files` of the four artifact trees is empty; `git check-ignore` on build paths; `frontend/src/lib/api.ts` not ignored; `git check-attr eol` reports `eol: lf` for each of the three paths; second untrack is a no-op | ❌ W0 | ⬜ pending |
+| FND-02 | 01-03 T2, T3 | unit | `uv run --directory backend python -m pytest -q` (no warning section) | ❌ W0 `tests/test_health.py` | ⬜ pending |
+| FND-03 | 01-04 T2, T3 | build | `npm --prefix frontend run build`; `frontend/out/index.html` has `app-title`; built CSS has `0d1117`, `ecad0a`, `209dd7`; tsconfig stable across rebuilds | ❌ W0 | ⬜ pending |
+| FND-04 | 01-02 T1, T2 | grep | every endpoint path, `change_percent`, `session_start_price` present in `planning/API_CONTRACT.md`; no legacy field names under `planning/` | ❌ W0 | ⬜ pending |
+| FND-05 | 01-03 T3 (01-01 T2 for `.env.example`) | unit | `uv run --directory backend python -m pytest -q` (includes `tests/test_config.py`) | ❌ W0 `tests/test_config.py` | ⬜ pending |
+| FND-06 | 01-02 T2 (CLAUDE.md), 01-05 T3 (README.md) | grep | stale-claim greps on CLAUDE.md and README.md are empty; README names `uv run python -m pytest`, the smoke command, `docker build`, the contract | n/a | ⬜ pending |
+| PORT-08 | 01-03 T2; 01-05 T3 | unit + live | `tests/test_health.py`; live uvicorn on :8765 answers `{"status":"ok"}`; container health status `healthy` | ❌ W0 | ⬜ pending |
+| PKG-01 | 01-05 T2, T3 | docker | image Cmd has `"--workers","1"`, Env has `DB_PATH`; no verification-disabling token in Dockerfile; container serves page + health, one uvicorn process; no Avast material or `.env` in the image | ❌ W0 `Dockerfile`, `.dockerignore` | ⬜ pending |
+| SC4 smoke | 01-05 T1 (local), T3 (container) | e2e | `npm --prefix test run smoke`; `BASE_URL=http://localhost:8000 npm --prefix test run smoke` | ❌ W0 `playwright.config.ts`, `smoke.spec.ts` | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -62,7 +62,7 @@ Task IDs are filled in by the planner. Requirement-level commands:
 - [ ] `frontend/` scaffold (package.json, lockfile, next/postcss/tsconfig, `src/app/*`)
 - [ ] `test/package.json` + lockfile + `playwright.config.ts` + `smoke.spec.ts`
 - [ ] `Dockerfile`, `.dockerignore`, `.env.example`, `.gitattributes`, `db/.gitkeep`, `planning/API_CONTRACT.md`
-- [ ] Docker Desktop started (human action) before any PKG-01 task
+- [ ] Docker Desktop running before 01-05 Task 2 (per CONTEXT D-04 the user starts it; no checkpoint, the task `<precondition>` halts if `docker info` fails)
 
 ---
 
@@ -70,8 +70,8 @@ Task IDs are filled in by the planner. Requirement-level commands:
 
 | Behavior | Requirement | Why Manual | Test Instructions |
 |----------|-------------|------------|-------------------|
-| Docker Desktop running | PKG-01 | Daemon is not started; starting it is a human action | Start Docker Desktop, confirm `docker version` shows a Server section |
-| Approve new third-party packages | FND-02, FND-03 | Package legitimacy flagged several as SUS (too new) | Review the batched package list at the human-verify checkpoint before first install |
+| Docker Desktop running | PKG-01 | Starting the daemon is a human action (CONTEXT D-04: done before execution, no checkpoint) | 01-05 Task 2 `<precondition>`: `docker info` exits 0 with a "Server Version" line |
+| Approve new third-party packages | FND-02, FND-03 | Package legitimacy flagged several as SUS (too new) | Blocking-human checkpoints 01-03 Task 1 (PyPI) and 01-04 Task 1 (npm), one per ecosystem |
 
 ---
 

@@ -760,15 +760,14 @@ Caution: `load_dotenv` writes into `os.environ`; `monkeypatch.delenv(..., raisin
 | A7 | One idempotent 200 for re-adding a watchlist ticker (vs 409) and `{"watchlist": [...]}` wrappers are acceptable | Contract | Contract-only decision; change before Phase 3 |
 | A8 | The Docker build should keep the optional CA secret mount even when interception is off | Docker | Slight extra Dockerfile lines; alternative is adding it only after a failure |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Skeleton template asks for "one real DB read AND write"; the roadmap puts DB in Phase 2.**
+1. **Skeleton template asks for "one real DB read AND write"; the roadmap puts DB in Phase 2.** RESOLVED by CONTEXT D-03: SQLite deferred to Phase 2; the skeleton proves browser -> static page -> same-origin `/api/health`; recorded in `01-SKELETON.md`.
    - What we know: DB-01..03 and the seed are Phase 2 requirements; Phase 1 requirements contain no persistence.
-   - Recommendation: SKELETON.md records "Database: deferred to Phase 2" and proves browser -> static page -> same-origin `/api/health` instead. Do not pull SQLite into Phase 1.
-2. **`change` semantics (tick vs session) and Massive's session-start definition** (Contract conflicts 2-3). Recommendation above; confirm with the user or lock as a Claude-discretion decision in the contract.
-3. **`httpx2` vs `httpx`.** Recommendation: `httpx2` behind the batched human-verify checkpoint, fallback `httpx` + warning filter.
-4. **Does Avast intercept inside the Docker VM?** Unknown until Docker Desktop runs; the probe answers it in under a minute.
-5. **Should `types.ts` / `schemas.py` be created in Phase 1?** Recommendation: no (doc only), unless the user wants a mechanical doc-to-code test now.
+2. **`change` semantics (tick vs session) and Massive's session-start definition** (Contract conflicts 2-3). RESOLVED by CONTEXT D-01: `change` and `direction` stay tick-over-tick; `change_percent` is measured from `session_start_price` (first price cached since process start, simulator and Massive alike); `session_start_price` is an SSE field. Implemented in plan 01-02.
+3. **`httpx2` vs `httpx`.** RESOLVED by CONTEXT D-02: plain `httpx` with a pytest warnings filter; `httpx2` is not installed. Implemented in plan 01-03.
+4. **Does Avast intercept inside the Docker VM?** RESOLVED at execution time by design (CONTEXT D-04): plan 01-05 Task 2 runs the TLS probe before the build and takes the planned branch (no secret, or the optional BuildKit CA secret in throwaway stages); verification stays on either way.
+5. **Should `types.ts` / `schemas.py` be created in Phase 1?** RESOLVED (planner, following this recommendation): no contract-wide types in Phase 1; only the typed `getHealth()` in `frontend/src/lib/api.ts` for the one real route. Pydantic models and TS types arrive with their routes in Phases 2-5.
 
 ## Environment Availability
 

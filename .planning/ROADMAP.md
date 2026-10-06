@@ -27,6 +27,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 ## Phase Details
 
 ### Phase 1: Walking Skeleton
+
 **Goal**: A developer can build and run an end-to-end skeleton of FinAlly on this machine (local and in Docker) against one frozen API/SSE contract
 **Mode:** mvp
 **Depends on**: Nothing (first phase)
@@ -37,10 +38,24 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. In `frontend/`, the build produces a static export (`output: 'export'`) of a Tailwind-styled dark placeholder page
   4. `docker build` succeeds on this machine with TLS verification left on, and the running container serves the placeholder page and `/api/health` on port 8000 with one worker. A host-run Playwright smoke check loads that page, or, if App Control blocks host Playwright, the container fallback is chosen and recorded
   5. One API/SSE contract doc in `planning/` defines every endpoint's request/response shape, field names, the `{"error": "..."}` format, status codes, the SSE payload (`change_percent` from the session-start price), and `GET /api/chat/history`. Backend and frontend both reference it
-**Plans**: TBD
+
+**Plans**: 5 plans
+Plans:
+**Wave 1**
+- [ ] 01-01-PLAN.md — Repo hygiene: untrack build artifacts, fix .gitignore lib/ block, .gitattributes LF, .env.example, db/.gitkeep (W1)
+- [ ] 01-02-PLAN.md — Frozen API/SSE contract in planning/API_CONTRACT.md, market docs on D-01 names, CLAUDE.md pointer (W1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 01-03-PLAN.md — Backend skeleton: uv project, create_app + /api/health, env config, {"error"} envelope, pytest (W2, PyPI checkpoint)
+- [ ] 01-04-PLAN.md — Frontend skeleton: Next 16 static export, Tailwind dark page calling same-origin /api/health (W2, npm checkpoint)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 01-05-PLAN.md — Local full-stack Playwright smoke, Docker TLS probe + 3-stage image on :8000, container smoke, README truth (W3)
+
 **Research flag**: Docker-build CA injection under Avast (build secret, never disabling verification). Whether App Control blocks host Playwright or Next native binaries (fallback: Playwright container, reversing §13 #23)
 
 ### Phase 2: Live Market Terminal
+
 **Goal**: A user opens FinAlly and watches the 10 default tickers stream live in a dark terminal, with $10,000 cash shown and a live connection indicator
 **Mode:** mvp
 **Depends on**: Phase 1
@@ -51,11 +66,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. On a fresh (deleted) database, the backend recreates and seeds it on startup, and the header shows $10,000.00 total value and cash. The connection dot is green while streaming, yellow while reconnecting and red when disconnected, and the page reconnects on its own after the backend restarts
   4. With `MASSIVE_API_KEY` set, the same UI is fed by the Massive REST poller with no frontend change. With `SIM_SEED` set, simulator output is reproducible, and a non-seed ticker always starts at the same ticker-derived price across restarts
   5. Stopping the server with browsers connected exits promptly (no SSE hang), and the market data unit tests (valid prices, GBM math, Massive parsing, interface conformance) pass
+
 **Plans**: TBD
 **UI hint**: yes
 **Research flag**: Massive free-tier rate limits (Grouped Daily, weekend/holiday walk-back) and certifi/truststore for the `massive` client. Largest phase (21 requirements): split along market engine/SSE vs terminal UI when planning
 
 ### Phase 3: Trading & Watchlist Management
+
 **Goal**: A user can buy and sell shares and curate their watchlist, and every position stays priced and every change shows immediately
 **Mode:** mvp
 **Depends on**: Phase 2
@@ -66,10 +83,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Invalid trades (quantity <= 0, unpriced ticker, insufficient cash, more shares than owned) show an inline error in the trade bar, return 400 `{"error": "..."}`, and leave cash and positions unchanged. Buy and Sell are disabled while a trade is in flight, and success shows inline
   4. User adds a ticker from the watchlist panel and it starts streaming. A malformed or unknown ticker is rejected with an inline "Unknown ticker" error. Removing a ticker drops it from the panel, and deleting an unknown ticker returns 404
   5. Removing a held ticker from the watchlist keeps its position priced and streaming, and buying an unwatched ticker starts streaming it before it is priced. Portfolio unit tests (execution, P&L, oversell, insufficient cash, selling at a loss) pass
+
 **Plans**: TBD
 **UI hint**: yes
 
 ### Phase 4: Charts & Portfolio Visualizations
+
 **Goal**: A user can see the selected ticker and their portfolio at a glance: a main price chart, a P&L heatmap and a portfolio value history chart
 **Mode:** mvp
 **Depends on**: Phase 3
@@ -79,10 +98,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. With positions held, the heatmap shows one rectangle per position sized by portfolio weight, colored green for profit and red for loss, and it updates with live prices
   3. The P&L chart shows total portfolio value over time from snapshots, starting with the seeded $10,000 point on first launch. It refetches every 30s and ends in a live "now" point. A new trade adds a point, and repeated history requests do not flood the snapshot table
   4. With no positions or an emptied watchlist, the watchlist, positions table, heatmap and P&L chart each show an explicit empty state instead of a blank or broken panel
+
 **Plans**: TBD
 **UI hint**: yes
 
 ### Phase 5: AI Trading Copilot
+
 **Goal**: A user can chat with FinAlly, which understands their portfolio and executes trades and watchlist changes on their behalf
 **Mode:** mvp
 **Depends on**: Phase 3
@@ -93,11 +114,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Asking FinAlly to buy, sell, or add/remove a watchlist ticker executes it through the same validation as manual actions. Each action's success or failure appears inline in the chat, and the header, positions, heatmap and watchlist refresh from the portfolio state in the response
   4. Reloading the page restores the prior conversation, including action lines. An LLM failure (timeout, malformed output, missing key) shows a graceful assistant error and executes nothing
   5. With `LLM_MOCK=true`, keyword messages (buy, sell, watchlist add/remove, analysis) return deterministic responses with no network calls. LLM unit tests (structured output parsing, malformed responses, trade validation in the chat flow) pass
+
 **Plans**: TBD
 **UI hint**: yes
 **Research flag**: Live Cerebras strict-schema limits (no `oneOf`/`pattern`/`nullable`, `additionalProperties:false`) and OpenRouter provider pinning (`order=["cerebras"]`, `require_parameters`) through LiteLLM `acompletion`
 
 ### Phase 6: One-Command Launch & Full Verification
+
 **Goal**: A user launches FinAlly with one command, and every PLAN.md §12 unit and E2E scenario passes against the running container
 **Mode:** mvp
 **Depends on**: Phase 5
@@ -107,6 +130,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Trades, positions and chat history survive a stop/start because SQLite lives on the named volume at `/app/db`. The stop script removes the container but keeps the volume, and `.env` reaches the container via `--env-file`
   3. The Playwright suite, run from the host against the container with `LLM_MOCK=true`, passes every §12 scenario: fresh start, add/remove ticker, buy, sell, heatmap and P&L chart, mocked AI chat with inline trade, and SSE reconnection. It selects elements by stable `data-testid` hooks
   4. Backend API route tests (status codes, response shapes, error handling) and frontend unit tests (component rendering, price flash, watchlist CRUD, portfolio calculations, chat rendering and loading state) all pass
+
 **Plans**: TBD
 
 ## Progress
