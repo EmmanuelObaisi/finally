@@ -1,7 +1,8 @@
 """FastAPI app factory. Request and response shapes follow planning/API_CONTRACT.md."""
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from .config import Settings
@@ -25,9 +26,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return {"status": "ok"}
 
     # Later routers are included above this catch-all so unknown /api paths stay JSON 404s.
-    @app.api_route("/api/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
-    def api_not_found(path: str):
-        raise HTTPException(status_code=404, detail="Not found")
+    # A response instance is a raw ASGI app, so Starlette matches every HTTP method
+    # (API_CONTRACT.md: any unknown /api path, any method, is 404).
+    app.add_route("/api/{path:path}", JSONResponse({"error": "Not found"}, status_code=404))
 
     if settings.static_dir.is_dir():
         app.mount("/", StaticFiles(directory=settings.static_dir, html=True), name="frontend")
