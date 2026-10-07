@@ -9,6 +9,11 @@ BACKEND_DIR = Path(__file__).resolve().parents[1]
 ROOT_DIR = BACKEND_DIR.parent        # "/" inside Docker: the Dockerfile must set DB_PATH
 
 
+def env(name: str, default: str = "") -> str:
+    """Read an env var; an empty or whitespace-only value counts as unset."""
+    return os.environ.get(name, "").strip() or default
+
+
 @dataclass(frozen=True)
 class Settings:
     openrouter_api_key: str
@@ -23,13 +28,13 @@ class Settings:
     def from_env(cls) -> "Settings":
         """Load the root .env (real env vars win) and read every setting."""
         load_dotenv(ROOT_DIR / ".env", override=False)
-        seed = os.environ.get("SIM_SEED", "").strip()
+        seed = env("SIM_SEED")
         return cls(
-            openrouter_api_key=os.environ.get("OPENROUTER_API_KEY", "").strip(),
-            massive_api_key=os.environ.get("MASSIVE_API_KEY", "").strip(),
-            llm_mock=os.environ.get("LLM_MOCK", "false").strip().lower() == "true",
-            db_path=Path(os.environ.get("DB_PATH") or ROOT_DIR / "db" / "finally.db"),
+            openrouter_api_key=env("OPENROUTER_API_KEY"),
+            massive_api_key=env("MASSIVE_API_KEY"),
+            llm_mock=env("LLM_MOCK", "false").lower() == "true",
+            db_path=Path(env("DB_PATH") or ROOT_DIR / "db" / "finally.db"),
             sim_seed=int(seed) if seed else None,
-            sim_event_probability=float(os.environ.get("SIM_EVENT_PROBABILITY", "0.001")),
-            static_dir=Path(os.environ.get("STATIC_DIR") or BACKEND_DIR / "static"),
+            sim_event_probability=float(env("SIM_EVENT_PROBABILITY", "0.001")),
+            static_dir=Path(env("STATIC_DIR") or BACKEND_DIR / "static"),
         )
