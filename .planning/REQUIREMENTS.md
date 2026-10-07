@@ -88,7 +88,7 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 
 ### Packaging
 
-- [ ] **PKG-01**: Multi-stage Dockerfile (Node 24 build → Python 3.12 + uv `--locked`) produces one image serving API and static frontend on port 8000 with one worker
+- [x] **PKG-01**: Multi-stage Dockerfile (Node 24 build → Python 3.12 + uv `--locked`) produces one image serving API and static frontend on port 8000 with one worker
 - [ ] **PKG-02**: SQLite persists on a named Docker volume mounted at `/app/db`; `.env` is passed via `--env-file`
 - [ ] **PKG-03**: `docker-compose.yml` defines the run; `scripts/start_mac.sh`, `stop_mac.sh`, `start_windows.ps1`, `stop_windows.ps1` are thin idempotent wrappers (start builds if needed, prints URL; stop keeps the volume)
 - [ ] **PKG-04**: User can launch the app with one command and open `http://localhost:8000`
@@ -191,7 +191,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PUI-06 | Phase 5 | Pending |
 | PUI-07 | Phase 4 | Pending |
 | PUI-08 | Phase 6 | Pending |
-| PKG-01 | Phase 1 | Gaps Found |
+| PKG-01 | Phase 1 | Complete |
 | PKG-02 | Phase 6 | Pending |
 | PKG-03 | Phase 6 | Pending |
 | PKG-04 | Phase 6 | Pending |
