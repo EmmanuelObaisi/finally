@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 01
 current_phase_name: Walking Skeleton
 status: executing
-stopped_at: Completed 01-01-PLAN.md
-last_updated: "2026-10-07T21:34:58.891Z"
+stopped_at: Completed 01-02-PLAN.md
+last_updated: "2026-10-07T21:38:19.548Z"
 last_activity: 2026-10-07
 last_activity_desc: Phase 01 execution started
-state_head: 9a3630fbb7e07187f74347e49e02150adf79f436
+state_head: 9a02c6f1084325dd8d12375d620277dbf9f1745e
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 5
-  completed_plans: 1
+  completed_plans: 2
   percent: 0
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-06)
 ## Current Position
 
 Phase: 01 (Walking Skeleton) — EXECUTING
-Plan: 2 of 5
+Plan: 3 of 5
 Status: Ready to execute
 Last activity: 2026-10-07 — Phase 01 execution started
 
@@ -57,6 +57,7 @@ Progress: [░░░░░░░░░░] 0%
 | Plan | Duration | Tasks | Files |
 |------|----------|-------|-------|
 | Phase 01 P01 | 25 min | 2 tasks | 4 files |
+| Phase 01 P02 | 15 min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -71,6 +72,8 @@ Recent decisions affecting current work:
 - [Roadmap]: TEST-01/02/03 verify with their slice. TEST-04/05/06 and the `data-testid` audit close out in Phase 6
 - [Phase 01]: No catch-all text=auto in .gitattributes; core.autocrlf=true is set on this machine and it would renormalize the repo
 - [Phase 01]: Removed unanchored packaging ignores (lib/, build/, dist/) since backend is a uv virtual project; they hid frontend/src/lib/
+- [Phase 01]: change_percent measured from session_start_price (first cached price since process start) for simulator and Massive; change/direction stay tick-over-tick (D-01)
+- [Phase 01]: API contract fixes unknown /api path as 404 {error: Not found}, mock LLM keywords case-insensitive, watchlist re-add idempotent 200
 
 ### Pending Todos
 
@@ -93,6 +96,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-07T21:34:58.858Z
-Stopped at: Completed 01-01-PLAN.md
+Last session: 2026-10-07T21:38:19.517Z
+Stopped at: Completed 01-02-PLAN.md
 Resume file: None
