@@ -57,9 +57,10 @@ Dependencies: `uv add fastapi numpy massive`.
 `PriceUpdate` is immutable and carries everything the SSE stream and REST API need.
 
 - `previous_price` is the price at the previous tick, used for flash direction.
-- `reference_price` answers PLAN.md review item 2 ("daily change %"): it is the
-  previous session close for Massive, and the first price seen since startup for the
-  simulator (the seed price). `day_change_percent` is computed against it.
+- `session_start_price` answers PLAN.md review item 2 ("daily change %"): it is the
+  first price cached for the ticker since the process started, for the simulator and
+  Massive alike. `change_percent` is computed against it, so it means "change since
+  session start", not tick-over-tick and not a daily change.
 - Prices are rounded to cents when cached, so `direction` reflects visible changes.
 
 ```python
@@ -76,7 +77,7 @@ class PriceUpdate:
     ticker: str
     price: float
     previous_price: float
-    reference_price: float
+    session_start_price: float
     timestamp: float
 
     @property
@@ -94,9 +95,9 @@ class PriceUpdate:
         return "flat"
 
     @property
-    def day_change_percent(self) -> float:
-        """Percent change versus the reference (previous close or session start)."""
-        return round((self.price / self.reference_price - 1) * 100, 4)
+    def change_percent(self) -> float:
+        """Percent change versus the session start price."""
+        return round((self.price / self.session_start_price - 1) * 100, 4)
 
     def to_dict(self) -> dict:
         """JSON-ready representation used by the SSE stream and REST API."""
@@ -106,8 +107,9 @@ class PriceUpdate:
             "previous_price": self.previous_price,
             "timestamp": self.timestamp,
             "change": self.change,
+            "change_percent": self.change_percent,
             "direction": self.direction,
-            "day_change_percent": self.day_change_percent,
+            "session_start_price": self.session_start_price,
         }
 ```
 
@@ -140,9 +142,8 @@ class PriceCache:
         ticker: str,
         price: float,
         timestamp: float | None = None,
-        reference_price: float | None = None,
     ) -> PriceUpdate:
-        """Record a new price. The first price seen becomes the reference unless one is given."""
+        """Record a new price. The first price seen becomes the session start price."""
         price = round(price, 2)
         with self._lock:
             prev = self._prices.get(ticker)
@@ -150,7 +151,7 @@ class PriceCache:
                 ticker=ticker,
                 price=price,
                 previous_price=prev.price if prev else price,
-                reference_price=reference_price or (prev.reference_price if prev else price),
+                session_start_price=prev.session_start_price if prev else price,
                 timestamp=timestamp or time.time(),
             )
             self._prices[ticker] = update
@@ -272,7 +273,8 @@ Behavior (endpoints explained in `MASSIVE_API.md`):
 
 - **Paid plan**: one `get_snapshot_all` call for all tracked tickers every 5 s.
   Price = last trade, falling back to today's close, then the previous close.
-  `reference_price` = previous close, so `day_change_percent` is a true daily change.
+  The first price cached becomes `session_start_price`, so `change_percent` is change
+  since startup, the same as for the simulator.
 - **Free plan**: the first snapshot call fails with `NOT_AUTHORIZED`; the source
   switches permanently to end-of-day mode. It loads all closes from one Grouped Daily
   call (walking back over weekends/holidays), refreshes every 15 min, and serves
@@ -387,7 +389,7 @@ class MassiveDataSource(MarketDataSource):
             if not price:
                 continue
             ts = trade.sip_timestamp / 1e9 if trade and trade.sip_timestamp else None
-            self.cache.update(snap.ticker, price, ts, reference_price=prev_close or None)
+            self.cache.update(snap.ticker, price, ts)
 
     def _fetch_latest_closes(self, max_days_back: int = 7) -> dict[str, float]:
         """All closes from the most recent trading day that has Grouped Daily data."""
@@ -420,8 +422,11 @@ tracked ticker:
 ```
 retry: 1000
 
-data: {"AAPL": {"ticker": "AAPL", "price": 190.12, "previous_price": 190.1, "timestamp": 1759507199.12, "change": 0.02, "direction": "up", "day_change_percent": 0.0632}, "GOOGL": {...}}
+data: {"AAPL": {"ticker": "AAPL", "price": 190.12, "previous_price": 190.1, "timestamp": 1759507199.12, "change": 0.02, "change_percent": 0.0632, "direction": "up", "session_start_price": 190.0}, "GOOGL": {...}}
 ```
+
+`planning/API_CONTRACT.md` is authoritative for the wire format; if the two differ, the
+contract wins.
 
 The server checks the cache every 500 ms and sends only if `version` changed, so on
 the Massive free plan the stream is nearly silent after the first event (the
@@ -471,6 +476,9 @@ async def price_events(cache: PriceCache, request: Request, poll_seconds: float)
 
 ## 11. Wiring into FastAPI
 
+The module-level wiring below is superseded by a `create_app()` factory that builds the
+cache and source inside the lifespan.
+
 ```python
 # backend/app/main.py (market data parts only)
 from contextlib import asynccontextmanager
@@ -517,7 +525,7 @@ Answers PLAN.md review item 6. When the user (or the LLM) adds a ticker:
 ## 13. Testing
 
 - `PriceCache`: first update has `previous_price == price` and `direction == "flat"`;
-  a second update sets direction and change; `reference_price` sticks; `remove`
+  a second update sets direction and change; `session_start_price` sticks; `remove`
   bumps `version`.
 - Factory: unset, empty and whitespace key -> simulator; any other value -> Massive.
 - `MassiveDataSource`: replace `source.client` with a stub object exposing

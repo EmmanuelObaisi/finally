@@ -159,8 +159,8 @@ Notes on the code:
   entry shows a price before the next tick.
 - The simulator task and the API handlers share one event loop, so adding/removing
   tickers never races with `step()`. No locks are needed in the simulator itself.
-- The first cached price for each ticker becomes its `reference_price`, so
-  `day_change_percent` is "change since startup", which is the closest honest
+- The first cached price for each ticker becomes its `session_start_price`, so
+  `change_percent` is "change since startup", which is the closest honest
   analogue of a daily change for a simulated market.
 
 ```python
