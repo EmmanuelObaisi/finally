@@ -28,6 +28,32 @@ def test_root_dotenv_is_loaded_and_real_env_wins(monkeypatch, tmp_path):
     assert s.sim_seed == 7 and s.llm_mock and s.sim_event_probability == 0.0
 
 
+CONFIG_VARS = ("OPENROUTER_API_KEY", "MASSIVE_API_KEY", "LLM_MOCK", "DB_PATH", "SIM_SEED",
+               "SIM_EVENT_PROBABILITY", "STATIC_DIR")
+
+
+@pytest.mark.parametrize("blank", ["", "   "])
+def test_blank_values_fall_back_to_defaults(monkeypatch, tmp_path, blank):
+    monkeypatch.setattr(config, "ROOT_DIR", tmp_path)
+    for name in CONFIG_VARS:
+        monkeypatch.setenv(name, blank)
+    s = config.Settings.from_env()
+    assert s.openrouter_api_key == "" and s.massive_api_key == ""
+    assert s.llm_mock is False
+    assert s.db_path == tmp_path / "db" / "finally.db"
+    assert s.sim_seed is None and s.sim_event_probability == 0.001
+    assert s.static_dir == config.BACKEND_DIR / "static"
+
+
+def test_committed_env_example_loads_as_defaults(monkeypatch, tmp_path):
+    template = config.BACKEND_DIR.parent / ".env.example"
+    (tmp_path / ".env").write_text(template.read_text())
+    monkeypatch.setattr(config, "ROOT_DIR", tmp_path)
+    s = config.Settings.from_env()
+    assert s.sim_event_probability == 0.001 and s.sim_seed is None
+    assert s.db_path == tmp_path / "db" / "finally.db" and s.llm_mock is False
+
+
 def test_explicit_env_vars_are_read(monkeypatch, tmp_path):
     monkeypatch.setattr(config, "ROOT_DIR", tmp_path)
     monkeypatch.setenv("OPENROUTER_API_KEY", "  or-key  ")
