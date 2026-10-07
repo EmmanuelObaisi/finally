@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 01
 current_phase_name: Walking Skeleton
 status: executing
-stopped_at: Completed 01-02-PLAN.md
-last_updated: "2026-10-07T21:38:19.548Z"
+stopped_at: Completed 01-03-PLAN.md
+last_updated: "2026-10-07T21:46:11.611Z"
 last_activity: 2026-10-07
 last_activity_desc: Phase 01 execution started
-state_head: 9a02c6f1084325dd8d12375d620277dbf9f1745e
+state_head: 676c76e8502efc80e048216d3f97c903195fdba6
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 5
-  completed_plans: 2
+  completed_plans: 3
   percent: 0
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-06)
 ## Current Position
 
 Phase: 01 (Walking Skeleton) — EXECUTING
-Plan: 3 of 5
+Plan: 4 of 5
 Status: Ready to execute
 Last activity: 2026-10-07 — Phase 01 execution started
 
@@ -58,6 +58,7 @@ Progress: [░░░░░░░░░░] 0%
 |------|----------|-------|-------|
 | Phase 01 P01 | 25 min | 2 tasks | 4 files |
 | Phase 01 P02 | 15 min | 2 tasks | 4 files |
+| Phase 01 P03 | 25 min | 3 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -74,6 +75,9 @@ Recent decisions affecting current work:
 - [Phase 01]: Removed unanchored packaging ignores (lib/, build/, dist/) since backend is a uv virtual project; they hid frontend/src/lib/
 - [Phase 01]: change_percent measured from session_start_price (first cached price since process start) for simulator and Massive; change/direction stay tick-over-tick (D-01)
 - [Phase 01]: API contract fixes unknown /api path as 404 {error: Not found}, mock LLM keywords case-insensitive, watchlist re-add idempotent 200
+- [Phase 01]: Backend uses plain httpx as the TestClient transport with the Starlette deprecation warning filtered; httpx2 is not installed (D-02)
+- [Phase 01]: Backend dependencies pinned with == to the human-approved versions (fastapi 0.142.2, uvicorn 0.54.0, python-dotenv 1.2.4; dev pytest 9.1.1, httpx 0.28.1)
+- [Phase 01]: Every backend failure returns the {error} envelope: unknown /api paths 404, validation 400 (never 422), unhandled 500 with fixed text; routers must be included above the /api catch-all
 
 ### Pending Todos
 
@@ -96,6 +100,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-07T21:38:19.517Z
-Stopped at: Completed 01-02-PLAN.md
+Last session: 2026-10-07T21:46:11.575Z
+Stopped at: Completed 01-03-PLAN.md
 Resume file: None
