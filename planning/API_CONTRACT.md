@@ -64,3 +64,155 @@ data: {"AAPL": {"ticker": "AAPL", "price": 190.12, "previous_price": 190.1, "tim
 - Every frame carries the full tracked set, so a reconnecting client needs no replay.
 - Clients must not derive the watchlist from the payload keys: a held ticker that was removed
   from the watchlist keeps streaming. Use `GET /api/watchlist` for the watchlist.
+
+## Endpoints
+
+| Method and path | Request body | Success (200) | Errors |
+|-----------------|--------------|---------------|--------|
+| `GET /api/health` | none | `{"status": "ok"}` | none |
+| `GET /api/stream/prices` | none | SSE stream (above) | none |
+| `GET /api/watchlist` | none | `{"watchlist": [WatchlistItem]}` | none |
+| `POST /api/watchlist` | `{"ticker"}` | `{"watchlist": [WatchlistItem]}` | 400 |
+| `DELETE /api/watchlist/{ticker}` | none | `{"watchlist": [WatchlistItem]}` | 404 |
+| `GET /api/portfolio` | none | Portfolio | none |
+| `POST /api/portfolio/trade` | `{"ticker", "quantity", "side"}` | `{"trade": Trade, "portfolio": Portfolio}` | 400 |
+| `GET /api/portfolio/history` | none | `{"history": [...]}` | none |
+| `POST /api/chat` | `{"message"}` | `{"message", "actions", "portfolio", "watchlist"}` | 400 |
+| `GET /api/chat/history` | none | `{"messages": [...]}` | none |
+
+Any unknown `/api/*` path, with any method, is `404 {"error": "Not found"}`. Any unexpected
+failure is `500 {"error": "Internal server error"}`.
+
+### GET /api/health
+
+`200 {"status": "ok"}`. Extra keys may be added later. The port does not open until startup
+has completed, so a reachable health endpoint means the app is ready.
+
+### GET /api/watchlist
+
+`200 {"watchlist": [WatchlistItem]}`. A WatchlistItem has the PriceUpdate keys, and every
+non-ticker field is `null` until the ticker has its first price.
+
+### POST /api/watchlist
+
+Body `{"ticker": "PYPL"}`. `200 {"watchlist": [WatchlistItem]}` with the updated list.
+
+- Re-adding a ticker already on the watchlist is an idempotent 200 (no error, no duplicate).
+- `400 {"error": "Invalid ticker: PYPL$"}` when the input fails the ticker format check; the
+  message quotes the rejected input.
+- `400 {"error": "Unknown ticker"}` when the ticker is well formed but no price appears for it
+  (Massive rejects symbols that do not exist; the simulator accepts any well-formed symbol).
+
+### DELETE /api/watchlist/{ticker}
+
+`200 {"watchlist": [WatchlistItem]}` with the updated list. A held ticker (open position) keeps
+streaming after it leaves the watchlist. `404 {"error": "Ticker not in watchlist"}` when the
+ticker is not on the watchlist.
+
+### GET /api/portfolio
+
+`200` Portfolio (see shared shapes).
+
+### POST /api/portfolio/trade
+
+Body `{"ticker": "AAPL", "quantity": 1.5, "side": "buy"}`. `side` is `"buy"` or `"sell"`;
+`quantity` must be greater than 0 (fractional shares are allowed).
+
+`200 {"trade": Trade, "portfolio": Portfolio}`. `400 {"error": "..."}` for quantity <= 0, a
+ticker with no price, insufficient cash, insufficient shares, or a bad `side`.
+
+A trade is all-or-nothing: a rejected trade changes nothing (no cash movement, no position
+change, no trade row, no snapshot).
+
+### GET /api/portfolio/history
+
+`200 {"history": [{"total_value": 10000.0, "recorded_at": "2026-10-07T12:00:00Z"}]}`, ascending by
+`recorded_at`, at most the 2000 most recent entries. The server may first record a snapshot,
+guarded by a minimum interval.
+
+### POST /api/chat
+
+Body `{"message": "..."}`.
+`200 {"message": str, "actions": [Action], "portfolio": Portfolio, "watchlist": [WatchlistItem]}`.
+
+- `400 {"error": "..."}` only for an empty message.
+- An LLM failure (timeout, malformed output, missing key) is not an HTTP error: the response is
+  `200` with an assistant error message in `message` and `"actions": []`.
+- The last 20 stored messages are sent to the LLM as conversation history.
+
+### GET /api/chat/history
+
+`200 {"messages": [{"id", "role", "content", "actions", "created_at"}]}`, oldest first, the most
+recent 100. `role` is `"user"` or `"assistant"`. `actions` is `null` for user messages.
+
+## More shared shapes
+
+### WatchlistItem
+
+The PriceUpdate keys. Every field other than `ticker` is `null` until the first price arrives.
+
+### Portfolio
+
+| Field | Meaning |
+|-------|---------|
+| `cash` | Cash balance |
+| `total_value` | Cash plus the market value of all positions |
+| `unrealized_pnl` | Sum of the positions' `unrealized_pnl` |
+| `positions` | List of position objects, below |
+
+Position object: `{ticker, quantity, avg_cost, current_price, market_value, unrealized_pnl,
+pnl_percent}`. `pnl_percent` is measured against `avg_cost` and is distinct from the SSE
+`change_percent`, which is measured against `session_start_price`.
+
+### Trade
+
+`{id, ticker, side, quantity, price, executed_at}`.
+
+### Action
+
+The server-authoritative outcome of one action the LLM requested, listed in `POST /api/chat`.
+Two variants:
+
+- Trade: `{"type": "trade", "ticker", "side", "quantity", "price": number or null, "ok": bool, "error": string or null}`
+- Watchlist: `{"type": "watchlist", "ticker", "action": "add" or "remove", "ok": bool, "error": string or null}`
+
+A failed action carries `ok: false` and the reason in `error`; `price` is `null` when no fill
+happened.
+
+### LLM structured output
+
+The model is instructed to answer with JSON of this shape:
+
+```json
+{
+  "message": "Your conversational response to the user",
+  "trades": [{"ticker": "AAPL", "side": "buy", "quantity": 10}],
+  "watchlist_changes": [{"ticker": "PYPL", "action": "add"}]
+}
+```
+
+`message` is required; `trades` and `watchlist_changes` are optional. Each trade goes through the
+same validation as a manual trade.
+
+## Mock LLM (LLM_MOCK=true)
+
+Deterministic keyword rules, frozen now because the E2E suite depends on them. A message is
+matched case-insensitively.
+
+| Message contains | Mock response |
+|------------------|---------------|
+| "buy" | Buy 1 AAPL |
+| "sell" | Sell 1 AAPL |
+| "add TICKER" or "remove TICKER" | That watchlist change |
+| "broke" | An unaffordable buy (failure path) |
+| "malformed" | Non-JSON model output (error path) |
+| anything else | Message only, no actions |
+
+## Empty and null cases
+
+- An empty watchlist is `{"watchlist": []}`.
+- No positions is `"positions": []` in Portfolio.
+- An unpriced ticker has `null` in every non-ticker price field of its WatchlistItem.
+- Empty history is `{"history": []}`; empty chat history is `{"messages": []}`.
+- An empty chat message is a `400`.
+- Every SSE frame carries the full tracked set, so a reconnecting client needs no replay.
