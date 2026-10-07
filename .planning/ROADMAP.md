@@ -39,7 +39,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. `docker build` succeeds on this machine with TLS verification left on, and the running container serves the placeholder page and `/api/health` on port 8000 with one worker. A host-run Playwright smoke check loads that page, or, if App Control blocks host Playwright, the container fallback is chosen and recorded
   5. One API/SSE contract doc in `planning/` defines every endpoint's request/response shape, field names, the `{"error": "..."}` format, status codes, the SSE payload (`change_percent` from the session-start price), and `GET /api/chat/history`. Backend and frontend both reference it
 
-**Plans**: 6/8 plans executed
+**Plans**: 7/8 plans executed
 Plans:
 **Wave 1**
 - [x] 01-01-PLAN.md — Repo hygiene: untrack build artifacts, fix .gitignore lib/ block, .gitattributes LF, .env.example, db/.gitkeep (W1)
@@ -54,7 +54,7 @@ Plans:
 
 **Gap closure** *(01-VERIFICATION.md CR-01 plus review warnings WR-01..WR-05; sequential because each plan updates 01-REVIEW-DISPOSITION.md)*
 - [x] 01-06-PLAN.md — Empty env values fall back to defaults (CR-01), hermetic backend tests (WR-03), any-method /api 404 (WR-05) (W1)
-- [ ] 01-07-PLAN.md — getHealth checks res.ok so a non-2xx health renders "down" (WR-04) (W2)
+- [x] 01-07-PLAN.md — getHealth checks res.ok so a non-2xx health renders "down" (WR-04) (W2)
 - [ ] 01-08-PLAN.md — Dockerfile fails on a failed uv sync (WR-01), non-root runtime user with writable /app/db (WR-02), full container re-proof (W3)
 
 **Research flag**: Docker-build CA injection under Avast (build secret, never disabling verification). Whether App Control blocks host Playwright or Next native binaries (fallback: Playwright container, reversing §13 #23)
@@ -145,7 +145,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6. Phases 4 and 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Walking Skeleton | 6/8 | In Progress | - |
+| 1. Walking Skeleton | 7/8 | In Progress | - |
 | 2. Live Market Terminal | 0/TBD | Not started | - |
 | 3. Trading & Watchlist Management | 0/TBD | Not started | - |
 | 4. Charts & Portfolio Visualizations | 0/TBD | Not started | - |

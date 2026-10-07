@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 01
 current_phase_name: Walking Skeleton
 status: executing
-stopped_at: Completed 01-06-PLAN.md
-last_updated: "2026-10-07T23:24:19.449Z"
+stopped_at: Completed 01-07-PLAN.md
+last_updated: "2026-10-07T23:27:20.486Z"
 last_activity: 2026-10-08
 last_activity_desc: Phase 01 execution started
-state_head: 3e7a5126ab6b0e490b3665d3610193ac6d11ca72
+state_head: f83c1e11badd62140cda52c2b32ef040a9d90639
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 8
-  completed_plans: 6
+  completed_plans: 7
   percent: 0
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-06)
 ## Current Position
 
 Phase: 01 (Walking Skeleton) — EXECUTING
-Plan: 2 of 8
+Plan: 3 of 8
 Status: Ready to execute
 Last activity: 2026-10-08 — Phase 01 execution started
 
@@ -62,6 +62,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01 P04 | 12 min | 3 tasks | 9 files |
 | Phase 01 P05 | 18 min | 3 tasks | 8 files |
 | Phase 01 P06 | 6 min | 3 tasks | 7 files |
+| Phase 01 P07 | 8 min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -86,6 +87,7 @@ Recent decisions affecting current work:
 - [Phase 01]: 01-05: Docker TLS probe showed no interception; image built without extra_ca secret, mechanism proven with a throwaway secret build; host Playwright passes against the container (D-05)
 - [Phase 01]: Empty or whitespace-only config values are unset (env() helper); malformed non-empty values still fail at startup
 - [Phase 01]: Unknown /api paths use add_route with a JSONResponse ASGI app so any HTTP method gets the contract 404
+- [Phase 01]: 01-07: getHealth() throws on non-2xx; page.tsx unchanged because its catch already sets down (WR-04)
 
 ### Pending Todos
 
@@ -108,6 +110,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-07T23:24:19.408Z
-Stopped at: Completed 01-06-PLAN.md
+Last session: 2026-10-07T23:27:20.447Z
+Stopped at: Completed 01-07-PLAN.md
 Resume file: None
