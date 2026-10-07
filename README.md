@@ -4,14 +4,18 @@ An AI-powered trading workstation: live market data, a simulated $10k portfolio,
 
 ## Status
 
-- **Done:** market data subsystem (GBM simulator, Massive API client, price cache, SSE stream) in `backend/app/market/`
-- **To do:** portfolio, watchlist and chat APIs, database, Next.js frontend, Docker packaging
+Phase 1 (walking skeleton) is in place:
+- FastAPI app factory with `GET /api/health` and a JSON error envelope
+- Next.js static-export placeholder page, served same-origin by FastAPI
+- Three-stage Docker image on port 8000 with one uvicorn worker
+- Host Playwright smoke test (`test/`)
+- Frozen REST/SSE contract in [planning/API_CONTRACT.md](planning/API_CONTRACT.md)
 
-The full specification is in [planning/PLAN.md](planning/PLAN.md).
+Not built yet: market data, database, trading, charts, AI chat, and compose with start/stop scripts. See `.planning/ROADMAP.md` for the later phases and [planning/PLAN.md](planning/PLAN.md) for the full specification.
 
 ## Architecture
 
-One Docker container on port 8000:
+Target design, one Docker container on port 8000:
 
 - **Frontend:** Next.js static export (TypeScript, Tailwind)
 - **Backend:** FastAPI managed with `uv`, SSE for live prices
@@ -21,12 +25,40 @@ One Docker container on port 8000:
 
 ## Development
 
+Backend:
+
 ```bash
 cd backend
 uv sync --extra dev
-uv run pytest                    # run tests
-uv run market_data_demo.py       # terminal demo of the simulator
+uv run python -m pytest
+uv run uvicorn --factory app.main:create_app
 ```
+
+Real environment variables beat `.env`, so run mock mode as `LLM_MOCK=true uv run uvicorn --factory app.main:create_app`.
+
+Frontend (static export to `frontend/out`):
+
+```bash
+cd frontend
+npm ci
+npm run build
+```
+
+Local full stack plus browser smoke test (starts the backend itself; port 8000 must be free):
+
+```bash
+npm --prefix test run smoke
+```
+
+Docker:
+
+```bash
+docker build -t finally .
+docker run --rm -p 8000:8000 finally
+```
+
+On a TLS-intercepting machine, pass the interception root as a build secret (used only in throwaway build stages, never in the final image): `docker build --secret id=extra_ca,src=<path-to-root.pem> -t finally .`
+Smoke-test a running container with `BASE_URL=http://localhost:8000 npm --prefix test run smoke`.
 
 ## Environment Variables
 
@@ -37,6 +69,10 @@ Set in `.env` at the project root:
 | `OPENROUTER_API_KEY` | Yes | OpenRouter key for AI chat |
 | `MASSIVE_API_KEY` | No | Real market data; omit to use the simulator |
 | `LLM_MOCK` | No | `true` for deterministic mock LLM responses |
+| `DB_PATH` | No | SQLite file; default `db/finally.db` (`/app/db/finally.db` in Docker) |
+| `SIM_SEED` | No | Integer seed for a reproducible simulator |
+| `SIM_EVENT_PROBABILITY` | No | Per-tick chance of a random price event; default `0.001` |
+| `STATIC_DIR` | No | Static export directory; local dev only |
 
 ## License
 
