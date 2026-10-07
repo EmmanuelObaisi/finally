@@ -39,7 +39,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. `docker build` succeeds on this machine with TLS verification left on, and the running container serves the placeholder page and `/api/health` on port 8000 with one worker. A host-run Playwright smoke check loads that page, or, if App Control blocks host Playwright, the container fallback is chosen and recorded
   5. One API/SSE contract doc in `planning/` defines every endpoint's request/response shape, field names, the `{"error": "..."}` format, status codes, the SSE payload (`change_percent` from the session-start price), and `GET /api/chat/history`. Backend and frontend both reference it
 
-**Plans**: 4/5 plans executed
+**Plans**: 5/5 plans executed
 Plans:
 **Wave 1**
 - [x] 01-01-PLAN.md — Repo hygiene: untrack build artifacts, fix .gitignore lib/ block, .gitattributes LF, .env.example, db/.gitkeep (W1)
@@ -50,7 +50,7 @@ Plans:
 - [x] 01-04-PLAN.md — Frontend skeleton: Next 16 static export, Tailwind dark page calling same-origin /api/health (W2, npm checkpoint)
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 01-05-PLAN.md — Local full-stack Playwright smoke, Docker TLS probe + 3-stage image on :8000, container smoke, README truth (W3)
+- [x] 01-05-PLAN.md — Local full-stack Playwright smoke, Docker TLS probe + 3-stage image on :8000, container smoke, README truth (W3)
 
 **Research flag**: Docker-build CA injection under Avast (build secret, never disabling verification). Whether App Control blocks host Playwright or Next native binaries (fallback: Playwright container, reversing §13 #23)
 
@@ -140,7 +140,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6. Phases 4 and 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Walking Skeleton | 4/5 | In Progress | - |
+| 1. Walking Skeleton | 5/5 | In Progress | - |
 | 2. Live Market Terminal | 0/TBD | Not started | - |
 | 3. Trading & Watchlist Management | 0/TBD | Not started | - |
 | 4. Charts & Portfolio Visualizations | 0/TBD | Not started | - |

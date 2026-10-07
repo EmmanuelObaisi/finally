@@ -2,17 +2,17 @@
 gsd_state_version: "1.0"
 current_phase: 01
 current_phase_name: Walking Skeleton
-status: executing
-stopped_at: Completed 01-04-PLAN.md
-last_updated: "2026-10-07T21:54:55.736Z"
+status: verifying
+stopped_at: Completed 01-05-PLAN.md
+last_updated: "2026-10-07T22:10:03.073Z"
 last_activity: 2026-10-07
 last_activity_desc: Phase 01 execution started
-state_head: 69d1a22c87c5ddcd72dc8213a3c2279073792d9f
+state_head: c01f11fd2709a9a576e421d35313904feb1058fe
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 5
-  completed_plans: 4
+  completed_plans: 5
   percent: 0
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-10-06)
 
 Phase: 01 (Walking Skeleton) — EXECUTING
 Plan: 5 of 5
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-10-07 — Phase 01 execution started
 
 Progress: [░░░░░░░░░░] 0%
@@ -60,6 +60,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01 P02 | 15 min | 2 tasks | 4 files |
 | Phase 01 P03 | 25 min | 3 tasks | 10 files |
 | Phase 01 P04 | 12 min | 3 tasks | 9 files |
+| Phase 01 P05 | 18 min | 3 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -81,6 +82,7 @@ Recent decisions affecting current work:
 - [Phase 01]: Every backend failure returns the {error} envelope: unknown /api paths 404, validation 400 (never 422), unhandled 500 with fixed text; routers must be included above the /api catch-all
 - [Phase 01]: 01-04: Next 16.4/React 19.3/Tailwind 4.3 frontend hand-written; export build only, /api rewrites spread only in next dev; Next-normalized tsconfig.json and lockfile committed
 - [Phase 01]: UI safety gate overridden for Phase 1 wave 2: placeholder page only (title, API status, dark theme); a UI-SPEC is produced via /gsd-ui-phase 2 before Phase 2 UI work (user decision)
+- [Phase 01]: 01-05: Docker TLS probe showed no interception; image built without extra_ca secret, mechanism proven with a throwaway secret build; host Playwright passes against the container (D-05)
 
 ### Pending Todos
 
@@ -103,6 +105,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-07T21:52:30.456Z
-Stopped at: Completed 01-04-PLAN.md
+Last session: 2026-10-07T22:10:02.819Z
+Stopped at: Completed 01-05-PLAN.md
 Resume file: None

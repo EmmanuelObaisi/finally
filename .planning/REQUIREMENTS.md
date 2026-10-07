@@ -14,7 +14,7 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 - [x] **FND-03**: Frontend is a Next.js TypeScript project in `frontend/` that builds to a static export (`output: 'export'`) with Tailwind
 - [x] **FND-04**: The API/SSE contract (request/response shapes, field names, error format, status codes) is written down in `planning/` and is the single reference for backend and frontend
 - [x] **FND-05**: Backend reads config from env: `OPENROUTER_API_KEY`, `MASSIVE_API_KEY`, `LLM_MOCK`, `DB_PATH`, `SIM_SEED`, `SIM_EVENT_PROBABILITY`; local dev loads the project-root `.env`
-- [ ] **FND-06**: `README.md` and `CLAUDE.md` status lines reflect the actual state of the code
+- [x] **FND-06**: `README.md` and `CLAUDE.md` status lines reflect the actual state of the code
 
 ### Market Data
 
@@ -88,7 +88,7 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 
 ### Packaging
 
-- [ ] **PKG-01**: Multi-stage Dockerfile (Node 24 build → Python 3.12 + uv `--locked`) produces one image serving API and static frontend on port 8000 with one worker
+- [x] **PKG-01**: Multi-stage Dockerfile (Node 24 build → Python 3.12 + uv `--locked`) produces one image serving API and static frontend on port 8000 with one worker
 - [ ] **PKG-02**: SQLite persists on a named Docker volume mounted at `/app/db`; `.env` is passed via `--env-file`
 - [ ] **PKG-03**: `docker-compose.yml` defines the run; `scripts/start_mac.sh`, `stop_mac.sh`, `start_windows.ps1`, `stop_windows.ps1` are thin idempotent wrappers (start builds if needed, prints URL; stop keeps the volume)
 - [ ] **PKG-04**: User can launch the app with one command and open `http://localhost:8000`
@@ -141,7 +141,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FND-03 | Phase 1 | Complete |
 | FND-04 | Phase 1 | Complete |
 | FND-05 | Phase 1 | Complete |
-| FND-06 | Phase 1 | Pending |
+| FND-06 | Phase 1 | Complete |
 | MKT-01 | Phase 2 | Pending |
 | MKT-02 | Phase 2 | Pending |
 | MKT-03 | Phase 2 | Pending |
@@ -191,7 +191,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PUI-06 | Phase 5 | Pending |
 | PUI-07 | Phase 4 | Pending |
 | PUI-08 | Phase 6 | Pending |
-| PKG-01 | Phase 1 | Pending |
+| PKG-01 | Phase 1 | Complete |
 | PKG-02 | Phase 6 | Pending |
 | PKG-03 | Phase 6 | Pending |
 | PKG-04 | Phase 6 | Pending |
