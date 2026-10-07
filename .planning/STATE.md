@@ -4,10 +4,10 @@ current_phase: 01
 current_phase_name: Walking Skeleton
 status: executing
 stopped_at: Completed 01-08-PLAN.md
-last_updated: "2026-10-07T23:31:27.383Z"
+last_updated: "2026-10-07T23:32:58.544Z"
 last_activity: 2026-10-08
 last_activity_desc: Phase 01 execution started
-state_head: 139ab9deb370988db3f3f487babf231996d67be4
+state_head: d3fb141aa87e64d26fd176e7aa9a4ed51bb9f936
 progress:
   total_phases: 6
   completed_phases: 0
@@ -90,6 +90,7 @@ Recent decisions affecting current work:
 - [Phase 01]: Unknown /api paths use add_route with a JSONResponse ASGI app so any HTTP method gets the contract 404
 - [Phase 01]: 01-07: getHealth() throws on non-2xx; page.tsx unchanged because its catch already sets down (WR-04)
 - [Phase 01]: 01-08: runtime image runs as non-root system user app owning /app/db; backend-build RUN uses set -e so a failed uv sync --locked fails the build
+- [Phase 01]: UI safety gate overridden for Phase 1 gap closure: 01-07 changed only a non-visual res.ok check in frontend/src/lib/api.ts; UI-SPEC still deferred to /gsd-ui-phase 2 (user decision)
 
 ### Pending Todos
 
