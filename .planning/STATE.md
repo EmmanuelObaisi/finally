@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 01
 current_phase_name: Walking Skeleton
 status: executing
-stopped_at: Completed 01-03-PLAN.md
-last_updated: "2026-10-07T21:46:11.611Z"
+stopped_at: Completed 01-04-PLAN.md
+last_updated: "2026-10-07T21:52:30.556Z"
 last_activity: 2026-10-07
 last_activity_desc: Phase 01 execution started
-state_head: 676c76e8502efc80e048216d3f97c903195fdba6
+state_head: 3697d1dff4ccee88b4abd039cdca03b586271908
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 5
-  completed_plans: 3
+  completed_plans: 4
   percent: 0
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-06)
 ## Current Position
 
 Phase: 01 (Walking Skeleton) — EXECUTING
-Plan: 4 of 5
+Plan: 5 of 5
 Status: Ready to execute
 Last activity: 2026-10-07 — Phase 01 execution started
 
@@ -59,6 +59,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01 P01 | 25 min | 2 tasks | 4 files |
 | Phase 01 P02 | 15 min | 2 tasks | 4 files |
 | Phase 01 P03 | 25 min | 3 tasks | 10 files |
+| Phase 01 P04 | 12 min | 3 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -78,6 +79,7 @@ Recent decisions affecting current work:
 - [Phase 01]: Backend uses plain httpx as the TestClient transport with the Starlette deprecation warning filtered; httpx2 is not installed (D-02)
 - [Phase 01]: Backend dependencies pinned with == to the human-approved versions (fastapi 0.142.2, uvicorn 0.54.0, python-dotenv 1.2.4; dev pytest 9.1.1, httpx 0.28.1)
 - [Phase 01]: Every backend failure returns the {error} envelope: unknown /api paths 404, validation 400 (never 422), unhandled 500 with fixed text; routers must be included above the /api catch-all
+- [Phase 01]: 01-04: Next 16.4/React 19.3/Tailwind 4.3 frontend hand-written; export build only, /api rewrites spread only in next dev; Next-normalized tsconfig.json and lockfile committed
 
 ### Pending Todos
 
@@ -100,6 +102,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-07T21:46:11.575Z
-Stopped at: Completed 01-03-PLAN.md
+Last session: 2026-10-07T21:52:30.456Z
+Stopped at: Completed 01-04-PLAN.md
 Resume file: None
