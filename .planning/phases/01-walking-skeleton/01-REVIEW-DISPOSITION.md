@@ -3,7 +3,7 @@ phase: 01-walking-skeleton
 review: 01-REVIEW.md
 review_status: issues_found
 findings:
-  open: 5
+  open: 3
   total: 9
 updated: 2026-10-08
 ---
@@ -15,8 +15,8 @@ One row per finding in `01-REVIEW.md`. Every finding defaults to `open` until it
 | ID | Severity | Finding | Disposition |
 |----|----------|---------|-------------|
 | CR-01 | critical | Copying `.env.example` to `.env` crashes the backend at startup (`SIM_EVENT_PROBABILITY=` -> `float("")`) | fixed (2824808) |
-| WR-01 | warning | Dockerfile masks a failed `uv sync` | open |
-| WR-02 | warning | Runtime container runs as root | open |
+| WR-01 | warning | Dockerfile masks a failed `uv sync` | fixed (85f71e1) |
+| WR-02 | warning | Runtime container runs as root | fixed (85f71e1) |
 | WR-03 | warning | Test suite depends on, and leaks, process environment | fixed (5f97c53) |
 | WR-04 | warning | `getHealth` ignores HTTP status and can render an empty status | fixed (63f1589) |
 | WR-05 | warning | Non-GET/POST methods on unknown `/api/*` paths do not return the contract's 404 | fixed (40a5611) |

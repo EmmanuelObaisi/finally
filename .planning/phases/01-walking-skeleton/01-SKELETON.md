@@ -21,7 +21,7 @@ Proven by plan 01-05: `npm --prefix test run smoke` runs it locally, and `BASE_U
 | Config | `Settings.from_env()`: env vars plus the project-root `.env` via python-dotenv (`override=False`, so real env wins); `DB_PATH`, `LLM_MOCK`, `SIM_SEED`, `SIM_EVENT_PROBABILITY`, `OPENROUTER_API_KEY`, `MASSIVE_API_KEY`, `STATIC_DIR` | PROJECT decisions 11-12; identical semantics locally and with Docker `--env-file` |
 | Data layer | SQLite through stdlib `sqlite3` at `DB_PATH` (default `<root>/db/finally.db`, `/app/db/finally.db` in Docker). **Deferred to Phase 2 (D-03)**: Phase 1 only resolves the path in config | DB-01..03 are Phase 2 requirements. The skeleton proves browser -> static page -> same-origin API instead of a DB read/write |
 | Auth | None: one hardcoded user `"default"` | PLAN.md: no login; the schema keeps `user_id` for the future |
-| Deployment target | One image, three stages: `node:24-slim` (npm ci + export) -> `python:3.12-slim` + uv 0.12.17 (`uv sync --locked`) -> runtime `python:3.12-slim`. Port 8000, one uvicorn worker, `HEALTHCHECK` on `/api/health`. An optional BuildKit secret `extra_ca` is mounted only in the throwaway stages (D-04) | PKG-01. Builds on this Avast-intercepted machine with TLS verification on; no interception root in the shipped image |
+| Deployment target | One image, three stages: `node:24-slim` (npm ci + export) -> `python:3.12-slim` + uv 0.12.17 (`uv sync --locked`) -> runtime `python:3.12-slim`. Port 8000, one uvicorn worker, `HEALTHCHECK` on `/api/health`. An optional BuildKit secret `extra_ca` is mounted only in the throwaway stages (D-04) | PKG-01. Builds on this Avast-intercepted machine with TLS verification on; no interception root in the shipped image. The runtime runs as the non-root user `app`, which owns `/app/db` (WR-02). |
 | E2E testing | Host-run Playwright 1.63 in `test/` (D-05). Its `webServer` starts local uvicorn only when `BASE_URL` is unset | Verified working on this machine; no Playwright container (PROJECT section 13 #23 stands) |
 | Directory layout | `backend/app/` (one module per concern; routers added above the catch-all), `backend/tests/`, `frontend/src/app/`, `frontend/src/lib/` (typed API calls), `test/` (Playwright), `planning/` (contract and design docs), `db/` (runtime volume target) | PLAN.md section 4; `frontend/src/lib/` is trackable after the 01-01 `.gitignore` fix |
 
@@ -42,7 +42,6 @@ Proven by plan 01-05: `npm --prefix test run smoke` runs it locally, and `BASE_U
 - LLM integration and mock mode behavior (Phase 5)
 - Frontend unit test runner (Vitest arrives with the first real components)
 - `docker-compose.yml`, start/stop scripts, named volume and `--env-file` launch (Phase 6)
-- Running the container as a non-root user and volume ownership (Phase 6)
 
 ## Subsequent Slice Plan
 
