@@ -1,18 +1,18 @@
 ---
 gsd_state_version: "1.0"
-current_phase: 1
+current_phase: 01
 current_phase_name: Walking Skeleton
 status: executing
-stopped_at: Completed 01-05-PLAN.md
-last_updated: "2026-10-07T22:58:38.114Z"
-last_activity: 2026-10-07
+stopped_at: Completed 01-06-PLAN.md
+last_updated: "2026-10-07T23:24:19.449Z"
+last_activity: 2026-10-08
 last_activity_desc: Phase 01 execution started
-state_head: 9986f98d3da4bfbf8ad52059b12bbf65e51b7f23
+state_head: 3e7a5126ab6b0e490b3665d3610193ac6d11ca72
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 8
-  completed_plans: 5
+  completed_plans: 6
   percent: 0
 ---
 
@@ -27,10 +27,10 @@ See: .planning/PROJECT.md (updated 2026-10-06)
 
 ## Current Position
 
-Phase: 1 (Walking Skeleton) — READY TO EXECUTE
-Plan: 5 of 5
+Phase: 01 (Walking Skeleton) — EXECUTING
+Plan: 2 of 8
 Status: Ready to execute
-Last activity: 2026-10-07 — Phase 01 execution started
+Last activity: 2026-10-08 — Phase 01 execution started
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -61,6 +61,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01 P03 | 25 min | 3 tasks | 10 files |
 | Phase 01 P04 | 12 min | 3 tasks | 9 files |
 | Phase 01 P05 | 18 min | 3 tasks | 8 files |
+| Phase 01 P06 | 6 min | 3 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -83,6 +84,8 @@ Recent decisions affecting current work:
 - [Phase 01]: 01-04: Next 16.4/React 19.3/Tailwind 4.3 frontend hand-written; export build only, /api rewrites spread only in next dev; Next-normalized tsconfig.json and lockfile committed
 - [Phase 01]: UI safety gate overridden for Phase 1 wave 2: placeholder page only (title, API status, dark theme); a UI-SPEC is produced via /gsd-ui-phase 2 before Phase 2 UI work (user decision)
 - [Phase 01]: 01-05: Docker TLS probe showed no interception; image built without extra_ca secret, mechanism proven with a throwaway secret build; host Playwright passes against the container (D-05)
+- [Phase 01]: Empty or whitespace-only config values are unset (env() helper); malformed non-empty values still fail at startup
+- [Phase 01]: Unknown /api paths use add_route with a JSONResponse ASGI app so any HTTP method gets the contract 404
 
 ### Pending Todos
 
@@ -105,6 +108,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-07T22:10:02.819Z
-Stopped at: Completed 01-05-PLAN.md
+Last session: 2026-10-07T23:24:19.408Z
+Stopped at: Completed 01-06-PLAN.md
 Resume file: None
