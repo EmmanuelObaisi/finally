@@ -4,10 +4,10 @@ current_phase: 01
 current_phase_name: Walking Skeleton
 status: executing
 stopped_at: Completed 01-04-PLAN.md
-last_updated: "2026-10-07T21:52:30.556Z"
+last_updated: "2026-10-07T21:54:55.736Z"
 last_activity: 2026-10-07
 last_activity_desc: Phase 01 execution started
-state_head: 3697d1dff4ccee88b4abd039cdca03b586271908
+state_head: 69d1a22c87c5ddcd72dc8213a3c2279073792d9f
 progress:
   total_phases: 6
   completed_phases: 0
@@ -80,6 +80,7 @@ Recent decisions affecting current work:
 - [Phase 01]: Backend dependencies pinned with == to the human-approved versions (fastapi 0.142.2, uvicorn 0.54.0, python-dotenv 1.2.4; dev pytest 9.1.1, httpx 0.28.1)
 - [Phase 01]: Every backend failure returns the {error} envelope: unknown /api paths 404, validation 400 (never 422), unhandled 500 with fixed text; routers must be included above the /api catch-all
 - [Phase 01]: 01-04: Next 16.4/React 19.3/Tailwind 4.3 frontend hand-written; export build only, /api rewrites spread only in next dev; Next-normalized tsconfig.json and lockfile committed
+- [Phase 01]: UI safety gate overridden for Phase 1 wave 2: placeholder page only (title, API status, dark theme); a UI-SPEC is produced via /gsd-ui-phase 2 before Phase 2 UI work (user decision)
 
 ### Pending Todos
 
