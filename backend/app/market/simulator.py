@@ -2,6 +2,7 @@
 
 import asyncio
 import contextlib
+import hashlib
 import logging
 import time
 
@@ -23,6 +24,13 @@ logger = logging.getLogger(__name__)
 
 TRADING_SECONDS_PER_YEAR = 252 * 6.5 * 3600
 TICK_SECONDS = 0.5
+
+
+def derived_price(ticker: str) -> float:
+    """Stable start price in [50, 300] for a ticker with no seed price."""
+    digest = hashlib.sha256(ticker.encode()).digest()
+    fraction = int.from_bytes(digest[:8], "big") / 2**64
+    return round(50 + 250 * fraction, 2)
 
 
 def sector_of(ticker: str) -> str | None:
@@ -66,10 +74,10 @@ class GBMSimulator:
         return list(self._tickers)
 
     def add_ticker(self, ticker: str) -> None:
-        """Add a ticker at its seed price, or a random price if unknown."""
+        """Add a ticker at its seed price, or a stable ticker-derived price if unknown."""
         if ticker in self.prices:
             return
-        self.prices[ticker] = SEED_PRICES.get(ticker) or float(self.rng.uniform(50, 300))
+        self.prices[ticker] = SEED_PRICES.get(ticker) or derived_price(ticker)
         self._tickers.append(ticker)
         self._rebuild()
 
