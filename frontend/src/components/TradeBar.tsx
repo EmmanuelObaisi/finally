@@ -16,6 +16,15 @@ const BUTTON =
 type Message = { kind: MessageKind; text: string };
 const IDLE: Message = { kind: "idle", text: "" };
 
+/** The first problem with the typed ticker and quantity, or null when the order may be sent. */
+function checkInput(ticker: string, quantity: string): string | null {
+  if (!ticker.trim()) return "Enter a ticker symbol";
+  const text = quantity.trim();
+  if (/^\d*\.\d{7,}$/.test(text)) return "Quantity supports up to 6 decimal places";
+  const valid = /^(\d+(\.\d{1,6})?|\.\d{1,6})$/.test(text) && Number(text) > 0;
+  return valid ? null : "Enter a quantity greater than 0, for example 10 or 1.5";
+}
+
 /** Market-order form. Orders only fire from an explicit click on Buy or Sell. */
 export default function TradeBar() {
   const [ticker, setTicker] = useState("");
@@ -26,10 +35,15 @@ export default function TradeBar() {
 
   async function submit(side: "buy" | "sell") {
     if (pending) return;
+    const problem = checkInput(ticker, quantity);
+    if (problem) {
+      setMessage({ kind: "error", text: problem });
+      return;
+    }
     setPending(true);
     setMessage({ kind: "pending", text: "Placing order..." });
     try {
-      const { trade, portfolio } = await postTrade(ticker.trim(), Number(quantity), side);
+      const { trade, portfolio } = await postTrade(ticker.trim(), Number(quantity.trim()), side);
       usePortfolioStore.getState().applyTrade(portfolio);
       setQuantity("");
       const verb = trade.side === "buy" ? "Bought" : "Sold";
