@@ -42,18 +42,18 @@ Seeded from RESEARCH.md; task IDs are bound when plans are created.
 
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| TBD | TBD | TBD | MKT-01, MKT-02, MKT-03 | — | N/A | unit | `uv run --directory backend python -m pytest tests/market/test_simulator.py -q` | ❌ W0 | ⬜ pending |
-| TBD | TBD | TBD | MKT-04, MKT-06 | — | N/A | unit | `uv run --directory backend python -m pytest tests/market/test_simulator.py tests/market/test_factory.py -q` | ❌ W0 | ⬜ pending |
-| TBD | TBD | TBD | MKT-05 | — | API key never logged or returned | unit | `uv run --directory backend python -m pytest tests/market/test_massive.py -q` | ❌ W0 | ⬜ pending |
-| TBD | TBD | TBD | MKT-07 | — | N/A | unit | `uv run --directory backend python -m pytest tests/market/test_cache.py -q` | ❌ W0 | ⬜ pending |
-| TBD | TBD | TBD | MKT-09 | — | N/A | unit + integration | `uv run --directory backend python -m pytest tests/market/test_stream.py -q` | ❌ W0 | ⬜ pending |
-| TBD | TBD | TBD | MKT-10 | — | No SSE hang on shutdown | integration | `uv run --directory backend python -m pytest tests/market/test_shutdown.py -q` | ❌ W0 | ⬜ pending |
-| TBD | TBD | TBD | DB-01, DB-02, DB-03 | — | Parameterized SQL only | unit | `uv run --directory backend python -m pytest tests/test_db.py -q` | ❌ W0 | ⬜ pending |
-| TBD | TBD | TBD | WL-01 | — | N/A | API | `uv run --directory backend python -m pytest tests/test_watchlist.py -q` | ❌ W0 | ⬜ pending |
-| TBD | TBD | TBD | PORT-01 | — | N/A | API | `uv run --directory backend python -m pytest tests/test_portfolio.py -q` | ❌ W0 | ⬜ pending |
-| TBD | TBD | TBD | UI-02, UI-03, UI-04, UI-05, UI-08 | — | N/A | unit | `npm --prefix frontend test` | ❌ W0 | ⬜ pending |
-| TBD | TBD | TBD | UI-01, UI-02, UI-03, UI-04 | — | N/A | e2e | `npm --prefix test run smoke` | ❌ W0 | ⬜ pending |
-| TBD | TBD | TBD | TEST-01 | — | N/A | suite | `uv run --directory backend python -m pytest tests/market -q` | ❌ W0 | ⬜ pending |
+| 02-03-01, 02-03-02 | 02-03 | 2 | MKT-01, MKT-02, MKT-03 | T-02-09 | N/A | unit | `uv run --directory backend python -m pytest tests/market/test_simulator.py -q` | ❌ W0 (created by 02-03-01) | ⬜ pending |
+| 02-03-02, 02-04-03 | 02-03, 02-04 | 2 | MKT-04, MKT-06 | — | N/A | unit | `uv run --directory backend python -m pytest tests/market/test_simulator.py tests/market/test_factory.py -q` | ❌ W0 (created by 02-03-01, 02-04-03) | ⬜ pending |
+| 02-04-01, 02-04-02, 02-04-03 | 02-04 | 2 | MKT-05 | T-02-10, T-02-11, T-02-12 | API key never logged or returned | unit | `uv run --directory backend python -m pytest tests/market/test_massive.py -q` | ❌ W0 (created by 02-04-01) | ⬜ pending |
+| 02-01-03 | 02-01 | 1 | MKT-07 | — | N/A | unit | `uv run --directory backend python -m pytest tests/market/test_cache.py -q` | ❌ W0 (created by 02-01-03) | ⬜ pending |
+| 02-01-02, 02-01-03 | 02-01 | 1 | MKT-09 | T-02-03 | N/A | unit + integration | `uv run --directory backend python -m pytest tests/market/test_stream.py -q` | ❌ W0 (created by 02-01-02) | ⬜ pending |
+| 02-01-03, 02-07-03 | 02-01, 02-07 | 1, 5 | MKT-10 | T-02-01, T-02-22 | No SSE hang on shutdown | integration | `uv run --directory backend python -m pytest tests/market/test_shutdown.py -q` | ❌ W0 (created by 02-01-03) | ⬜ pending |
+| 02-02-01, 02-02-02 | 02-02 | 2 | DB-01, DB-02, DB-03 | T-02-05, T-02-07 | Parameterized SQL only; seed never resets user data | unit | `uv run --directory backend python -m pytest tests/test_db.py -q` | ❌ W0 (created by 02-02-02) | ⬜ pending |
+| 02-02-01, 02-02-03 | 02-02 | 2 | WL-01 | T-02-05 | N/A | API | `uv run --directory backend python -m pytest tests/test_watchlist.py -q` | ❌ W0 (created by 02-02-01) | ⬜ pending |
+| 02-02-03 | 02-02 | 2 | PORT-01 | T-02-06 | N/A | API | `uv run --directory backend python -m pytest tests/test_portfolio.py -q` | ❌ W0 (created by 02-02-03) | ⬜ pending |
+| 02-05-02, 02-05-03, 02-06-02, 02-06-03, 02-07-01, 02-07-02 | 02-05, 02-06, 02-07 | 3, 4, 5 | UI-02, UI-03, UI-04, UI-05, UI-08 | T-02-14, T-02-18 | N/A | unit | `npm --prefix frontend test` | ❌ W0 (Vitest set up by 02-05-02) | ⬜ pending |
+| 02-05-01, 02-06-01, 02-07-01, 02-07-02 | 02-05, 02-06, 02-07 | 3, 4, 5 | UI-01, UI-02, UI-03, UI-04 | — | N/A | e2e | `npm --prefix frontend run build && npm --prefix test run smoke` | ✅ (smoke.spec.ts rewritten by 02-05-01) | ⬜ pending |
+| 02-01-03, 02-03-02, 02-04-03 | 02-01, 02-03, 02-04 | 1, 2 | TEST-01 | — | N/A | suite | `uv run --directory backend python -m pytest tests/market -q` | ❌ W0 | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
