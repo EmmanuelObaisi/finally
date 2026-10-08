@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 02
 current_phase_name: Live Market Terminal
 status: executing
-stopped_at: Completed 02-05-PLAN.md
-last_updated: "2026-10-08T13:55:48.001Z"
+stopped_at: Completed 02-06-PLAN.md
+last_updated: "2026-10-08T14:02:56.881Z"
 last_activity: 2026-10-08
 last_activity_desc: Phase 02 execution started
-state_head: 80c00e1543fb4c8b8fee8550f0d5c35d83d749d8
+state_head: 01dd2773cce0717abeb557369fa553a420415518
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 15
-  completed_plans: 13
+  completed_plans: 14
   percent: 17
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-08)
 ## Current Position
 
 Phase: 02 (Live Market Terminal) — EXECUTING
-Plan: 6 of 7
+Plan: 7 of 7
 Status: Ready to execute
 Last activity: 2026-10-08 — Phase 02 execution started
 
@@ -69,6 +69,7 @@ Progress: [██░░░░░░░░] 17%
 | Phase 02 P03 | 2 min | 2 tasks | 2 files |
 | Phase 02 P04 | 4 min | 3 tasks | 6 files |
 | Phase 02 P05 | 9 min | 3 tasks | 21 files |
+| Phase 02 P06 | 5 min | 3 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -107,6 +108,8 @@ Recent decisions affecting current work:
 - [Phase 02]: 02-04: a rejected Massive key fails start() loudly; no silent fallback to simulated prices
 - [Phase 02]: 02-05: All Phase 2 npm packages installed with exact pins in one plan; Phase 1 api-status, getHealth and health-status spec removed together
 - [Phase 02]: 02-05: fmtPct uses the decimal signed formatter plus a literal percent sign because change_percent is already in percent units
+- [Phase 02]: Footer attribution uses the UI-SPEC-quoted NOTICE text because lightweight-charts 5.2.1 ships no NOTICE file — Licence needs notice plus tradingview.com link; compare if a later release adds NOTICE
+- [Phase 02]: Watchlist price and change cells dim at opacity-60 when disconnected, in addition to header numbers — UI-SPEC Connection indicator contract; stale prices must not look live
 
 ### Pending Todos
 
@@ -130,6 +133,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-08T13:55:47.888Z
-Stopped at: Completed 02-05-PLAN.md
+Last session: 2026-10-08T14:02:56.798Z
+Stopped at: Completed 02-06-PLAN.md
 Resume file: None
