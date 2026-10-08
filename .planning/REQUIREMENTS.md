@@ -24,9 +24,9 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 - [ ] **MKT-04**: Simulator randomness is seedable (`SIM_SEED`) and event probability configurable (`SIM_EVENT_PROBABILITY`) for deterministic tests
 - [ ] **MKT-05**: When `MASSIVE_API_KEY` is set, a Massive REST poller supplies prices instead (paid: snapshot every 2-15s, default 5s; free: Grouped Daily fallback)
 - [ ] **MKT-06**: Simulator and Massive poller implement one abstract interface; a factory selects by env var; downstream code is source-agnostic
-- [ ] **MKT-07**: An in-memory price cache holds latest price, previous price, timestamp and session-start price per ticker, with a version counter
+- [x] **MKT-07**: An in-memory price cache holds latest price, previous price, timestamp and session-start price per ticker, with a version counter
 - [ ] **MKT-08**: Tracked tickers = watchlist ∪ open positions; a ticker is untracked only when in neither, and buying an untracked ticker starts tracking it before pricing
-- [ ] **MKT-09**: `GET /api/stream/prices` streams SSE events, one per cache-version change, each a dict of all tracked tickers with `ticker, price, previous_price, timestamp, change, change_percent, direction` (change measured from session-start price)
+- [x] **MKT-09**: `GET /api/stream/prices` streams SSE events, one per cache-version change, each a dict of all tracked tickers with `ticker, price, previous_price, timestamp, change, change_percent, direction` (change measured from session-start price)
 - [ ] **MKT-10**: Market data task and SSE streams start and stop cleanly with the app lifespan (no hang on shutdown)
 
 ### Database
@@ -148,9 +148,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MKT-04 | Phase 2 | Pending |
 | MKT-05 | Phase 2 | Pending |
 | MKT-06 | Phase 2 | Pending |
-| MKT-07 | Phase 2 | Pending |
+| MKT-07 | Phase 2 | Complete |
 | MKT-08 | Phase 3 | Pending |
-| MKT-09 | Phase 2 | Pending |
+| MKT-09 | Phase 2 | Complete |
 | MKT-10 | Phase 2 | Pending |
 | DB-01 | Phase 2 | Pending |
 | DB-02 | Phase 2 | Pending |
