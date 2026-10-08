@@ -107,7 +107,7 @@ Plans:
   4. User adds a ticker from the watchlist panel and it starts streaming. A malformed or unknown ticker is rejected with an inline "Unknown ticker" error. Removing a ticker drops it from the panel, and deleting an unknown ticker returns 404
   5. Removing a held ticker from the watchlist keeps its position priced and streaming, and buying an unwatched ticker starts streaming it before it is priced. Portfolio unit tests (execution, P&L, oversell, insufficient cash, selling at a loss) pass
 
-**Plans**: 4/5 plans executed
+**Plans**: 5/5 plans executed
 Plans:
 **Wave 1**
 - [x] 03-01-PLAN.md — Trade execution backend: atomic POST /api/portfolio/trade, domain errors, tracking rule for trades, TEST-02 suite, frozen rejection messages (W1)
@@ -120,7 +120,7 @@ Plans:
 - [x] 03-04-PLAN.md — Live positions table with loading/error/empty states; bought unwatched ticker streams in its row (W3)
 
 **Wave 4** *(blocked on Wave 3 completion)*
-- [ ] 03-05-PLAN.md — Watchlist add form and per-row remove in the panel; held-ticker removal E2E; IN-01 closed (W4)
+- [x] 03-05-PLAN.md — Watchlist add form and per-row remove in the panel; held-ticker removal E2E; IN-01 closed (W4)
 
 **UI hint**: yes
 
@@ -179,7 +179,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6. Phases 4 and 5
 |-------|----------------|--------|-----------|
 | 1. Walking Skeleton | 8/8 | Complete    | 2026-10-08 |
 | 2. Live Market Terminal | 7/7 | Complete    | 2026-10-08 |
-| 3. Trading & Watchlist Management | 4/5 | In Progress | - |
+| 3. Trading & Watchlist Management | 5/5 | In Progress | - |
 | 4. Charts & Portfolio Visualizations | 0/TBD | Not started | - |
 | 5. AI Trading Copilot | 0/TBD | Not started | - |
 | 6. One-Command Launch & Full Verification | 0/TBD | Not started | - |

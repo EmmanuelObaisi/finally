@@ -2,17 +2,17 @@
 gsd_state_version: "1.0"
 current_phase: 03
 current_phase_name: Trading & Watchlist Management
-status: executing
-stopped_at: Completed 03-04-PLAN.md
-last_updated: "2026-10-08T21:20:59.514Z"
+status: verifying
+stopped_at: Completed 03-05-PLAN.md
+last_updated: "2026-10-08T21:26:20.736Z"
 last_activity: 2026-10-08
 last_activity_desc: Phase 03 execution started
-state_head: 323786c1316afe96d33fd902b6ae6d3bdc5e7a52
+state_head: 5ff6c9c9f5246ed8a21dbf925b331f8a9fee5041
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 20
-  completed_plans: 19
+  completed_plans: 20
   percent: 33
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-10-08)
 
 Phase: 03 (Trading & Watchlist Management) — EXECUTING
 Plan: 5 of 5
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-10-08 — Phase 03 execution started
 
 Progress: [███░░░░░░░] 33%
@@ -76,6 +76,7 @@ Progress: [███░░░░░░░] 33%
 | Phase 03 P02 | 6 min | 2 tasks | 5 files |
 | Phase 03 P03 | 6 min | 3 tasks | 12 files |
 | Phase 03 P04 | 3 min | 2 tasks | 7 files |
+| Phase 03 P05 | 4 min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -124,6 +125,7 @@ Recent decisions affecting current work:
 - [Phase 03]: 03-03: Header reads usePortfolioStore (ticket guard); TradeBar applies response.portfolio before the confirmation, closing the Header half of IN-01
 - [Phase 03]: 03-04: PositionRow uses plain td cells with position-* testids and no flash; price-{TICKER} stays unique to the watchlist
 - [Phase 03]: 03-04: PositionsTable never loads itself; Header's mount and reconnect loads feed the shared portfolio store
+- [Phase 03]: 03-05: add and remove share one busy lock; input and Add disabled outside the ready state (completes IN-01)
 
 ### Pending Todos
 
@@ -147,6 +149,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-08T21:20:59.378Z
-Stopped at: Completed 03-04-PLAN.md
+Last session: 2026-10-08T21:26:20.619Z
+Stopped at: Completed 03-05-PLAN.md
 Resume file: None
