@@ -21,7 +21,7 @@ findings:
     title: "A transient Massive error at startup aborts the whole app"
   - id: WR-05
     severity: warning
-    disposition: fixed
+    disposition: skipped
     title: "Massive path has no OS-trust-store opt-in on the target machine"
   - id: WR-06
     severity: warning
@@ -57,7 +57,7 @@ findings:
     title: "Timing-based backend tests may be flaky under load"
 open: 7
 total: 13
-recorded: 2026-10-08T14:44:11.203Z
+recorded: 2026-10-08T14:44:39.862Z
 ---
 
 # Phase 02: Code Review Disposition
@@ -68,7 +68,7 @@ recorded: 2026-10-08T14:44:11.203Z
 | WR-02 | warning | fixed | 02-REVIEW-FIX.md |
 | WR-03 | warning | fixed | 02-REVIEW-FIX.md |
 | WR-04 | warning | fixed | 02-REVIEW-FIX.md |
-| WR-05 | warning | fixed | 02-REVIEW-FIX.md |
+| WR-05 | warning | skipped | 02-REVIEW-FIX.md |
 | WR-06 | warning | fixed | 02-REVIEW-FIX.md |
 | IN-01 | info | open | - |
 | IN-02 | info | open | - |
