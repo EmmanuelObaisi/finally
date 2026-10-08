@@ -1,10 +1,14 @@
 """MassiveDataSource against a stub client: no network, no API key."""
 import dataclasses
+from datetime import date
 from types import SimpleNamespace
+
+import pytest
+from massive.exceptions import BadResponse
 
 from app.market.cache import PriceCache
 from app.market.factory import create_market_data_source
-from app.market.massive_client import MassiveDataSource
+from app.market.massive_client import MAX_EOD_LOOKBACK, MassiveDataSource, last_trading_day
 from app.market.stream import price_frames
 
 PRICE_KEYS = {"ticker", "price", "previous_price", "session_start_price", "timestamp",
@@ -75,3 +79,125 @@ async def test_paid_snapshot_reaches_the_stream(settings):
     assert all(set(v) == PRICE_KEYS for v in frame.values())
     await source.stop()
     assert source._task is None
+
+
+async def test_snapshot_request_is_sorted_whatever_the_add_order():
+    source = make_source(StubClient(snapshots=[[]]))
+    await source.start([])
+    source._tickers = set()
+    await source.add_ticker("ZZZZ")
+    await source.add_ticker("AAPL")
+    assert source.client.calls[-1] == ("get_snapshot_all", "stocks", ["AAPL", "ZZZZ"])
+    await source.stop()
+
+
+async def test_no_tracked_tickers_means_no_api_call():
+    source = make_source(StubClient(snapshots=[[]]))
+    await source.start([])
+    await source._poll()
+    assert source.client.calls == []
+    await source.stop()
+
+
+async def test_empty_snapshot_list_leaves_the_cache_version_unchanged():
+    source = make_source(StubClient(snapshots=[[]]))
+    await source.start(["AAPL"])
+    assert source.cache.version == 0
+    await source.stop()
+
+
+async def test_same_price_and_timestamp_twice_is_a_flat_update():
+    source = make_source(StubClient(snapshots=[[snap("AAPL", 190.0, 1759507199000000000)]]))
+    source._tickers = {"AAPL"}
+    await source._poll()
+    await source._poll()
+    update = source.cache.get("AAPL")
+    assert (update.direction, update.change) == ("flat", 0.0)
+    assert source.cache.version == 2
+
+
+async def test_price_falls_back_from_last_trade_to_day_close_to_prev_close():
+    snapshots = [
+        snap("AAA", last=None, day_close=11.0, prev_close=10.0),
+        snap("BBB", last=None, day_close=0, prev_close=20.0),
+        snap("CCC", last=None, day_close=None, prev_close=None),
+    ]
+    source = make_source(StubClient(snapshots=[snapshots]))
+    await source.start(["AAA", "BBB", "CCC"])
+    assert source.cache.get_price("AAA") == 11.0
+    assert source.cache.get_price("BBB") == 20.0
+    assert source.cache.get("CCC") is None
+    await source.stop()
+
+
+async def test_ticker_missing_from_the_response_never_gets_a_price():
+    source = make_source(StubClient(snapshots=[[snap("AAPL", 190.0)]]))
+    await source.start(["AAPL", "ZZZZ"])
+    assert source.cache.get("ZZZZ") is None
+    await source.stop()
+
+
+NOT_AUTHORIZED = BadResponse(
+    '{"status":"NOT_AUTHORIZED","request_id":"x","message":"You are not entitled to this data. '
+    'Please upgrade your plan at https://massive.com/pricing"}')
+
+
+def free_plan_client(*grouped):
+    return StubClient(snapshots=[NOT_AUTHORIZED], grouped=list(grouped) or [[]])
+
+
+def grouped_dates(client):
+    return [date.fromisoformat(c[1]) for c in client.calls if c[0] == "get_grouped_daily_aggs"]
+
+
+@pytest.mark.parametrize("today, expected", [
+    (date(2026, 10, 7), date(2026, 10, 6)),
+    (date(2026, 10, 5), date(2026, 10, 2)),
+    (date(2026, 10, 4), date(2026, 10, 2)),
+    (date(2026, 10, 3), date(2026, 10, 2)),
+])
+def test_last_trading_day_is_the_previous_weekday(today, expected):
+    assert last_trading_day(today) == expected
+
+
+async def test_free_plan_starts_in_two_calls_with_end_of_day_closes():
+    client = free_plan_client([bar("AAPL", 190.58), bar("MSFT", 415.0), bar("PYPL", 70.1)])
+    source = make_source(client)
+    await source.start(["AAPL", "MSFT"])
+    assert source.eod_mode is True
+    assert source.cache.get_price("AAPL") == 190.58
+    assert len(client.calls) == 2
+    assert client.calls[1] == ("get_grouped_daily_aggs", last_trading_day(date.today()).isoformat())
+    await source.stop()
+
+
+async def test_ticker_added_in_end_of_day_mode_costs_no_call():
+    client = free_plan_client([bar("AAPL", 190.58), bar("PYPL", 70.1)])
+    source = make_source(client)
+    await source.start(["AAPL"])
+    await source.add_ticker("PYPL")
+    assert source.cache.get_price("PYPL") == 70.1
+    assert len(client.calls) == 2
+    await source.stop()
+
+
+async def test_grouped_daily_walks_back_over_a_day_without_data():
+    client = free_plan_client([], [bar("AAPL", 190.58)])
+    source = make_source(client)
+    await source.start(["AAPL"])
+    first, second = grouped_dates(client)
+    assert second == last_trading_day(first)
+    assert source.cache.get_price("AAPL") == 190.58
+    await source.stop()
+
+
+async def test_grouped_daily_walk_back_is_capped_and_skips_weekends():
+    client = free_plan_client([])
+    source = make_source(client)
+    await source.start(["AAPL"])
+    days = grouped_dates(client)
+    assert len(days) == MAX_EOD_LOOKBACK == 5
+    assert all(d.weekday() < 5 for d in days)
+    assert days == sorted(days, reverse=True) and len(set(days)) == 5
+    assert source.cache.get("AAPL") is None
+    await source.stop()
