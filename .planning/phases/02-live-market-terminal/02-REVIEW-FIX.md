@@ -2,9 +2,9 @@
 phase: 02-live-market-terminal
 fixed_at: 2026-10-08T00:00:00Z
 review_path: .planning/phases/02-live-market-terminal/02-REVIEW.md
-iteration: 1
-findings_in_scope: 6
-fixed: 5
+iteration: 2
+findings_in_scope: 7
+fixed: 6
 skipped: 1
 status: partial
 ---
@@ -13,11 +13,11 @@ status: partial
 
 **Fixed at:** 2026-10-08
 **Source review:** .planning/phases/02-live-market-terminal/02-REVIEW.md
-**Iteration:** 1
+**Iteration:** 2
 
 **Summary:**
-- Findings in scope: 6 (0 critical, 6 warning; Info excluded by `fix_scope: critical_warning`)
-- Fixed: 5
+- Findings in scope: 7 (0 critical, 7 warning; Info excluded by `fix_scope: critical_warning`)
+- Fixed: 6 (WR-01 to WR-04, WR-06 in iteration 1; WR-07 in iteration 2)
 - Skipped: 1 (WR-05, reverted)
 
 ## Fixed Issues
@@ -52,6 +52,13 @@ status: partial
 **Commit:** ce98581
 **Applied fix:** `PriceCache.update` now returns `None` (and does not store or bump the version) when the rounded price is `<= 0`, fixing it at the write boundary so no `session_start_price` of zero can exist. Return type is `PriceUpdate | None`; no caller uses the return value. New test covers a `0.004` price. Status: fixed, requires human verification (logic change: a sub-cent quote is now treated as unpriced).
 
+### WR-07: After a transient startup error on a free plan, prices stay empty for 15 minutes
+
+**Files modified:** `backend/app/market/massive_client.py`, `backend/tests/market/test_massive.py`
+**Commit:** dfe4268 (iteration 2)
+**Root cause (proved first):** `start()` swallows a transient error (WR-04), but `eod_mode` is already `True` with `_eod_closes == {}`, so `_run` slept `eod_interval` (900 s). A new test (snapshot `NOT_AUTHORIZED`, first Grouped Daily call raises `RuntimeError`, then returns a bar) failed against that code: the cache was still empty after the polling deadline.
+**Applied fix:** New `retry_interval` constructor argument (default 60 s, under the free-plan 5 calls per minute) and a small `_delay()` method used by `_run`: `interval` outside EOD mode, `eod_interval` once closes exist, `retry_interval` in EOD mode with no closes. A constructor argument rather than the review's module constant so the test can shorten it, matching `interval` and `eod_interval`. WR-04 behaviour is unchanged (rejected key still fails fast; other errors retry). Status: fixed, requires human verification (loop timing logic; the test covers the retry path).
+
 ## Skipped Issues
 
 ### WR-05: Massive path has no OS-trust-store opt-in on the target machine
@@ -71,7 +78,7 @@ Info findings (IN-01 to IN-07) were out of scope for this run.
 ## Verification
 
 - Environment: all gates ran in the **main checkout**, not an isolated worktree (see deviation below).
-- Backend: `UV_SYSTEM_CERTS=1 uv run python -m pytest -q` from `backend/`: 111 passed (baseline 109 + 2 new tests) after the last fix.
+- Backend: `UV_SYSTEM_CERTS=1 uv run python -m pytest -q` from `backend/`: 111 passed (baseline 109 + 2 new tests) after the last iteration 1 fix; 112 passed after WR-07 (iteration 2, +1 test, run in the main checkout).
 - Frontend: `npm --prefix frontend test`: 8 files, 87 tests passed after WR-01; `npm --prefix frontend run build` succeeded.
 - E2E: `npm --prefix test run smoke`: 6 passed (after WR-02 and again after WR-03, the second time with `MASSIVE_API_KEY=bogus` in the shell).
 
@@ -81,4 +88,4 @@ Info findings (IN-01 to IN-07) were out of scope for this run.
 
 _Fixed: 2026-10-08_
 _Fixer: Claude (gsd-code-fixer)_
-_Iteration: 1_
+_Iteration: 2_
