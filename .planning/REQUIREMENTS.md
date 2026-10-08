@@ -18,10 +18,10 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 
 ### Market Data
 
-- [ ] **MKT-01**: Simulator generates prices by correlated geometric Brownian motion at ~500ms ticks, starting from realistic seed prices for the 10 default tickers
-- [ ] **MKT-02**: Simulator injects occasional random 2-5% "event" moves on a ticker
-- [ ] **MKT-03**: Simulator gives non-seed tickers a deterministic ticker-derived starting price (stable across restarts)
-- [ ] **MKT-04**: Simulator randomness is seedable (`SIM_SEED`) and event probability configurable (`SIM_EVENT_PROBABILITY`) for deterministic tests
+- [x] **MKT-01**: Simulator generates prices by correlated geometric Brownian motion at ~500ms ticks, starting from realistic seed prices for the 10 default tickers
+- [x] **MKT-02**: Simulator injects occasional random 2-5% "event" moves on a ticker
+- [x] **MKT-03**: Simulator gives non-seed tickers a deterministic ticker-derived starting price (stable across restarts)
+- [x] **MKT-04**: Simulator randomness is seedable (`SIM_SEED`) and event probability configurable (`SIM_EVENT_PROBABILITY`) for deterministic tests
 - [ ] **MKT-05**: When `MASSIVE_API_KEY` is set, a Massive REST poller supplies prices instead (paid: snapshot every 2-15s, default 5s; free: Grouped Daily fallback)
 - [ ] **MKT-06**: Simulator and Massive poller implement one abstract interface; a factory selects by env var; downstream code is source-agnostic
 - [x] **MKT-07**: An in-memory price cache holds latest price, previous price, timestamp and session-start price per ticker, with a version counter
@@ -142,10 +142,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FND-04 | Phase 1 | Complete |
 | FND-05 | Phase 1 | Complete |
 | FND-06 | Phase 1 | Complete |
-| MKT-01 | Phase 2 | Pending |
-| MKT-02 | Phase 2 | Pending |
-| MKT-03 | Phase 2 | Pending |
-| MKT-04 | Phase 2 | Pending |
+| MKT-01 | Phase 2 | Complete |
+| MKT-02 | Phase 2 | Complete |
+| MKT-03 | Phase 2 | Complete |
+| MKT-04 | Phase 2 | Complete |
 | MKT-05 | Phase 2 | Pending |
 | MKT-06 | Phase 2 | Pending |
 | MKT-07 | Phase 2 | Complete |
