@@ -43,7 +43,7 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 
 ### Portfolio & Trading
 
-- [ ] **PORT-01**: User can view cash, positions (ticker, quantity, avg cost, current price, unrealized P&L, % change), total value and total unrealized P&L via `GET /api/portfolio`
+- [x] **PORT-01**: User can view cash, positions (ticker, quantity, avg cost, current price, unrealized P&L, % change), total value and total unrealized P&L via `GET /api/portfolio`
 - [ ] **PORT-02**: User can buy shares at the current price via `POST /api/portfolio/trade`; cash decreases and position quantity/avg cost update; fractional quantities allowed
 - [ ] **PORT-03**: User can sell owned shares; cash increases; the position row is deleted when quantity reaches zero (float residue handled)
 - [ ] **PORT-04**: Invalid trades (quantity <= 0, no price, insufficient cash, insufficient shares) are rejected with 400 `{"error": "..."}` and change nothing
@@ -67,8 +67,8 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 ### Frontend: Market UI
 
 - [ ] **UI-01**: Dark terminal theme (backgrounds ~`#0d1117`, muted borders; accent `#ecad0a`, blue `#209dd7`, purple `#753991` submit buttons), dense desktop-first layout, functional on tablet
-- [ ] **UI-02**: Header shows live total portfolio value, cash balance, and a connection dot (green connected / yellow reconnecting / red disconnected)
-- [ ] **UI-03**: A single `EventSource` feeds all components and re-connects after failure
+- [x] **UI-02**: Header shows live total portfolio value, cash balance, and a connection dot (green connected / yellow reconnecting / red disconnected)
+- [x] **UI-03**: A single `EventSource` feeds all components and re-connects after failure
 - [ ] **UI-04**: Watchlist panel shows ticker, price, change % and a sparkline accumulated since page load
 - [ ] **UI-05**: Prices flash green on uptick / red on downtick, fading over ~500ms
 - [ ] **UI-06**: User can add and remove watchlist tickers from the panel
@@ -158,7 +158,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | WL-01 | Phase 2 | Complete |
 | WL-02 | Phase 3 | Pending |
 | WL-03 | Phase 3 | Pending |
-| PORT-01 | Phase 2 | Pending |
+| PORT-01 | Phase 2 | Complete |
 | PORT-02 | Phase 3 | Pending |
 | PORT-03 | Phase 3 | Pending |
 | PORT-04 | Phase 3 | Pending |
@@ -176,8 +176,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CHAT-08 | Phase 5 | Pending |
 | CHAT-09 | Phase 5 | Pending |
 | UI-01 | Phase 2 | Pending |
-| UI-02 | Phase 2 | Pending |
-| UI-03 | Phase 2 | Pending |
+| UI-02 | Phase 2 | Complete |
+| UI-03 | Phase 2 | Complete |
 | UI-04 | Phase 2 | Pending |
 | UI-05 | Phase 2 | Pending |
 | UI-06 | Phase 3 | Pending |
