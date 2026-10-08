@@ -50,9 +50,17 @@ class MassiveDataSource(MarketDataSource):
         self._task: asyncio.Task | None = None
 
     async def start(self, tickers: list[str]) -> None:
-        """Fetch the first prices (errors propagate), then poll in the background."""
+        """Fetch the first prices, then poll in the background.
+
+        A rejected key fails fast; transient errors are logged and the poll loop retries them.
+        """
         self._tickers = {t.upper() for t in tickers}
-        await self._poll()
+        try:
+            await self._poll()
+        except Exception as e:
+            if "Unknown API Key" in str(e):
+                raise
+            logger.exception("Initial Massive poll failed; will retry")
         self._task = asyncio.create_task(self._run(), name="massive-poller")
 
     async def stop(self) -> None:

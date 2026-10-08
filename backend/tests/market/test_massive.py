@@ -217,6 +217,19 @@ async def test_a_rejected_key_fails_start_without_falling_back():
     assert source._task is None
 
 
+async def test_a_transient_error_at_start_does_not_abort_and_the_loop_retries():
+    client = StubClient(snapshots=[RuntimeError("dns blip"), [snap("AAPL", 190.0)]])
+    source = make_source(client, interval=0.01)
+    await source.start(["AAPL"])
+    assert source._task is not None and source.cache.get("AAPL") is None
+    for _ in range(100):
+        if source.cache.get("AAPL"):
+            break
+        await asyncio.sleep(0.01)
+    assert source.cache.get("AAPL").price == 190.0
+    await source.stop()
+
+
 async def test_poll_loop_survives_an_error_and_never_logs_the_key(caplog):
     ok = [snap("AAPL", 190.0)]
     client = StubClient(snapshots=[ok, RuntimeError("boom"), ok])
