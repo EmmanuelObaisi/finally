@@ -1,6 +1,6 @@
 ---
 phase: 02-live-market-terminal
-verified: 2026-10-08T16:10:00Z
+verified: 2026-10-08T16:30:00Z
 status: passed
 score: 5/5 must-haves verified
 covered_files:
@@ -34,7 +34,7 @@ covered_files:
   - "frontend/src/lib/useMarketStream.ts"
   - "test/motion.spec.ts"
   - "test/playwright.config.ts"
-covered_digest: "v3:sha256:beb5d4478488b09b651c8a89a841930eda2b1add99032c30dcb65349c2521aeb"
+covered_digest: "v3:sha256:62f38f37fbd0526777bd35923b38aab62ff2bc1d460e55c5fbe30c6cc171d4fb"
 behavior_unverified: 0
 overrides_applied: 0
 re_verification:
@@ -46,11 +46,7 @@ re_verification:
     - "Visual density and motion: passed by the user (UAT test 3)"
   gaps_remaining: []
   regressions: []
-advisory:
-  - finding: "WR-07: after a transient startup error on a free Massive plan, the poller sleeps eod_interval (900 s) before retrying, so prices stay empty for up to 15 minutes"
-    category: other
-    reason: "Introduced by the WR-04 fix. Free-plan Massive path only, and only after a transient failure of the grouped-daily call at boot. Does not touch the default simulator path, and the real-key UAT run passed. Fix is specified in 02-REVIEW.md (a 60 s RETRY_DELAY while eod_mode and no closes). Triage before relying on a free-plan Massive key"
-    evidence_status: "reviewed by reading massive_client.py:52-64, 91-98, 100-114; not reproduced at runtime"
+advisory: []
 ---
 
 # Phase 2: Live Market Terminal Verification Report
@@ -58,11 +54,11 @@ advisory:
 **Phase Goal:** A user opens FinAlly and watches the 10 default tickers stream live in a dark terminal, with $10,000 cash shown and a live connection indicator
 **Verified:** 2026-10-08
 **Status:** passed
-**Re-verification:** Yes. The prior report was stale after the code-review fix commits (WR-01, WR-02, WR-03, WR-04, WR-06; WR-05 was added then reverted). All items from the prior `human_verification` list are now closed by `02-UAT.md` (3 of 3 passed).
+**Re-verification:** Yes. The prior report was stale after the code-review fix commits (WR-01, WR-02, WR-03, WR-04, WR-06, and now WR-07 in `dfe4268`; WR-05 was added then reverted). All items from the prior `human_verification` list are now closed by `02-UAT.md` (3 of 3 passed).
 
 ## Goal Achievement
 
-The goal is achieved. Fix commits since the prior report touched 8 files (diff against 642eef7: cache.py, massive_client.py, their two test files, Sparkline.tsx and its test, motion.spec.ts, playwright.config.ts). I read each changed source file, re-ran all three test layers, and checked that the fixes did not break any truth.
+The goal is achieved. Refreshed after `dfe4268` (WR-07), which changed only `massive_client.py` and `test_massive.py` (`git diff --stat 98ae1c7 HEAD -- backend frontend test` lists exactly those two files, 24 insertions, 1 deletion); frontend and `test/` are untouched, so their results below carry over. Before that, fix commits touched 8 files (diff against 642eef7: cache.py, massive_client.py, their two test files, Sparkline.tsx and its test, motion.spec.ts, playwright.config.ts). I read each changed source file, re-ran all three test layers, and checked that the fixes did not break any truth.
 
 ### Observable Truths (ROADMAP success criteria)
 
@@ -71,8 +67,8 @@ The goal is achieved. Fix commits since the prior report touched 8 files (diff a
 | 1 | 10 seeded tickers in a dense dark layout; ~2 updates/s; green/red flash fading ~500 ms; occasional 2-5% events | VERIFIED | Unchanged since the prior report (simulator, `db.py` seed, keyframes). `motion.spec.ts` "prices flash on ticks" and `smoke.spec.ts` "fresh start streams the seeded watchlist" pass in my re-run. UAT test 3 passed by the user at 1280x720 and 1920x1080 |
 | 2 | Row shows price, change % since session start, sparkline from page load; `--` before first tick; shared formatters, tabular numerals | VERIFIED | `Sparkline.tsx` now re-seeds the series via `setData(toData(buffer))` from the capped store buffer, so chart and store agree (WR-01). The E2E "sparklines draw from the stream" test now requires at least one non-transparent pixel (WR-02), and passes. `cache.update` ignores a price that rounds to <= 0, so `change_percent` cannot divide by zero and an unpriced ticker still renders `--` (WR-06). 87 frontend tests pass |
 | 3 | Fresh DB recreated and seeded; header shows $10,000.00 total and cash; green/yellow/red dot; reconnects on its own after backend restart | VERIFIED | `connection.spec.ts` "fresh start shows $10,000 and a live connection" passes. UAT test 2: a real uvicorn was killed and restarted with the same `DB_PATH`; yellow at +0.5 s, red at +5.0 s with header `opacity-60`, then green on its own with a fresh `GET /api/portfolio` observed |
-| 4 | With `MASSIVE_API_KEY` the same UI is fed by the Massive poller; `SIM_SEED` makes output reproducible; non-seed ticker starts at the same derived price across restarts | VERIFIED (advisory WR-07) | Simulator half unchanged and tested (derived price is sha256-based). Massive half: UAT test 1, a real key on this Windows + Avast machine, streamed the same 10 rows with no frontend change. `start()` re-raises only on "Unknown API Key" and otherwise logs and retries (WR-04), covered by a new test. WR-05 (truststore) was reverted at the user's request because the predicted TLS failure did not reproduce, and UAT test 1 confirms certifi reaches Massive here. WR-07 is a free-plan retry-delay edge case, recorded as advisory |
-| 5 | Server exits promptly with browsers connected; market data unit tests pass | VERIFIED | `test_shutdown.py` is part of the 111-test backend run, which passes. Graceful-timeout flag unchanged |
+| 4 | With `MASSIVE_API_KEY` the same UI is fed by the Massive poller; `SIM_SEED` makes output reproducible; non-seed ticker starts at the same derived price across restarts | VERIFIED | Simulator half unchanged and tested (derived price is sha256-based). Massive half: UAT test 1, a real key on this Windows + Avast machine, streamed the same 10 rows with no frontend change. `start()` re-raises only on "Unknown API Key" and otherwise logs and retries (WR-04), covered by a new test. WR-05 (truststore) was reverted at the user's request because the predicted TLS failure did not reproduce, and UAT test 1 confirms certifi reaches Massive here. WR-07 (free-plan retry delay after a transient startup error) is resolved by `dfe4268`: `_delay()` returns `retry_interval` (60 s) while `eod_mode` and `_eod_closes` is empty, else `eod_interval`; new test `test_a_transient_grouped_daily_error_at_start_retries_before_the_eod_interval` passes |
+| 5 | Server exits promptly with browsers connected; market data unit tests pass | VERIFIED | `test_shutdown.py` is part of the 112-test backend run, which passes. Graceful-timeout flag unchanged |
 
 **Score:** 5/5 truths verified
 
@@ -109,7 +105,7 @@ The goal is achieved. Fix commits since the prior report touched 8 files (diff a
 
 | Behavior | Command | Result | Status |
 |----------|---------|--------|--------|
-| Backend suite | `UV_SYSTEM_CERTS=1 uv run python -m pytest -q` (backend/) | 111 passed in 8.88 s | PASS |
+| Backend suite | `UV_SYSTEM_CERTS=1 uv run python -m pytest -q` (backend/) | 112 passed in 8.44 s | PASS |
 | Frontend suite | `npm --prefix frontend test` | 87 passed, 8 files | PASS |
 | E2E | `npm --prefix test run smoke` | 6 passed (real uvicorn started and stopped by Playwright; no listener left on :8000) | PASS |
 
@@ -127,7 +123,7 @@ The union of `requirements:` across the seven PLAN files is exactly the 21 IDs i
 | MKT-02 | 02-03 | 2-5% events | SATISFIED | `_event_shocks` and its test |
 | MKT-03 | 02-03 | Deterministic derived price for non-seed tickers | SATISFIED | `derived_price`, process-independence test |
 | MKT-04 | 02-03 | `SIM_SEED`, `SIM_EVENT_PROBABILITY` | SATISFIED | `config.py` into the simulator |
-| MKT-05 | 02-04 | Massive REST poller, paid and free paths | SATISFIED | `massive_client.py`, `test_massive.py`, real-key UAT test 1 (advisory WR-07 on free-plan transient retry) |
+| MKT-05 | 02-04 | Massive REST poller, paid and free paths | SATISFIED | `massive_client.py`, `test_massive.py`, real-key UAT test 1; WR-07 free-plan transient retry fixed in `dfe4268` |
 | MKT-06 | 02-01, 02-03, 02-04 | One interface, factory | SATISFIED | `interface.py`, `factory.py`, `test_factory.py` |
 | MKT-07 | 02-01 | Cache with version and session-start price | SATISFIED | `cache.py` read in full, `test_cache.py` |
 | MKT-09 | 02-01 | SSE frames, dict of all tickers | SATISFIED | `stream.py`, tests, E2E |
@@ -143,17 +139,17 @@ The union of `requirements:` across the seven PLAN files is exactly the 21 IDs i
 | UI-04 | 02-05, 02-07 | Price, change %, sparkline | SATISFIED | `WatchlistRow`, `Sparkline`, pixel E2E |
 | UI-05 | 02-07 | Flash green/red, ~500 ms | SATISFIED | `PriceCell`, keyframes, E2E, UAT 3 |
 | UI-08 | 02-05, 02-06, 02-07 | `--` placeholders, shared formatters | SATISFIED | `format.ts`, tests |
-| TEST-01 | 02-01, 02-03, 02-04 | Market data unit tests | SATISFIED | 111 backend tests green |
+| TEST-01 | 02-01, 02-03, 02-04 | Market data unit tests | SATISFIED | 112 backend tests green |
 
 ### Anti-Patterns Found
 
 No `TBD`, `FIXME`, `XXX`, `TODO` or `HACK` marker in `backend/app`, `frontend/src` or `test/*.ts`. No stubs or hollow props.
 
-Review disposition (`02-REVIEW-DISPOSITION.md`): 15 findings, 9 open (1 warning, 8 info), 5 fixed (WR-01..WR-04, WR-06), 1 skipped (WR-05, reverted at user request). Security: `02-SECURITY.md` threats_open 0. UI review: 23/24.
+Review disposition (`02-REVIEW-DISPOSITION.md`): 15 findings, 8 open (all info), 6 fixed (WR-01..WR-04, WR-06, WR-07), 1 skipped (WR-05, reverted at user request). Security: `02-SECURITY.md` threats_open 0. UI review: 23/24.
 
 | File | Line | Pattern | Severity | Impact |
 |------|------|---------|----------|--------|
-| `backend/app/market/massive_client.py` | 91-98, 112-113 | WR-07: free-plan EOD mode with no closes sleeps 900 s before retry | Warning (advisory, open) | Reproducible only on a free-plan key after a transient grouped-daily error at boot; simulator path and paid or healthy free path unaffected. Does not defeat the phase goal, which the real-key UAT run met |
+| `backend/app/market/massive_client.py` | 93-106 | WR-07 (resolved in `dfe4268`) | Resolved | `_delay()` retries in 60 s while EOD mode has no closes; at most `MAX_EOD_LOOKBACK` (5) Grouped Daily calls per attempt, so the free-plan 5 calls/minute limit is respected |
 | `backend/app/market/massive_client.py` | 61 | IN-08: bad-key detection by message text | Info | If Massive rewords the error, a rejected key logs tracebacks instead of failing fast |
 | `backend/app/market/massive_client.py` | 84-86, 128-136 | IN-03, IN-04 | Info | Latent for Phase 3 (held-ticker eviction) and free-plan call budget |
 | Header, WatchlistPanel | - | IN-01, IN-02, IN-05 | Info | Stale-response race, silent portfolio error, stale REST price; Phase 3 hardening |
@@ -165,9 +161,9 @@ None. The three items from the prior report were executed and recorded as passed
 
 ### Gaps Summary
 
-No gaps. All five roadmap success criteria hold in the current code and all 21 requirement IDs are accounted for. The one open warning, WR-07, concerns a free-plan Massive retry delay after a transient startup error. I judged it not to undermine the phase goal: the goal's default path is the simulator, the Massive path was proven with a real key, and the failure needs a specific transient error on a free key. It is carried as an advisory and should be fixed (the review gives a ready patch and test) before relying on a free-plan key, or in Phase 3 housekeeping along with the info items.
+No gaps. All five roadmap success criteria hold in the current code and all 21 requirement IDs are accounted for. The one previously open warning, WR-07 (free-plan Massive retry delay after a transient startup error), is fixed in `dfe4268` with a regression test; there are no open warnings and no advisories. The remaining 8 review findings are info-level Phase 3 housekeeping.
 
-Housekeeping for the orchestrator: ROADMAP.md still shows the Phase 2 checkbox unchecked.
+Housekeeping: ROADMAP.md marks Phase 2 complete (2026-10-08, commit af71d08).
 
 ---
 
