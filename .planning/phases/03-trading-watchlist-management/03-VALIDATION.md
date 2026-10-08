@@ -40,7 +40,18 @@ created: "2026-10-08"
 
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| 3-xx-xx | TBD | TBD | See 03-RESEARCH.md "Phase Requirements -> Test Map" | — | — | — | filled in by planner/executor | ❌ W0 | ⬜ pending |
+| 03-01-01 | 01 | 1 | PORT-02..PORT-06 | T-03-01, T-03-02, T-03-03 | Strict quantity model; fill inside BEGIN IMMEDIATE | live API | live uvicorn check on :8766 (03-01 Task 1) + `uv run --directory backend python -m pytest -q` | ✅ suite exists | ⬜ pending |
+| 03-01-02 | 01 | 1 | TEST-02, PORT-02..PORT-05 | T-03-01, T-03-02 | Every rejection changes nothing; one winner among concurrent unaffordable buys | unit + API | `uv run --directory backend python -m pytest -q tests/test_trading.py` | ❌ created in task | ⬜ pending |
+| 03-01-03 | 01 | 1 | MKT-08 | T-03-05 | Failed buy of an unwatched ticker untracks it | API | `uv run --directory backend python -m pytest -q tests/test_tracking.py tests/test_trading.py` | ❌ created in task | ⬜ pending |
+| 03-02-01 | 02 | 2 | WL-02, MKT-08 | T-03-08, T-03-09 | ASCII + fullmatch ticker check; unknown ticker untracked | live API | live uvicorn check on :8767 (03-02 Task 1) + `uv run --directory backend python -m pytest -q tests/test_watchlist.py` | ✅ | ⬜ pending |
+| 03-02-02 | 02 | 2 | WL-03, MKT-08 | T-03-10 | Held ticker stays tracked and priced after removal | API | `uv run --directory backend python -m pytest -q tests/test_watchlist.py tests/test_tracking.py` | ✅ | ⬜ pending |
+| 03-03-01 | 03 | 2 | PUI-01 | T-03-12, T-03-13 | Server text as React text node; buttons type=button | e2e | `npm --prefix frontend run build && npm --prefix test run smoke -- trade.spec.ts` | ❌ created in task | ⬜ pending |
+| 03-03-02 | 03 | 2 | PUI-01 | T-03-14 | Ticket guard: stale GET never overwrites a trade result | unit + e2e | `npm --prefix frontend test -- portfolioStore Header` | ❌ created in task | ⬜ pending |
+| 03-03-03 | 03 | 2 | PUI-01 | T-03-13, T-03-15 | No implicit submit; GET helpers never echo bodies | unit | `npm --prefix frontend test -- TradeBar api` | ❌ created in task | ⬜ pending |
+| 03-04-01 | 04 | 3 | PUI-02, MKT-08 | — | — | e2e | `npm --prefix frontend run build && npm --prefix test run smoke -- trade.spec.ts` | ✅ from 03-03 | ⬜ pending |
+| 03-04-02 | 04 | 3 | PUI-02 | T-03-16 | Live cells dim while disconnected | unit + human-check | `npm --prefix frontend test -- PositionsTable positions` | ❌ created in task | ⬜ pending |
+| 03-05-01 | 05 | 4 | UI-06 | T-03-18 | Server text as React text node | e2e | `npm --prefix frontend run build && npm --prefix test run smoke -- watchlist.spec.ts` | ❌ created in task | ⬜ pending |
+| 03-05-02 | 05 | 4 | UI-06, WL-03 | T-03-19, T-03-20 | Panel locked while a mutation is in flight; encoded DELETE path | unit + e2e | `npm --prefix frontend test -- WatchlistPanel` then `npm --prefix test run smoke` | ✅ | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
