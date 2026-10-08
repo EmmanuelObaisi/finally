@@ -5,7 +5,7 @@ titles: json
 findings:
   - id: WR-01
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "The `/api/*` catch-all turns wrong-method requests on real endpoints into 404 instead of 405"
   - id: IN-01
     severity: info
@@ -13,7 +13,7 @@ findings:
     title: "Validation-error message formatting is inconsistent for non-field locations (carried forward)"
   - id: IN-02
     severity: info
-    disposition: open
+    disposition: fixed
     title: "`test_health_is_side_effect_free` asserts nothing about side effects (carried forward)"
   - id: IN-03
     severity: info
@@ -31,7 +31,7 @@ findings:
     severity: info
     disposition: open
     title: "Minor robustness and consistency nits in the health path"
-open: 7
+open: 5
 total: 7
 recorded: 2026-10-08T08:28:48.188Z
 ---
@@ -40,9 +40,9 @@ recorded: 2026-10-08T08:28:48.188Z
 
 | Finding | Severity | Disposition | Source |
 |---------|----------|-------------|--------|
-| WR-01 | warning | open | - |
+| WR-01 | warning | fixed | b9e94ca |
 | IN-01 | info | open | - |
-| IN-02 | info | open | - |
+| IN-02 | info | fixed | 91dfc2e |
 | IN-03 | info | open | - |
 | IN-04 | info | open | - |
 | IN-05 | info | open | - |
