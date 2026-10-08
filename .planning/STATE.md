@@ -123,7 +123,7 @@ None yet.
 
 - [Phase 3]: `remove_ticker` evicts the price for held tickers (02-REVIEW IN-03); the DELETE /api/watchlist handler must keep tickers in watchlist ∪ positions tracked
 - [Phase 3]: Header and WatchlistPanel have no stale-response guard (02-REVIEW IN-01); matters once trades refetch the portfolio
-- [Phase 2 carry-over]: WR-07 open: free-plan Massive retries after 900 s when the Grouped Daily fetch fails at startup; fix spec in 02-REVIEW.md (60 s retry while no closes). IN-08: bad-key detection relies on the "Unknown API Key" message text
+- [Phase 2 carry-over]: IN-08: bad-key detection relies on the "Unknown API Key" message text (WR-07 fixed in dfe4268)
 - [Phase 6]: A `.env` copied from `.env.example` passes an empty `DB_PATH` through `docker run --env-file` (PKG-02)
 - [Phase 5]: Cerebras strict-schema limits and OpenRouter provider pinning need a live smoke call
 
