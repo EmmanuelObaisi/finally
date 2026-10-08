@@ -39,11 +39,13 @@ class MassiveDataSource(MarketDataSource):
         api_key: str,
         interval: float = 5.0,
         eod_interval: float = 900.0,
+        retry_interval: float = 60.0,
     ) -> None:
         self.cache = cache
         self.client = RESTClient(api_key=api_key)
         self.interval = interval
         self.eod_interval = eod_interval
+        self.retry_interval = retry_interval
         self.eod_mode = False
         self._eod_closes: dict[str, float] = {}
         self._tickers: set[str] = set()
@@ -91,11 +93,17 @@ class MassiveDataSource(MarketDataSource):
     async def _run(self) -> None:
         """Poll until cancelled. Errors are logged and the next poll retries."""
         while True:
-            await asyncio.sleep(self.eod_interval if self.eod_mode else self.interval)
+            await asyncio.sleep(self._delay())
             try:
                 await self._poll()
             except Exception:
                 logger.exception("Massive poll failed")
+
+    def _delay(self) -> float:
+        """Seconds until the next poll; in EOD mode with no closes yet, retry soon (rate-limit safe)."""
+        if not self.eod_mode:
+            return self.interval
+        return self.eod_interval if self._eod_closes else self.retry_interval
 
     async def _poll(self) -> None:
         """Fetch prices for all tracked tickers, falling back to EOD on a free plan."""

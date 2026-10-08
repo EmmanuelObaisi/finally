@@ -230,6 +230,21 @@ async def test_a_transient_error_at_start_does_not_abort_and_the_loop_retries():
     await source.stop()
 
 
+async def test_a_transient_grouped_daily_error_at_start_retries_before_the_eod_interval():
+    client = free_plan_client(RuntimeError("429 too many requests"), [bar("AAPL", 190.58)])
+    source = make_source(client, eod_interval=900.0, retry_interval=0.01)
+    try:
+        await source.start(["AAPL"])
+        assert source.eod_mode is True and source.cache.get("AAPL") is None
+        for _ in range(100):
+            if source.cache.get("AAPL"):
+                break
+            await asyncio.sleep(0.01)
+        assert source.cache.get_price("AAPL") == 190.58
+    finally:
+        await source.stop()
+
+
 async def test_poll_loop_survives_an_error_and_never_logs_the_key(caplog):
     ok = [snap("AAPL", 190.0)]
     client = StubClient(snapshots=[ok, RuntimeError("boom"), ok])
