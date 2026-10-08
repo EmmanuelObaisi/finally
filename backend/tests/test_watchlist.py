@@ -1,6 +1,7 @@
 import asyncio
 
 import httpx
+import pytest
 from fastapi.testclient import TestClient
 
 from app.db import DEFAULT_TICKERS, connect, init_db
@@ -49,3 +50,58 @@ async def test_concurrent_watchlist_reads_all_succeed_in_order(live_server):
     for r in responses:
         assert r.status_code == 200
         assert [i["ticker"] for i in r.json()["watchlist"]] == list(DEFAULT_TICKERS)
+
+
+def add(client, ticker):
+    return client.post("/api/watchlist", json={"ticker": ticker})
+
+
+def tickers(client):
+    return [i["ticker"] for i in client.get("/api/watchlist").json()["watchlist"]]
+
+
+def test_add_upper_cases_prices_and_appends_last(client):
+    r = add(client, "pypl")
+    items = r.json()["watchlist"]
+    assert r.status_code == 200
+    assert [i["ticker"] for i in items] == [*DEFAULT_TICKERS, "PYPL"]
+    assert items[-1]["price"] == 60.0
+    assert "PYPL" in client.app.state.source.get_tickers()
+
+
+def test_re_adding_a_watched_ticker_is_idempotent(client):
+    r = add(client, "AAPL")
+    assert r.status_code == 200
+    assert [i["ticker"] for i in r.json()["watchlist"]] == list(DEFAULT_TICKERS)
+
+
+@pytest.mark.parametrize("raw", ["PYPL$", "", "ABCDEFGHIJK", ".A", "ß", "ı", "AAPL\n", " AAPL"])
+def test_malformed_ticker_is_rejected_and_changes_nothing(client, raw):
+    r = add(client, raw)
+    assert (r.status_code, r.json()) == (400, {"error": "Invalid ticker: " + raw})
+    assert tickers(client) == list(DEFAULT_TICKERS)
+
+
+@pytest.mark.parametrize("ticker", ["A", "ABCDEFGHIJ", "BRK.B"])
+def test_boundary_tickers_are_accepted_when_priced(client, ticker):
+    client.app.state.source.prices[ticker] = 10.0
+    r = add(client, ticker)
+    assert r.status_code == 200
+    assert r.json()["watchlist"][-1]["ticker"] == ticker
+
+
+def test_unpriced_ticker_is_rejected_and_not_left_tracked(client):
+    r = add(client, "ZZZZ")
+    assert (r.status_code, r.json()) == (400, {"error": "Unknown ticker"})
+    assert "ZZZZ" not in tickers(client)
+    assert "ZZZZ" not in client.app.state.source.get_tickers()
+    assert client.app.state.cache.get_price("ZZZZ") is None
+
+
+async def test_concurrent_adds_leave_one_row(live_server):
+    async with httpx.AsyncClient(base_url=live_server.url) as client:
+        body = {"ticker": "PYPL"}
+        responses = await asyncio.gather(*[client.post("/api/watchlist", json=body) for _ in range(5)])
+        final = (await client.get("/api/watchlist")).json()["watchlist"]
+    assert [r.status_code for r in responses] == [200] * 5
+    assert [i["ticker"] for i in final].count("PYPL") == 1
