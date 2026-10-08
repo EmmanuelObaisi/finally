@@ -5,12 +5,13 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
+from . import watchlist
 from .config import Settings
+from .db import connect, init_db, load_tracked_tickers
 from .errors import register_error_handlers
 from .market import stream
 from .market.cache import PriceCache
 from .market.factory import create_market_data_source
-from .market.seed_prices import SEED_PRICES
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -24,7 +25,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         app.state.settings = settings
         app.state.cache = cache
         app.state.source = source
-        await source.start(list(SEED_PRICES))
+        init_db(settings.db_path)
+        with connect(settings.db_path) as conn:
+            tickers = load_tracked_tickers(conn)
+        await source.start(tickers)
         yield
         await source.stop()
 
@@ -36,6 +40,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return {"status": "ok"}
 
     app.include_router(stream.router)
+    app.include_router(watchlist.router)
 
     # Later routers are included above this catch-all so unknown /api paths stay JSON 404s.
     # A response instance is a raw ASGI app, so Starlette matches every HTTP method
