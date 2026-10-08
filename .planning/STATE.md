@@ -1,18 +1,18 @@
 ---
 gsd_state_version: "1.0"
 current_phase: 03
-current_phase_name: trading-watchlist-management
+current_phase_name: Trading & Watchlist Management
 status: executing
-stopped_at: Phase 3 UI-SPEC approved
-last_updated: "2026-10-08T20:52:54.037Z"
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-10-08T21:04:23.003Z"
 last_activity: 2026-10-08
-last_activity_desc: Phase 02 complete, transitioned to Phase 3
-state_head: 487ba4eb1c7d5eee4ded9b9d9496d48b197fc185
+last_activity_desc: Phase 03 execution started
+state_head: b7c6f0f1b13ddb81387a89d058b97b3c39e99a25
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 20
-  completed_plans: 15
+  completed_plans: 16
   percent: 33
 ---
 
@@ -23,14 +23,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-08)
 
 **Core value:** One command launches a live, data-dense trading terminal where prices stream, trades fill instantly, and the AI copilot can act on the portfolio — and every specified unit and E2E scenario passes to prove it.
-**Current focus:** Phase 3 — Trading & Watchlist Management
+**Current focus:** Phase 03 — Trading & Watchlist Management
 
 ## Current Position
 
-Phase: 03 (trading-watchlist-management) — READY TO EXECUTE
-Plan: Not started
+Phase: 03 (Trading & Watchlist Management) — EXECUTING
+Plan: 2 of 5
 Status: Ready to execute
-Last activity: 2026-10-08 — Phase 02 complete, transitioned to Phase 3
+Last activity: 2026-10-08 — Phase 03 execution started
 
 Progress: [███░░░░░░░] 33%
 
@@ -72,6 +72,7 @@ Progress: [███░░░░░░░] 33%
 | Phase 02 P05 | 9 min | 3 tasks | 21 files |
 | Phase 02 P06 | 5 min | 3 tasks | 14 files |
 | Phase 02 P07 | 7 min | 3 tasks | 13 files |
+| Phase 03 P01 | 4 min | 3 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -114,6 +115,8 @@ Recent decisions affecting current work:
 - [Phase 02]: Watchlist price and change cells dim at opacity-60 when disconnected, in addition to header numbers — UI-SPEC Connection indicator contract; stale prices must not look live
 - [Phase 02]: 02-07: applyFrame is pure over (state, frame, nowSeconds) and owns flash and sparkline buffers; Sparkline only mirrors the buffer into the chart
 - [Phase 02]: 02-07: docker stop with an open SSE client took 4 s (uvicorn --timeout-graceful-shutdown 3); lifespan-event shutdown recipe disproved and PITFALLS/STACK corrected
+- [Phase 03]: 03-01: quantities rounded to 6 dp and money to 2 dp inside execute_trade so the chat path gets identical rules
+- [Phase 03]: 03-01: sync_ticker in place_trade finally is the single place app code stops tracking a ticker
 
 ### Pending Todos
 
@@ -137,6 +140,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-08T20:16:35.888Z
-Stopped at: Phase 3 UI-SPEC approved
-Resume file: .planning/phases/03-trading-watchlist-management/03-UI-SPEC.md
+Last session: 2026-10-08T21:04:22.899Z
+Stopped at: Completed 03-01-PLAN.md
+Resume file: None

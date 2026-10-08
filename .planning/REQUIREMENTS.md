@@ -44,11 +44,11 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 ### Portfolio & Trading
 
 - [x] **PORT-01**: User can view cash, positions (ticker, quantity, avg cost, current price, unrealized P&L, % change), total value and total unrealized P&L via `GET /api/portfolio`
-- [ ] **PORT-02**: User can buy shares at the current price via `POST /api/portfolio/trade`; cash decreases and position quantity/avg cost update; fractional quantities allowed
-- [ ] **PORT-03**: User can sell owned shares; cash increases; the position row is deleted when quantity reaches zero (float residue handled)
-- [ ] **PORT-04**: Invalid trades (quantity <= 0, no price, insufficient cash, insufficient shares) are rejected with 400 `{"error": "..."}` and change nothing
-- [ ] **PORT-05**: Each trade is atomic, appended to the `trades` log, and followed by a portfolio snapshot
-- [ ] **PORT-06**: Trade responses include the updated portfolio state
+- [x] **PORT-02**: User can buy shares at the current price via `POST /api/portfolio/trade`; cash decreases and position quantity/avg cost update; fractional quantities allowed
+- [x] **PORT-03**: User can sell owned shares; cash increases; the position row is deleted when quantity reaches zero (float residue handled)
+- [x] **PORT-04**: Invalid trades (quantity <= 0, no price, insufficient cash, insufficient shares) are rejected with 400 `{"error": "..."}` and change nothing
+- [x] **PORT-05**: Each trade is atomic, appended to the `trades` log, and followed by a portfolio snapshot
+- [x] **PORT-06**: Trade responses include the updated portfolio state
 - [ ] **PORT-07**: User can fetch portfolio value history via `GET /api/portfolio/history`; a snapshot is recorded on request (min-interval guarded)
 - [x] **PORT-08**: `GET /api/health` reports health for Docker
 
@@ -96,7 +96,7 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 ### Testing
 
 - [x] **TEST-01**: Backend pytest covers market data (valid prices, GBM math, Massive parsing, interface conformance)
-- [ ] **TEST-02**: Backend pytest covers portfolio (trade execution, P&L, oversell, insufficient cash, selling at a loss)
+- [x] **TEST-02**: Backend pytest covers portfolio (trade execution, P&L, oversell, insufficient cash, selling at a loss)
 - [ ] **TEST-03**: Backend pytest covers LLM (structured output parsing, malformed responses, trade validation in chat flow)
 - [ ] **TEST-04**: Backend pytest covers API routes (status codes, response shapes, error handling)
 - [ ] **TEST-05**: Frontend unit tests cover component rendering, price flash triggering, watchlist CRUD, portfolio calculations, chat rendering and loading state
@@ -159,11 +159,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | WL-02 | Phase 3 | Pending |
 | WL-03 | Phase 3 | Pending |
 | PORT-01 | Phase 2 | Complete |
-| PORT-02 | Phase 3 | Pending |
-| PORT-03 | Phase 3 | Pending |
-| PORT-04 | Phase 3 | Pending |
-| PORT-05 | Phase 3 | Pending |
-| PORT-06 | Phase 3 | Pending |
+| PORT-02 | Phase 3 | Complete |
+| PORT-03 | Phase 3 | Complete |
+| PORT-04 | Phase 3 | Complete |
+| PORT-05 | Phase 3 | Complete |
+| PORT-06 | Phase 3 | Complete |
 | PORT-07 | Phase 4 | Pending |
 | PORT-08 | Phase 1 | Complete |
 | CHAT-01 | Phase 5 | Pending |
@@ -196,7 +196,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PKG-03 | Phase 6 | Pending |
 | PKG-04 | Phase 6 | Pending |
 | TEST-01 | Phase 2 | Complete |
-| TEST-02 | Phase 3 | Pending |
+| TEST-02 | Phase 3 | Complete |
 | TEST-03 | Phase 5 | Pending |
 | TEST-04 | Phase 6 | Pending |
 | TEST-05 | Phase 6 | Pending |
