@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { initialMarketState, useMarketStore } from "../lib/store";
 import type { PriceFrame, WatchlistItem } from "../lib/types";
@@ -139,5 +139,34 @@ describe("WatchlistPanel rows", () => {
     render(<WatchlistPanel />);
     await screen.findByTestId("watchlist-row-AAPL");
     expect(screen.getByText("Chg %")).toHaveAttribute("title", "Change since session start");
+  });
+});
+
+describe("WatchlistPanel reconnect", () => {
+  it("re-fetches in the error state when the status becomes connected", async () => {
+    const fetchFn = stubFetch(Promise.reject(new Error("down")), ok([item("AAPL", 190)]));
+    render(<WatchlistPanel />);
+    await screen.findByTestId("watchlist-error");
+    act(() => useMarketStore.getState().setStatus("connected"));
+    await screen.findByTestId("watchlist-row-AAPL");
+    expect(fetchFn).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not re-fetch in the ready state", async () => {
+    const fetchFn = stubFetch(ok([item("AAPL", 190)]));
+    render(<WatchlistPanel />);
+    await screen.findByTestId("watchlist-row-AAPL");
+    act(() => useMarketStore.getState().setStatus("connected"));
+    expect(fetchFn).toHaveBeenCalledTimes(1);
+  });
+
+  it("dims price and change cells while disconnected", async () => {
+    stubFetch(ok([item("AAPL", 190)]));
+    render(<WatchlistPanel />);
+    await screen.findByTestId("watchlist-row-AAPL");
+    expect(screen.getByTestId("price-AAPL")).not.toHaveClass("opacity-60");
+    act(() => useMarketStore.getState().setStatus("disconnected"));
+    expect(screen.getByTestId("price-AAPL")).toHaveClass("opacity-60");
+    expect(screen.getByTestId("change-AAPL")).toHaveClass("opacity-60");
   });
 });
