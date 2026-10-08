@@ -26,7 +26,10 @@ export default function WatchlistPanel() {
         <h2 className="text-heading font-semibold">Watchlist</h2>
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto">
-        {view.kind === "ready" && (
+        {view.kind === "loading" && <Skeleton />}
+        {view.kind === "error" && <ErrorState onRetry={load} />}
+        {view.kind === "ready" && view.items.length === 0 && <EmptyState />}
+        {view.kind === "ready" && view.items.length > 0 && (
           <table className="w-full table-fixed">
             <thead className="sticky top-0 bg-panel">
               <tr className="h-8 border-b border-border text-label text-muted">
@@ -47,5 +50,44 @@ export default function WatchlistPanel() {
         )}
       </div>
     </section>
+  );
+}
+
+function Skeleton() {
+  return (
+    <div data-testid="watchlist-loading" aria-busy="true" aria-label="Loading watchlist">
+      {Array.from({ length: 10 }, (_, i) => (
+        <div key={i} className="h-10 border-b border-border px-4">
+          <div className="h-2 rounded-sm bg-raised motion-safe:animate-pulse" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ErrorState({ onRetry }: { onRetry: () => void }) {
+  return (
+    <div data-testid="watchlist-error" className="p-6">
+      <h3 className="text-heading font-semibold">Watchlist unavailable</h3>
+      <p className="text-body">
+        The server did not return your watchlist. Check that FinAlly is running, then retry.
+      </p>
+      <button
+        data-testid="watchlist-retry"
+        onClick={onRetry}
+        className="mt-4 h-8 rounded-sm border border-border px-4 hover:bg-raised focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+      >
+        Retry
+      </button>
+    </div>
+  );
+}
+
+function EmptyState() {
+  return (
+    <div data-testid="watchlist-empty" className="p-6">
+      <h3 className="text-heading font-semibold">Watchlist is empty</h3>
+      <p className="text-body">Add a ticker to start watching live prices.</p>
+    </div>
   );
 }
