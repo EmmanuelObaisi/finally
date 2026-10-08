@@ -72,7 +72,7 @@ Plans:
   4. With `MASSIVE_API_KEY` set, the same UI is fed by the Massive REST poller with no frontend change. With `SIM_SEED` set, simulator output is reproducible, and a non-seed ticker always starts at the same ticker-derived price across restarts
   5. Stopping the server with browsers connected exits promptly (no SSE hang), and the market data unit tests (valid prices, GBM math, Massive parsing, interface conformance) pass
 
-**Plans**: 4/7 plans executed
+**Plans**: 5/7 plans executed
 Plans:
 **Wave 1**
 - [x] 02-01-PLAN.md — Package gate (all Phase 2 PyPI/npm packages), market package + native SSE stream tracer, cache/frame/shutdown tests, Playwright launch flags (W1, checkpoint)
@@ -83,7 +83,7 @@ Plans:
 - [x] 02-04-PLAN.md — Massive REST poller behind the same interface: paid snapshot, free-plan Grouped Daily within 5 calls/min, factory branch (W2)
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 02-05-PLAN.md — Live watchlist in the browser: one EventSource, zustand store, formatters, panel states, UI-SPEC theme, Vitest harness, new smoke E2E (W3)
+- [x] 02-05-PLAN.md — Live watchlist in the browser: one EventSource, zustand store, formatters, panel states, UI-SPEC theme, Vitest harness, new smoke E2E (W3)
 
 **Wave 4** *(blocked on Wave 3 completion)*
 - [ ] 02-06-PLAN.md — Header totals, connection dot state machine with reconnect backoff, refetch on reconnect, stale dimming, footer attribution (W4)
@@ -164,7 +164,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6. Phases 4 and 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Walking Skeleton | 8/8 | Complete    | 2026-10-08 |
-| 2. Live Market Terminal | 4/7 | In Progress | - |
+| 2. Live Market Terminal | 5/7 | In Progress | - |
 | 3. Trading & Watchlist Management | 0/TBD | Not started | - |
 | 4. Charts & Portfolio Visualizations | 0/TBD | Not started | - |
 | 5. AI Trading Copilot | 0/TBD | Not started | - |
