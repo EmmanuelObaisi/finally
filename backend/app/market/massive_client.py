@@ -13,6 +13,16 @@ from .interface import MarketDataSource
 
 logger = logging.getLogger(__name__)
 
+MAX_EOD_LOOKBACK = 5  # free plan allows 5 calls per minute
+
+
+def last_trading_day(today: date) -> date:
+    """The most recent weekday strictly before `today` (holidays are not known here)."""
+    day = today - timedelta(days=1)
+    while day.weekday() >= 5:
+        day -= timedelta(days=1)
+    return day
+
 
 class MassiveDataSource(MarketDataSource):
     """Polls Massive for the tracked tickers and writes prices to the PriceCache.
@@ -107,14 +117,14 @@ class MassiveDataSource(MarketDataSource):
             ts = trade.sip_timestamp / 1e9 if trade and trade.sip_timestamp else None
             self.cache.update(snap.ticker, price, ts)
 
-    def _fetch_latest_closes(self, max_days_back: int = 7) -> dict[str, float]:
-        """All closes from the most recent trading day that has Grouped Daily data."""
-        day = date.today() - timedelta(days=1)
-        for _ in range(max_days_back):
+    def _fetch_latest_closes(self) -> dict[str, float]:
+        """All closes from the latest weekday with Grouped Daily data (at most MAX_EOD_LOOKBACK calls)."""
+        day = last_trading_day(date.today())
+        for _ in range(MAX_EOD_LOOKBACK):
             bars = self.client.get_grouped_daily_aggs(day.isoformat())
             if bars:
                 return {b.ticker: b.close for b in bars}
-            day -= timedelta(days=1)
+            day = last_trading_day(day)
         return {}
 
     def _write_eod(self, tickers: set[str]) -> None:
