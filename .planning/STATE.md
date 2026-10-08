@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 03
 current_phase_name: Trading & Watchlist Management
 status: executing
-stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-10-08T21:04:23.003Z"
+stopped_at: Completed 03-02-PLAN.md
+last_updated: "2026-10-08T21:08:16.979Z"
 last_activity: 2026-10-08
 last_activity_desc: Phase 03 execution started
-state_head: b7c6f0f1b13ddb81387a89d058b97b3c39e99a25
+state_head: 22da2d36ce3084ae166e3374d12680ae6626d51f
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 20
-  completed_plans: 16
+  completed_plans: 17
   percent: 33
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-08)
 ## Current Position
 
 Phase: 03 (Trading & Watchlist Management) — EXECUTING
-Plan: 2 of 5
+Plan: 3 of 5
 Status: Ready to execute
 Last activity: 2026-10-08 — Phase 03 execution started
 
@@ -73,6 +73,7 @@ Progress: [███░░░░░░░] 33%
 | Phase 02 P06 | 5 min | 3 tasks | 14 files |
 | Phase 02 P07 | 7 min | 3 tasks | 13 files |
 | Phase 03 P01 | 4 min | 3 tasks | 9 files |
+| Phase 03 P02 | 6 min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -117,6 +118,7 @@ Recent decisions affecting current work:
 - [Phase 02]: 02-07: docker stop with an open SSE client took 4 s (uvicorn --timeout-graceful-shutdown 3); lifespan-event shutdown recipe disproved and PITFALLS/STACK corrected
 - [Phase 03]: 03-01: quantities rounded to 6 dp and money to 2 dp inside execute_trade so the chat path gets identical rules
 - [Phase 03]: 03-01: sync_ticker in place_trade finally is the single place app code stops tracking a ticker
+- [Phase 03]: 03-02: add_to_watchlist short-circuits an already-watched ticker; DELETE upper-cases ASCII only; routes delegate tracking to sync_ticker (IN-03 fixed)
 
 ### Pending Todos
 
@@ -140,6 +142,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-08T21:04:22.899Z
-Stopped at: Completed 03-01-PLAN.md
+Last session: 2026-10-08T21:08:16.874Z
+Stopped at: Completed 03-02-PLAN.md
 Resume file: None

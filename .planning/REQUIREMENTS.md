@@ -38,8 +38,8 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 ### Watchlist
 
 - [x] **WL-01**: User can view the watchlist with latest prices via `GET /api/watchlist`
-- [ ] **WL-02**: User can add a ticker via `POST /api/watchlist`; it is upper-cased, format-checked (`[A-Z][A-Z.]{0,9}`), and rejected with 400 "Unknown ticker" if no price appears
-- [ ] **WL-03**: User can remove a ticker via `DELETE /api/watchlist/{ticker}`; unknown ticker returns 404; a held ticker keeps streaming
+- [x] **WL-02**: User can add a ticker via `POST /api/watchlist`; it is upper-cased, format-checked (`[A-Z][A-Z.]{0,9}`), and rejected with 400 "Unknown ticker" if no price appears
+- [x] **WL-03**: User can remove a ticker via `DELETE /api/watchlist/{ticker}`; unknown ticker returns 404; a held ticker keeps streaming
 
 ### Portfolio & Trading
 
@@ -156,8 +156,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DB-02 | Phase 2 | Complete |
 | DB-03 | Phase 2 | Complete |
 | WL-01 | Phase 2 | Complete |
-| WL-02 | Phase 3 | Pending |
-| WL-03 | Phase 3 | Pending |
+| WL-02 | Phase 3 | Complete |
+| WL-03 | Phase 3 | Complete |
 | PORT-01 | Phase 2 | Complete |
 | PORT-02 | Phase 3 | Complete |
 | PORT-03 | Phase 3 | Complete |
