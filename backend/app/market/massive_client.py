@@ -5,7 +5,6 @@ import contextlib
 import logging
 from datetime import date, timedelta
 
-import truststore
 from massive import RESTClient
 from massive.exceptions import BadResponse
 
@@ -13,10 +12,6 @@ from .cache import PriceCache
 from .interface import MarketDataSource
 
 logger = logging.getLogger(__name__)
-
-# massive verifies with urllib3 and certifi; use the OS trust store so TLS verification works
-# behind a re-signing proxy. Verification stays on.
-truststore.inject_into_ssl()
 
 MAX_EOD_LOOKBACK = 5  # free plan allows 5 calls per minute
 
