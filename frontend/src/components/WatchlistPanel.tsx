@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { addTicker, getWatchlist } from "../lib/api";
+import { addTicker, getWatchlist, removeTicker } from "../lib/api";
 import { useMarketStore } from "../lib/store";
 import type { WatchlistItem } from "../lib/types";
 import FormMessage, { type MessageKind } from "./FormMessage";
@@ -78,6 +78,11 @@ export default function WatchlistPanel() {
     if (await mutate("Adding " + ticker.toUpperCase() + "...", () => addTicker(ticker))) setInput("");
   }
 
+  function remove(ticker: string) {
+    if (busy) return;
+    mutate("Removing " + ticker + "...", () => removeTicker(ticker));
+  }
+
   const locked = busy || view.kind !== "ready";
 
   return (
@@ -129,11 +134,14 @@ export default function WatchlistPanel() {
                   Chg %
                 </th>
                 <th className="px-2 text-left font-normal hidden sm:table-cell">Since load</th>
+                <th className="w-10 p-0">
+                  <span className="sr-only">Remove</span>
+                </th>
               </tr>
             </thead>
             <tbody>
               {view.items.map((item) => (
-                <WatchlistRow key={item.ticker} item={item} />
+                <WatchlistRow key={item.ticker} item={item} busy={busy} onRemove={remove} />
               ))}
             </tbody>
           </table>

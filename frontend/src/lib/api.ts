@@ -36,6 +36,11 @@ export async function addTicker(ticker: string): Promise<WatchlistItem[]> {
   return body.watchlist;
 }
 
+export async function removeTicker(ticker: string): Promise<WatchlistItem[]> {
+  const body = await send<{ watchlist: WatchlistItem[] }>("DELETE", "/api/watchlist/" + encodeURIComponent(ticker));
+  return body.watchlist;
+}
+
 export function postTrade(ticker: string, quantity: number, side: "buy" | "sell") {
   return send<{ trade: Trade; portfolio: Portfolio }>("POST", "/api/portfolio/trade", {
     ticker,

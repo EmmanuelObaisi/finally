@@ -53,7 +53,7 @@ findings:
     title: "`change_percent` can raise ZeroDivisionError and kill the whole stream"
   - id: IN-01
     severity: info
-    disposition: open
+    disposition: fixed
     title: "Overlapping fetches can apply a stale response (Header and WatchlistPanel)"
   - id: IN-02
     severity: info
@@ -63,7 +63,7 @@ findings:
     severity: info
     disposition: open
     title: "Stale REST price shown for a ticker that has left the live frame"
-open: 7
+open: 6
 total: 15
 recorded: 2026-10-08T15:19:37.978Z
 ---
@@ -84,7 +84,7 @@ recorded: 2026-10-08T15:19:37.978Z
 | WR-04 | warning | fixed | 02-REVIEW-FIX.md (not in the current review) |
 | WR-05 | warning | skipped | 02-REVIEW-FIX.md (not in the current review) |
 | WR-06 | warning | fixed | 02-REVIEW-FIX.md (not in the current review) |
-| IN-01 | info | open | - (not in the current review) |
+| IN-01 | info | fixed | 03-03 Task 2 (portfolio ticket guard) and 03-05 (watchlist mutations disabled outside the ready state) |
 | IN-02 | info | open | - (not in the current review) |
 | IN-05 | info | open | - (not in the current review) |
 

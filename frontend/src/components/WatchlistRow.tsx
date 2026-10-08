@@ -7,7 +7,15 @@ import PriceCell from "./PriceCell";
 import Sparkline from "./Sparkline";
 
 /** One watchlist row; subscribes only to its own ticker's slice of the price map. */
-export default function WatchlistRow({ item }: { item: WatchlistItem }) {
+export default function WatchlistRow({
+  item,
+  busy,
+  onRemove,
+}: {
+  item: WatchlistItem;
+  busy: boolean;
+  onRemove: (ticker: string) => void;
+}) {
   const { ticker } = item;
   const live = useMarketStore((s) => s.prices[ticker]);
   const change = fmtPct(live?.change_percent ?? item.change_percent);
@@ -27,6 +35,19 @@ export default function WatchlistRow({ item }: { item: WatchlistItem }) {
       </td>
       <td className="px-2 hidden sm:table-cell">
         <Sparkline ticker={ticker} />
+      </td>
+      <td className="p-0 text-center">
+        <button
+          type="button"
+          data-testid={"watchlist-remove-" + ticker}
+          aria-label={"Remove " + ticker}
+          title={"Remove " + ticker}
+          disabled={busy}
+          onClick={() => onRemove(ticker)}
+          className="size-8 rounded-sm text-body text-muted hover:text-down disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        >
+          <span aria-hidden="true">×</span>
+        </button>
       </td>
     </tr>
   );
