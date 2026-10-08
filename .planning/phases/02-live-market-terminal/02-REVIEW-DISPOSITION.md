@@ -5,27 +5,27 @@ titles: json
 findings:
   - id: WR-01
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "Sparkline chart accumulates points beyond the 300-point store cap"
   - id: WR-02
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "\"sparklines draw from the stream\" E2E test passes with an empty chart"
   - id: WR-03
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "E2E backend is not isolated from the developer's shell environment and `.env`"
   - id: WR-04
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "A transient Massive error at startup aborts the whole app"
   - id: WR-05
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "Massive path has no OS-trust-store opt-in on the target machine"
   - id: WR-06
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "`change_percent` can raise ZeroDivisionError and kill the whole stream"
   - id: IN-01
     severity: info
@@ -55,21 +55,21 @@ findings:
     severity: info
     disposition: open
     title: "Timing-based backend tests may be flaky under load"
-open: 13
+open: 7
 total: 13
-recorded: 2026-10-08T14:17:46.176Z
+recorded: 2026-10-08T14:29:08.277Z
 ---
 
 # Phase 02: Code Review Disposition
 
 | Finding | Severity | Disposition | Source |
 |---------|----------|-------------|--------|
-| WR-01 | warning | open | - |
-| WR-02 | warning | open | - |
-| WR-03 | warning | open | - |
-| WR-04 | warning | open | - |
-| WR-05 | warning | open | - |
-| WR-06 | warning | open | - |
+| WR-01 | warning | fixed | 02-REVIEW-FIX.md |
+| WR-02 | warning | fixed | 02-REVIEW-FIX.md |
+| WR-03 | warning | fixed | 02-REVIEW-FIX.md |
+| WR-04 | warning | fixed | 02-REVIEW-FIX.md |
+| WR-05 | warning | fixed | 02-REVIEW-FIX.md |
+| WR-06 | warning | fixed | 02-REVIEW-FIX.md |
 | IN-01 | info | open | - |
 | IN-02 | info | open | - |
 | IN-03 | info | open | - |
