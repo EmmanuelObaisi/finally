@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 02
 current_phase_name: Live Market Terminal
 status: executing
-stopped_at: Phase 2 UI-SPEC approved
-last_updated: "2026-10-08T13:25:01.345Z"
+stopped_at: Completed 02-01-PLAN.md
+last_updated: "2026-10-08T13:35:57.086Z"
 last_activity: 2026-10-08
-last_activity_desc: Phase 01 complete, transitioned to Phase 2
-state_head: 10bc79bace07d5c1bc5c04e520b58feb3b567476
+last_activity_desc: Phase 02 execution started
+state_head: 606c811f92850db358bb82a2fa57031b545af6cf
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 15
-  completed_plans: 8
+  completed_plans: 9
   percent: 17
 ---
 
@@ -23,14 +23,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-08)
 
 **Core value:** One command launches a live, data-dense trading terminal where prices stream, trades fill instantly, and the AI copilot can act on the portfolio — and every specified unit and E2E scenario passes to prove it.
-**Current focus:** Phase 2 — Live Market Terminal
+**Current focus:** Phase 02 — Live Market Terminal
 
 ## Current Position
 
-Phase: 02 (Live Market Terminal) — READY TO EXECUTE
-Plan: Not started
+Phase: 02 (Live Market Terminal) — EXECUTING
+Plan: 2 of 7
 Status: Ready to execute
-Last activity: 2026-10-08 — Phase 01 complete, transitioned to Phase 2
+Last activity: 2026-10-08 — Phase 02 execution started
 
 Progress: [██░░░░░░░░] 17%
 
@@ -64,6 +64,7 @@ Progress: [██░░░░░░░░] 17%
 | Phase 01 P06 | 6 min | 3 tasks | 7 files |
 | Phase 01 P07 | 8 min | 2 tasks | 3 files |
 | Phase 01 P08 | 2 min | 2 tasks | 3 files |
+| Phase 02 P01 | 3 min | 3 tasks | 16 files |
 
 ## Accumulated Context
 
@@ -91,6 +92,9 @@ Recent decisions affecting current work:
 - [Phase 01]: 01-07: getHealth() throws on non-2xx; page.tsx unchanged because its catch already sets down (WR-04)
 - [Phase 01]: 01-08: runtime image runs as non-root system user app owning /app/db; backend-build RUN uses set -e so a failed uv sync --locked fails the build
 - [Phase 01]: UI safety gate overridden for Phase 1 gap closure: 01-07 changed only a non-visual res.ok check in frontend/src/lib/api.ts; UI-SPEC still deferred to /gsd-ui-phase 2 (user decision)
+- [Phase 02]: 02-01: SSE polls cache.version every 0.1 s (not 0.5 s) to avoid aliasing with the 0.5 s simulator tick; one frame per version change
+- [Phase 02]: 02-01: every uvicorn launch path must pass --timeout-graceful-shutdown (Playwright webServer and tests done; README dev command in 02-07)
+- [Phase 02]: 02-01: Phase 2 packages approved by user; list recorded in 02-01-SUMMARY.md Approved packages (02-04 massive 2.8.0, 02-05 npm set)
 
 ### Pending Todos
 
@@ -114,6 +118,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-08T09:38:49.323Z
-Stopped at: Phase 2 UI-SPEC approved
-Resume file: .planning/phases/02-live-market-terminal/02-UI-SPEC.md
+Last session: 2026-10-08T13:35:57.005Z
+Stopped at: Completed 02-01-PLAN.md
+Resume file: None

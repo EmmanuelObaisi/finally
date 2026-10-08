@@ -235,3 +235,7 @@ None - no external service configuration required.
 ---
 *Phase: 02-live-market-terminal*
 *Completed: 2026-10-08*
+
+## Self-Check: PASSED
+
+All created files exist; commits d99aa50, 24a761a found; backend suite (46 passed, no warnings), live curl check and Playwright smoke (4 passed) re-run green.
