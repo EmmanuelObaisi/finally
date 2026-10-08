@@ -75,6 +75,15 @@ describe("PriceCell flash", () => {
   });
 });
 
+describe("PriceCell dimming", () => {
+  it("has opacity-60 only when dim", () => {
+    const view = render(<PriceCell ticker="AAPL" price={190} dim={false} />);
+    expect(screen.getByTestId("price-AAPL")).not.toHaveClass("opacity-60");
+    view.rerender(<PriceCell ticker="AAPL" price={190} dim />);
+    expect(screen.getByTestId("price-AAPL")).toHaveClass("opacity-60");
+  });
+});
+
 describe("PriceCell text", () => {
   it("renders -- muted for a null price", () => {
     render(<PriceCell ticker="AAPL" price={null} dim={false} />);

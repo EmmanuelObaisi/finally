@@ -168,5 +168,10 @@ describe("WatchlistPanel reconnect", () => {
     act(() => useMarketStore.getState().setStatus("disconnected"));
     expect(screen.getByTestId("price-AAPL")).toHaveClass("opacity-60");
     expect(screen.getByTestId("change-AAPL")).toHaveClass("opacity-60");
+    expect(screen.getByText("AAPL")).not.toHaveClass("opacity-60");
+    expect(screen.getByTestId("sparkline-AAPL")).not.toHaveClass("opacity-60");
+    act(() => useMarketStore.getState().setStatus("connected"));
+    expect(screen.getByTestId("price-AAPL")).not.toHaveClass("opacity-60");
+    expect(screen.getByTestId("change-AAPL")).not.toHaveClass("opacity-60");
   });
 });
