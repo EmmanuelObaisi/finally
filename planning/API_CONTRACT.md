@@ -8,7 +8,8 @@ endpoint is defined here, and changes happen only by editing this file.
 - Every request and response body is UTF-8 JSON (the SSE stream is UTF-8 text frames carrying JSON).
 - Success is always `200`, never `201`.
 - Every error body is `{"error": "..."}`, where the value is a human-readable message string.
-- Rounding: prices to 2 dp, quantities to 6 dp, `change` and `change_percent` to 4 dp.
+- Rounding: prices and money amounts to 2 dp, quantities to 6 dp, `change`, `change_percent` and
+  `pnl_percent` to 4 dp.
 - SSE `timestamp` is epoch seconds as a float. REST timestamps (`recorded_at`, `executed_at`,
   `created_at`) are ISO-8601 UTC strings.
 - Ticker identity is the upper-cased ASCII symbol matching `[A-Z][A-Z.]{0,9}`. Input is
@@ -17,7 +18,9 @@ endpoint is defined here, and changes happen only by editing this file.
   - `200` success.
   - `400` validation or domain failure, including FastAPI body validation errors (remapped
     from `422` so clients see one error shape).
-  - `404` unknown watchlist ticker on `DELETE`, or any unknown `/api/*` path with any method.
+  - `404` unknown watchlist ticker on `DELETE`, or any unknown `/api/*` path with any method. A
+    wrong method on a known `/api/*` path (for example `PUT /api/watchlist`) is also
+    `404 {"error": "Not found"}`; the API never answers `405`.
   - `500` `{"error": "Internal server error"}`. The message is always this generic string;
     exception text is never returned to the client.
 - A chat LLM failure is not an HTTP error (see `POST /api/chat`).
@@ -80,7 +83,8 @@ data: {"AAPL": {"ticker": "AAPL", "price": 190.12, "previous_price": 190.1, "tim
 | `POST /api/chat` | `{"message"}` | `{"message", "actions", "portfolio", "watchlist"}` | 400 |
 | `GET /api/chat/history` | none | `{"messages": [...]}` | none |
 
-Any unknown `/api/*` path, with any method, is `404 {"error": "Not found"}`. Any unexpected
+Any unknown `/api/*` path, with any method, is `404 {"error": "Not found"}`, as is a known path
+called with a method it does not support. Any unexpected
 failure is `500 {"error": "Internal server error"}`.
 
 ### GET /api/health

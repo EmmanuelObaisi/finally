@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from . import watchlist
+from . import portfolio, watchlist
 from .config import Settings
 from .db import connect, init_db, load_tracked_tickers
 from .errors import register_error_handlers
@@ -41,6 +41,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app.include_router(stream.router)
     app.include_router(watchlist.router)
+    app.include_router(portfolio.router)
 
     # Later routers are included above this catch-all so unknown /api paths stay JSON 404s.
     # A response instance is a raw ASGI app, so Starlette matches every HTTP method
