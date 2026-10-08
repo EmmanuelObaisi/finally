@@ -25,7 +25,7 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 - [x] **MKT-05**: When `MASSIVE_API_KEY` is set, a Massive REST poller supplies prices instead (paid: snapshot every 2-15s, default 5s; free: Grouped Daily fallback)
 - [x] **MKT-06**: Simulator and Massive poller implement one abstract interface; a factory selects by env var; downstream code is source-agnostic
 - [x] **MKT-07**: An in-memory price cache holds latest price, previous price, timestamp and session-start price per ticker, with a version counter
-- [ ] **MKT-08**: Tracked tickers = watchlist ∪ open positions; a ticker is untracked only when in neither, and buying an untracked ticker starts tracking it before pricing
+- [x] **MKT-08**: Tracked tickers = watchlist ∪ open positions; a ticker is untracked only when in neither, and buying an untracked ticker starts tracking it before pricing
 - [x] **MKT-09**: `GET /api/stream/prices` streams SSE events, one per cache-version change, each a dict of all tracked tickers with `ticker, price, previous_price, timestamp, change, change_percent, direction` (change measured from session-start price)
 - [x] **MKT-10**: Market data task and SSE streams start and stop cleanly with the app lifespan (no hang on shutdown)
 
@@ -78,7 +78,7 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 ### Frontend: Portfolio & Chat UI
 
 - [x] **PUI-01**: Trade bar with ticker, quantity, Buy and Sell executes market orders; shows inline success/error; buttons disabled while in flight
-- [ ] **PUI-02**: Positions table shows ticker, quantity, avg cost, current price, unrealized P&L and % change, updating live
+- [x] **PUI-02**: Positions table shows ticker, quantity, avg cost, current price, unrealized P&L and % change, updating live
 - [ ] **PUI-03**: Portfolio heatmap (treemap) sizes positions by weight and colors by P&L (green profit, red loss)
 - [ ] **PUI-04**: P&L chart shows total portfolio value over time from snapshots, refetched every 30s with a live "now" point
 - [ ] **PUI-05**: Collapsible AI chat panel with message input (Enter to send), scrolling history restored on load, auto-scroll, and loading indicator
@@ -149,7 +149,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MKT-05 | Phase 2 | Complete |
 | MKT-06 | Phase 2 | Complete |
 | MKT-07 | Phase 2 | Complete |
-| MKT-08 | Phase 3 | Pending |
+| MKT-08 | Phase 3 | Complete |
 | MKT-09 | Phase 2 | Complete |
 | MKT-10 | Phase 2 | Complete |
 | DB-01 | Phase 2 | Complete |
@@ -184,7 +184,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | UI-07 | Phase 4 | Pending |
 | UI-08 | Phase 2 | Complete |
 | PUI-01 | Phase 3 | Complete |
-| PUI-02 | Phase 3 | Pending |
+| PUI-02 | Phase 3 | Complete |
 | PUI-03 | Phase 4 | Pending |
 | PUI-04 | Phase 4 | Pending |
 | PUI-05 | Phase 5 | Pending |

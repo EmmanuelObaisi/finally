@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 03
 current_phase_name: Trading & Watchlist Management
 status: executing
-stopped_at: Completed 03-03-PLAN.md
-last_updated: "2026-10-08T21:16:08.504Z"
+stopped_at: Completed 03-04-PLAN.md
+last_updated: "2026-10-08T21:20:59.514Z"
 last_activity: 2026-10-08
 last_activity_desc: Phase 03 execution started
-state_head: 25a9662a86af94954a894dae8c75cb0747a1b1eb
+state_head: 323786c1316afe96d33fd902b6ae6d3bdc5e7a52
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 20
-  completed_plans: 18
+  completed_plans: 19
   percent: 33
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-08)
 ## Current Position
 
 Phase: 03 (Trading & Watchlist Management) — EXECUTING
-Plan: 4 of 5
+Plan: 5 of 5
 Status: Ready to execute
 Last activity: 2026-10-08 — Phase 03 execution started
 
@@ -75,6 +75,7 @@ Progress: [███░░░░░░░] 33%
 | Phase 03 P01 | 4 min | 3 tasks | 9 files |
 | Phase 03 P02 | 6 min | 2 tasks | 5 files |
 | Phase 03 P03 | 6 min | 3 tasks | 12 files |
+| Phase 03 P04 | 3 min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -121,6 +122,8 @@ Recent decisions affecting current work:
 - [Phase 03]: 03-01: sync_ticker in place_trade finally is the single place app code stops tracking a ticker
 - [Phase 03]: 03-02: add_to_watchlist short-circuits an already-watched ticker; DELETE upper-cases ASCII only; routes delegate tracking to sync_ticker (IN-03 fixed)
 - [Phase 03]: 03-03: Header reads usePortfolioStore (ticket guard); TradeBar applies response.portfolio before the confirmation, closing the Header half of IN-01
+- [Phase 03]: 03-04: PositionRow uses plain td cells with position-* testids and no flash; price-{TICKER} stays unique to the watchlist
+- [Phase 03]: 03-04: PositionsTable never loads itself; Header's mount and reconnect loads feed the shared portfolio store
 
 ### Pending Todos
 
@@ -144,6 +147,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-08T21:16:08.394Z
-Stopped at: Completed 03-03-PLAN.md
+Last session: 2026-10-08T21:20:59.378Z
+Stopped at: Completed 03-04-PLAN.md
 Resume file: None
