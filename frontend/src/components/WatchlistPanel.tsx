@@ -1,16 +1,32 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getWatchlist } from "../lib/api";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { addTicker, getWatchlist } from "../lib/api";
 import { useMarketStore } from "../lib/store";
 import type { WatchlistItem } from "../lib/types";
+import FormMessage, { type MessageKind } from "./FormMessage";
 import WatchlistRow from "./WatchlistRow";
 
 type View = { kind: "loading" } | { kind: "error" } | { kind: "ready"; items: WatchlistItem[] };
+type Message = { kind: MessageKind; text: string };
+
+const IDLE: Message = { kind: "idle", text: "" };
+const FOCUS = " focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
+const INPUT =
+  "h-8 min-w-0 flex-1 rounded-sm border border-border bg-surface px-2 text-body text-fg placeholder:text-muted disabled:opacity-50 uppercase" +
+  FOCUS;
+const BUTTON =
+  "h-8 w-20 rounded-sm bg-secondary px-4 text-body font-semibold text-fg hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50" +
+  FOCUS;
 
 /** Watchlist membership and order come from GET /api/watchlist, never from SSE keys. */
 export default function WatchlistPanel() {
   const [view, setView] = useState<View>({ kind: "loading" });
+  const [input, setInput] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<Message>(IDLE);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const refocus = useRef(false);
 
   function load() {
     setView({ kind: "loading" });
@@ -26,12 +42,80 @@ export default function WatchlistPanel() {
     if (status === "connected" && view.kind === "error") load();
   }, [status]);
 
+  // A disabled input cannot take focus inside the handler, so focus returns once busy clears.
+  useEffect(() => {
+    if (!busy && refocus.current) {
+      refocus.current = false;
+      inputRef.current?.focus();
+    }
+  }, [busy]);
+
+  /** Runs one add or remove; the response list replaces the table, so load() is never re-run. */
+  async function mutate(pending: string, run: () => Promise<WatchlistItem[]>): Promise<boolean> {
+    setBusy(true);
+    setMessage({ kind: "pending", text: pending });
+    try {
+      setView({ kind: "ready", items: await run() });
+      setMessage(IDLE);
+      return true;
+    } catch (e) {
+      setMessage({ kind: "error", text: (e as Error).message });
+      return false;
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function add(e: FormEvent) {
+    e.preventDefault();
+    if (busy) return;
+    const ticker = input.trim();
+    if (!ticker) {
+      setMessage({ kind: "error", text: "Enter a ticker symbol" });
+      return;
+    }
+    refocus.current = true;
+    if (await mutate("Adding " + ticker.toUpperCase() + "...", () => addTicker(ticker))) setInput("");
+  }
+
+  const locked = busy || view.kind !== "ready";
+
   return (
-    <section data-testid="watchlist-panel" className="flex h-full min-h-0 flex-col bg-panel lg:border-r lg:border-border">
+    <section data-testid="watchlist-panel" className="flex lg:h-full min-h-0 flex-col bg-panel lg:border-r lg:border-border">
       <div className="flex h-10 items-center border-b border-border px-4">
         <h2 className="text-heading font-semibold">Watchlist</h2>
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <form
+        aria-label="Add ticker to watchlist"
+        data-testid="watchlist-add-form"
+        aria-busy={busy ? "true" : undefined}
+        onSubmit={add}
+        className="h-18 shrink-0 border-b border-border"
+      >
+        <div className="flex h-12 items-center gap-2 px-4">
+          <input
+            ref={inputRef}
+            data-testid="watchlist-add-input"
+            type="text"
+            placeholder="Add ticker (for example PYPL)"
+            aria-label="Ticker to add"
+            autoComplete="off"
+            spellCheck={false}
+            disabled={locked}
+            value={input}
+            onChange={(e) => {
+              setInput(e.target.value);
+              setMessage(IDLE);
+            }}
+            className={INPUT}
+          />
+          <button data-testid="watchlist-add-button" type="submit" disabled={locked} className={BUTTON}>
+            Add
+          </button>
+        </div>
+        <FormMessage testId="watchlist-message" kind={message.kind} text={message.text} />
+      </form>
+      <div className="min-h-0 flex-1 lg:overflow-y-auto">
         {view.kind === "loading" && <Skeleton />}
         {view.kind === "error" && <ErrorState onRetry={load} />}
         {view.kind === "ready" && view.items.length === 0 && <EmptyState />}

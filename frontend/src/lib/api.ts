@@ -31,6 +31,11 @@ export async function send<T>(method: string, url: string, body?: unknown): Prom
   throw new Error(typeof error === "string" ? error : NETWORK_ERROR);
 }
 
+export async function addTicker(ticker: string): Promise<WatchlistItem[]> {
+  const body = await send<{ watchlist: WatchlistItem[] }>("POST", "/api/watchlist", { ticker });
+  return body.watchlist;
+}
+
 export function postTrade(ticker: string, quantity: number, side: "buy" | "sell") {
   return send<{ trade: Trade; portfolio: Portfolio }>("POST", "/api/portfolio/trade", {
     ticker,
