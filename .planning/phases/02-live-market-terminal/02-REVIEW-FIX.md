@@ -4,9 +4,9 @@ fixed_at: 2026-10-08T00:00:00Z
 review_path: .planning/phases/02-live-market-terminal/02-REVIEW.md
 iteration: 1
 findings_in_scope: 6
-fixed: 6
-skipped: 0
-status: all_fixed
+fixed: 5
+skipped: 1
+status: partial
 ---
 
 # Phase 02: Code Review Fix Report
@@ -17,8 +17,8 @@ status: all_fixed
 
 **Summary:**
 - Findings in scope: 6 (0 critical, 6 warning; Info excluded by `fix_scope: critical_warning`)
-- Fixed: 6
-- Skipped: 0
+- Fixed: 5
+- Skipped: 1 (WR-05, reverted)
 
 ## Fixed Issues
 
@@ -46,6 +46,14 @@ status: all_fixed
 **Commit:** a5e9b2e
 **Applied fix:** `start()` re-raises only when the error text contains "Unknown API Key" (the existing rejected-key test still passes); any other initial-poll error is logged and the background loop retries it. `BadResponse` carries only the response body (no status), so the rejected-key check is by message, as the review suggested. A single `except Exception` replaces the review's two clauses. New test: a `RuntimeError` on the first poll does not abort `start()` and the loop later fills the cache.
 
+### WR-06: `change_percent` can raise ZeroDivisionError and kill the whole stream
+
+**Files modified:** `backend/app/market/cache.py`, `backend/tests/market/test_cache.py`
+**Commit:** ce98581
+**Applied fix:** `PriceCache.update` now returns `None` (and does not store or bump the version) when the rounded price is `<= 0`, fixing it at the write boundary so no `session_start_price` of zero can exist. Return type is `PriceUpdate | None`; no caller uses the return value. New test covers a `0.004` price. Status: fixed, requires human verification (logic change: a sub-cent quote is now treated as unpriced).
+
+## Skipped Issues
+
 ### WR-05: Massive path has no OS-trust-store opt-in on the target machine
 
 **Files modified:** `backend/app/market/massive_client.py`, `backend/pyproject.toml`, `backend/uv.lock`
@@ -56,15 +64,9 @@ status: all_fixed
 
 **Not reproduced:** the reviewer's premise (Massive hits `CERTIFICATE_VERIFY_FAILED` here) did not reproduce. A real `RESTClient(api_key="bogus").get_grouped_daily_aggs(...)` call returned the API's `Unknown API Key` response both without and with the injection, so TLS verified in both cases in this shell (`NODE_EXTRA_CA_CERTS` is set, no other cert env). The change follows the project's documented requirement and does not break the path (verified with the same call after injection). Marked for human verification as a precaution because the benefit depends on the machine's trust setup.
 
-### WR-06: `change_percent` can raise ZeroDivisionError and kill the whole stream
+**Reverted:** commit 5b3431b was reverted in 2f110c8 at the user's request. The predicted failure did not reproduce and phase research (02-RESEARCH.md) found certifi reaches api.massive.com on this machine. Add truststore only if CERTIFICATE_VERIFY_FAILED actually appears.
 
-**Files modified:** `backend/app/market/cache.py`, `backend/tests/market/test_cache.py`
-**Commit:** ce98581
-**Applied fix:** `PriceCache.update` now returns `None` (and does not store or bump the version) when the rounded price is `<= 0`, fixing it at the write boundary so no `session_start_price` of zero can exist. Return type is `PriceUpdate | None`; no caller uses the return value. New test covers a `0.004` price. Status: fixed, requires human verification (logic change: a sub-cent quote is now treated as unpriced).
-
-## Skipped Issues
-
-None. Info findings (IN-01 to IN-07) were out of scope for this run.
+Info findings (IN-01 to IN-07) were out of scope for this run.
 
 ## Verification
 
