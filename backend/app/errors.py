@@ -5,6 +5,18 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 
+class DomainError(Exception):
+    """A rule violation the client can fix, answered as {"error": message}."""
+
+    status_code = 400
+
+
+class NotFoundError(DomainError):
+    """A named resource that does not exist, answered as 404."""
+
+    status_code = 404
+
+
 def register_error_handlers(app: FastAPI) -> None:
     """Map HTTP errors to their status, validation errors to 400, anything else to 500."""
 
@@ -17,6 +29,10 @@ def register_error_handlers(app: FastAPI) -> None:
         first = exc.errors()[0]
         loc = ".".join(str(p) for p in first["loc"] if p != "body")
         return JSONResponse({"error": f"{loc}: {first['msg']}"}, status_code=400)
+
+    @app.exception_handler(DomainError)
+    async def domain_error(_: Request, exc: DomainError) -> JSONResponse:
+        return JSONResponse({"error": str(exc)}, status_code=exc.status_code)
 
     @app.exception_handler(Exception)
     async def unhandled_error(_: Request, exc: Exception) -> JSONResponse:

@@ -71,6 +71,18 @@ def connect(db_path: Path):
         conn.close()
 
 
+@contextmanager
+def transaction(conn: sqlite3.Connection):
+    """Run the block under BEGIN IMMEDIATE: commit on success, roll back on any error."""
+    conn.execute("BEGIN IMMEDIATE")
+    try:
+        yield
+    except BaseException:
+        conn.execute("ROLLBACK")
+        raise
+    conn.execute("COMMIT")
+
+
 def init_db(db_path: Path) -> None:
     """Create the file and schema, and seed defaults only into a fresh database."""
     db_path.parent.mkdir(parents=True, exist_ok=True)
