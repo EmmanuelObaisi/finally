@@ -27,7 +27,7 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 - [x] **MKT-07**: An in-memory price cache holds latest price, previous price, timestamp and session-start price per ticker, with a version counter
 - [ ] **MKT-08**: Tracked tickers = watchlist ∪ open positions; a ticker is untracked only when in neither, and buying an untracked ticker starts tracking it before pricing
 - [x] **MKT-09**: `GET /api/stream/prices` streams SSE events, one per cache-version change, each a dict of all tracked tickers with `ticker, price, previous_price, timestamp, change, change_percent, direction` (change measured from session-start price)
-- [ ] **MKT-10**: Market data task and SSE streams start and stop cleanly with the app lifespan (no hang on shutdown)
+- [x] **MKT-10**: Market data task and SSE streams start and stop cleanly with the app lifespan (no hang on shutdown)
 
 ### Database
 
@@ -66,14 +66,14 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 
 ### Frontend: Market UI
 
-- [ ] **UI-01**: Dark terminal theme (backgrounds ~`#0d1117`, muted borders; accent `#ecad0a`, blue `#209dd7`, purple `#753991` submit buttons), dense desktop-first layout, functional on tablet
+- [x] **UI-01**: Dark terminal theme (backgrounds ~`#0d1117`, muted borders; accent `#ecad0a`, blue `#209dd7`, purple `#753991` submit buttons), dense desktop-first layout, functional on tablet
 - [x] **UI-02**: Header shows live total portfolio value, cash balance, and a connection dot (green connected / yellow reconnecting / red disconnected)
 - [x] **UI-03**: A single `EventSource` feeds all components and re-connects after failure
-- [ ] **UI-04**: Watchlist panel shows ticker, price, change % and a sparkline accumulated since page load
-- [ ] **UI-05**: Prices flash green on uptick / red on downtick, fading over ~500ms
+- [x] **UI-04**: Watchlist panel shows ticker, price, change % and a sparkline accumulated since page load
+- [x] **UI-05**: Prices flash green on uptick / red on downtick, fading over ~500ms
 - [ ] **UI-06**: User can add and remove watchlist tickers from the panel
 - [ ] **UI-07**: Clicking a ticker shows it in the main chart (price over time); a default ticker is selected on load
-- [ ] **UI-08**: Prices show "--" before the first value arrives (never NaN or 0); numbers use shared currency/quantity/sign/percent formatters with tabular numerals
+- [x] **UI-08**: Prices show "--" before the first value arrives (never NaN or 0); numbers use shared currency/quantity/sign/percent formatters with tabular numerals
 
 ### Frontend: Portfolio & Chat UI
 
@@ -151,7 +151,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MKT-07 | Phase 2 | Complete |
 | MKT-08 | Phase 3 | Pending |
 | MKT-09 | Phase 2 | Complete |
-| MKT-10 | Phase 2 | Pending |
+| MKT-10 | Phase 2 | Complete |
 | DB-01 | Phase 2 | Complete |
 | DB-02 | Phase 2 | Complete |
 | DB-03 | Phase 2 | Complete |
@@ -175,14 +175,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CHAT-07 | Phase 5 | Pending |
 | CHAT-08 | Phase 5 | Pending |
 | CHAT-09 | Phase 5 | Pending |
-| UI-01 | Phase 2 | Pending |
+| UI-01 | Phase 2 | Complete |
 | UI-02 | Phase 2 | Complete |
 | UI-03 | Phase 2 | Complete |
-| UI-04 | Phase 2 | Pending |
-| UI-05 | Phase 2 | Pending |
+| UI-04 | Phase 2 | Complete |
+| UI-05 | Phase 2 | Complete |
 | UI-06 | Phase 3 | Pending |
 | UI-07 | Phase 4 | Pending |
-| UI-08 | Phase 2 | Pending |
+| UI-08 | Phase 2 | Complete |
 | PUI-01 | Phase 3 | Pending |
 | PUI-02 | Phase 3 | Pending |
 | PUI-03 | Phase 4 | Pending |

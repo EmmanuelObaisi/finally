@@ -1,10 +1,10 @@
 ---
 schema_version: 1
-open_count: 1
+open_count: 0
 waived_count: 0
-fixed_count: 0
+fixed_count: 1
 total_count: 1
-last_updated: 2026-10-08T13:54:46.418Z
+last_updated: 2026-10-08T14:10:01.649Z
 ---
 
 # Broken Windows Ledger
@@ -15,7 +15,7 @@ last_updated: 2026-10-08T13:54:46.418Z
 
 | id | phase | kind | file | line | description | status | reason | recorded_at | resolved_at |
 |----|-------|------|------|------|-------------|--------|--------|-------------|-------------|
-| 1 | 02 | stub | frontend/src/components/WatchlistRow.tsx | 31 | Sparkline cell is an empty placeholder div; plan 02-07 replaces it with the Lightweight Charts sparkline | open |  | 2026-10-08T13:54:46.418Z |  |
+| 1 | 02 | stub | frontend/src/components/WatchlistRow.tsx | 31 | Sparkline cell is an empty placeholder div; plan 02-07 replaces it with the Lightweight Charts sparkline | fixed |  | 2026-10-08T13:54:46.418Z | 2026-10-08T14:10:01.649Z |
 
 ````json
 [
@@ -26,10 +26,10 @@ last_updated: 2026-10-08T13:54:46.418Z
     "file": "frontend/src/components/WatchlistRow.tsx",
     "line": 31,
     "description": "Sparkline cell is an empty placeholder div; plan 02-07 replaces it with the Lightweight Charts sparkline",
-    "status": "open",
+    "status": "fixed",
     "reason": "",
     "recorded_at": "2026-10-08T13:54:46.418Z",
-    "resolved_at": null,
+    "resolved_at": "2026-10-08T14:10:01.649Z",
     "milestone": null
   }
 ]
