@@ -8,6 +8,8 @@ const NUM = "px-2 text-right font-normal";
 /** Positions come from the shared portfolio store; each row streams its own price. */
 export default function PositionsTable() {
   const portfolio = usePortfolioStore((s) => s.portfolio);
+  const failed = usePortfolioStore((s) => s.failed);
+  const load = usePortfolioStore((s) => s.load);
 
   return (
     <section data-testid="positions-panel" className="flex min-h-0 flex-1 flex-col bg-panel">
@@ -15,6 +17,9 @@ export default function PositionsTable() {
         <h2 className="text-heading font-semibold">Positions</h2>
       </div>
       <div className="min-h-0 flex-1 overflow-auto">
+        {!portfolio && !failed && <Skeleton />}
+        {!portfolio && failed && <ErrorState onRetry={load} />}
+        {portfolio && portfolio.positions.length === 0 && <EmptyState />}
         {portfolio && portfolio.positions.length > 0 && (
           <table data-testid="positions-table" className="w-full min-w-144 table-fixed">
             <thead className="sticky top-0 bg-panel">
@@ -40,5 +45,44 @@ export default function PositionsTable() {
         )}
       </div>
     </section>
+  );
+}
+
+function Skeleton() {
+  return (
+    <div data-testid="positions-loading" aria-busy="true" aria-label="Loading positions">
+      {Array.from({ length: 3 }, (_, i) => (
+        <div key={i} className="h-10 border-b border-border px-4">
+          <div className="h-2 rounded-sm bg-raised motion-safe:animate-pulse" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ErrorState({ onRetry }: { onRetry: () => void }) {
+  return (
+    <div data-testid="positions-error" className="p-6">
+      <h3 className="text-heading font-semibold">Positions unavailable</h3>
+      <p className="text-body">
+        The server did not return your portfolio. Check that FinAlly is running, then retry.
+      </p>
+      <button
+        data-testid="positions-retry"
+        onClick={onRetry}
+        className="mt-4 h-8 rounded-sm border border-border px-4 hover:bg-raised focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+      >
+        Retry
+      </button>
+    </div>
+  );
+}
+
+function EmptyState() {
+  return (
+    <div data-testid="positions-empty" className="p-6">
+      <h3 className="text-heading font-semibold">No open positions</h3>
+      <p className="text-body">Buy shares with the trade bar to open a position.</p>
+    </div>
   );
 }
