@@ -72,3 +72,24 @@ def test_is_wanted_covers_watchlist_and_positions(tmp_path):
             "INSERT INTO positions (user_id, ticker, quantity, avg_cost, updated_at) "
             "VALUES (?, 'PYPL', 1, 60, ?)", (USER_ID, now_iso()))
     assert is_wanted(path, "PYPL") is True
+
+
+def test_removing_a_held_ticker_keeps_it_streaming_and_priced(client, caplog):
+    source, cache = client.app.state.source, client.app.state.cache
+    buy(client, "AAPL", 2)
+    r = client.delete("/api/watchlist/AAPL")
+    assert r.status_code == 200
+    assert "AAPL" not in [i["ticker"] for i in r.json()["watchlist"]]
+    assert "AAPL" in source.get_tickers()
+    cache.update("AAPL", 110.0)
+    position = client.get("/api/portfolio").json()["positions"][0]
+    assert (position["ticker"], position["quantity"], position["current_price"]) == ("AAPL", 2.0, 110.0)
+    assert "No cached price" not in caplog.text
+
+
+def test_selling_a_removed_held_ticker_stops_streaming_it(client):
+    buy(client, "AAPL")
+    client.delete("/api/watchlist/AAPL")
+    sell(client, "AAPL")
+    assert "AAPL" not in client.app.state.source.get_tickers()
+    assert client.app.state.cache.get_price("AAPL") is None

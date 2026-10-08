@@ -105,3 +105,48 @@ async def test_concurrent_adds_leave_one_row(live_server):
         final = (await client.get("/api/watchlist")).json()["watchlist"]
     assert [r.status_code for r in responses] == [200] * 5
     assert [i["ticker"] for i in final].count("PYPL") == 1
+
+
+def delete(client, ticker):
+    return client.delete(f"/api/watchlist/{ticker}")
+
+
+def test_delete_removes_the_ticker_and_stops_streaming_it(client):
+    r = delete(client, "NFLX")
+    assert r.status_code == 200
+    assert [i["ticker"] for i in r.json()["watchlist"]] == list(DEFAULT_TICKERS[:9])
+    assert "NFLX" not in client.app.state.source.get_tickers()
+    assert client.app.state.cache.get_price("NFLX") is None
+
+
+def test_delete_accepts_a_lower_case_path(client):
+    assert delete(client, "aapl").status_code == 200
+    assert "AAPL" not in tickers(client)
+
+
+def test_delete_of_an_unknown_ticker_is_404(client):
+    r = delete(client, "ZZZZ")
+    assert (r.status_code, r.json()) == (404, {"error": "Ticker not in watchlist"})
+
+
+def test_deleting_twice_is_200_then_404_and_changes_no_money(client):
+    before = client.get("/api/portfolio").json()
+    assert delete(client, "NFLX").status_code == 200
+    second = delete(client, "NFLX")
+    assert (second.status_code, second.json()) == (404, {"error": "Ticker not in watchlist"})
+    after = client.get("/api/portfolio").json()
+    assert (after["cash"], after["positions"]) == (before["cash"], before["positions"])
+
+
+@pytest.mark.parametrize("method, path", [
+    ("put", "/api/watchlist"), ("get", "/api/watchlist/AAPL"), ("delete", "/api/watchlist")])
+def test_wrong_methods_on_watchlist_paths_are_404(client, method, path):
+    r = getattr(client, method)(path)
+    assert (r.status_code, r.json()) == (404, {"error": "Not found"})
+
+
+async def test_concurrent_deletes_give_one_200_and_four_404(live_server):
+    async with httpx.AsyncClient(base_url=live_server.url) as client:
+        responses = await asyncio.gather(*[client.delete("/api/watchlist/NFLX") for _ in range(5)])
+    assert sorted(r.status_code for r in responses) == [200, 404, 404, 404, 404]
+    assert all(r.json() == {"error": "Ticker not in watchlist"} for r in responses if r.status_code == 404)
