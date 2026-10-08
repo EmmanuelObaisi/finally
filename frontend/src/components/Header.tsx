@@ -1,32 +1,26 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { getPortfolio } from "../lib/api";
+import { useEffect, useRef } from "react";
 import { fmtMoney, MISSING } from "../lib/format";
+import { usePortfolioStore } from "../lib/portfolioStore";
 import { useMarketStore } from "../lib/store";
 import { liveTotals } from "../lib/totals";
-import type { Portfolio } from "../lib/types";
 import ConnectionDot from "./ConnectionDot";
 
 /** Wordmark, live total value and cash from GET /api/portfolio, and the connection dot. */
 export default function Header() {
-  const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
+  const portfolio = usePortfolioStore((s) => s.portfolio);
+  const load = usePortfolioStore((s) => s.load);
   const prices = useMarketStore((s) => s.prices);
   const status = useMarketStore((s) => s.status);
 
-  function load() {
-    getPortfolio()
-      .then(setPortfolio)
-      .catch(() => {});
-  }
-
-  useEffect(load, []);
+  useEffect(load, [load]);
 
   const previous = useRef(status);
   useEffect(() => {
     if (status === "connected" && previous.current !== "connected") load();
     previous.current = status;
-  }, [status]);
+  }, [status, load]);
 
   const totals = portfolio ? liveTotals(portfolio, prices) : null;
   const total = fmtMoney(totals?.total);

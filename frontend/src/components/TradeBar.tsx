@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { postTrade } from "../lib/api";
 import { fmtMoney, fmtQty } from "../lib/format";
+import { usePortfolioStore } from "../lib/portfolioStore";
 import FormMessage, { type MessageKind } from "./FormMessage";
 
 const FOCUS = " focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
@@ -28,7 +29,8 @@ export default function TradeBar() {
     setPending(true);
     setMessage({ kind: "pending", text: "Placing order..." });
     try {
-      const { trade } = await postTrade(ticker.trim(), Number(quantity), side);
+      const { trade, portfolio } = await postTrade(ticker.trim(), Number(quantity), side);
+      usePortfolioStore.getState().applyTrade(portfolio);
       setQuantity("");
       const verb = trade.side === "buy" ? "Bought" : "Sold";
       setMessage({
