@@ -44,4 +44,14 @@ export type Portfolio = {
   positions: Position[];
 };
 
+/** POST /api/portfolio/trade fill. */
+export type Trade = {
+  id: string;
+  ticker: string;
+  side: "buy" | "sell";
+  quantity: number;
+  price: number;
+  executed_at: string;
+};
+
 export type ConnectionStatus = "connected" | "reconnecting" | "disconnected";
