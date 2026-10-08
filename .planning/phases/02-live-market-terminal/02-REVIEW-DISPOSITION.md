@@ -9,7 +9,7 @@ findings:
     title: "After a transient startup error on a free plan, prices stay empty for 15 minutes"
   - id: IN-03
     severity: info
-    disposition: open
+    disposition: fixed
     title: "Interface docs say `remove_ticker` evicts from the cache unconditionally (carried over, unchanged)"
   - id: IN-04
     severity: info
@@ -63,7 +63,7 @@ findings:
     severity: info
     disposition: open
     title: "Stale REST price shown for a ticker that has left the live frame"
-open: 8
+open: 7
 total: 15
 recorded: 2026-10-08T15:19:37.978Z
 ---
@@ -73,7 +73,7 @@ recorded: 2026-10-08T15:19:37.978Z
 | Finding | Severity | Disposition | Source |
 |---------|----------|-------------|--------|
 | WR-07 | warning | fixed | 02-REVIEW-FIX.md |
-| IN-03 | info | open | - |
+| IN-03 | info | fixed | 03-02 Task 2 (DELETE goes through tracking.sync_ticker) |
 | IN-04 | info | open | - |
 | IN-06 | info | open | - |
 | IN-07 | info | open | - |

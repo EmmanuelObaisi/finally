@@ -20,7 +20,11 @@ class MarketDataSource(ABC):
 
     @abstractmethod
     async def remove_ticker(self, ticker: str) -> None:
-        """Stop tracking a ticker and drop it from the cache. No-op if not tracked."""
+        """Stop tracking a ticker and drop it from the cache. No-op if not tracked.
+
+        App code calls this only through app.tracking.sync_ticker, which keeps watched or held
+        tickers tracked.
+        """
 
     @abstractmethod
     def get_tickers(self) -> list[str]:

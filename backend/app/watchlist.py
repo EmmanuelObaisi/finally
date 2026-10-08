@@ -5,7 +5,7 @@ from fastapi import APIRouter, Request
 from pydantic import BaseModel
 
 from .db import USER_ID, connect, now_iso
-from .errors import DomainError
+from .errors import DomainError, NotFoundError
 from .tracking import normalize_ticker, sync_ticker
 
 PRICE_FIELDS = ("price", "previous_price", "timestamp", "change", "change_percent",
@@ -83,3 +83,28 @@ async def add_to_watchlist(state, raw_ticker: str) -> list[dict]:
 async def post_watchlist(body: WatchlistRequest, request: Request) -> dict:
     """Add a ticker to the watchlist and return the updated list."""
     return {"watchlist": await add_to_watchlist(request.app.state, body.ticker)}
+
+
+def delete_and_read(state, ticker: str) -> list[dict]:
+    """Delete the watchlist row (NotFoundError if absent) and return the watchlist."""
+    with connect(state.settings.db_path) as conn:
+        cur = conn.execute(
+            "DELETE FROM watchlist WHERE user_id = ? AND ticker = ?", (USER_ID, ticker)
+        )
+        if cur.rowcount == 0:
+            raise NotFoundError("Ticker not in watchlist")
+        return build_watchlist(conn, state.cache)
+
+
+async def remove_from_watchlist(state, raw_ticker: str) -> list[dict]:
+    """Remove a ticker; it keeps streaming while a position is held. Shared with Phase 5 chat."""
+    ticker = raw_ticker.upper() if raw_ticker.isascii() else raw_ticker
+    items = await asyncio.to_thread(delete_and_read, state, ticker)
+    await sync_ticker(state, ticker)
+    return items
+
+
+@router.delete("/api/watchlist/{ticker}")
+async def delete_watchlist_ticker(ticker: str, request: Request) -> dict:
+    """Remove a ticker from the watchlist and return the updated list."""
+    return {"watchlist": await remove_from_watchlist(request.app.state, ticker)}
