@@ -17,7 +17,7 @@ FinAlly is built as a sequence of vertical slices. Each phase leaves the app run
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Walking Skeleton** - Clean repo, backend and frontend skeletons, frozen contract, and a Docker build proven on this machine
+- [x] **Phase 1: Walking Skeleton** - Clean repo, backend and frontend skeletons, frozen contract, and a Docker build proven on this machine (completed 2026-10-08)
 - [ ] **Phase 2: Live Market Terminal** - Open the app and watch the 10 default tickers stream with flashes, sparklines and a live header
 - [ ] **Phase 3: Trading & Watchlist Management** - Buy and sell shares and curate the watchlist, with positions, prices and streams kept consistent
 - [ ] **Phase 4: Charts & Portfolio Visualizations** - Main ticker chart, P&L treemap heatmap and portfolio value history chart
@@ -39,7 +39,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. `docker build` succeeds on this machine with TLS verification left on, and the running container serves the placeholder page and `/api/health` on port 8000 with one worker. A host-run Playwright smoke check loads that page, or, if App Control blocks host Playwright, the container fallback is chosen and recorded
   5. One API/SSE contract doc in `planning/` defines every endpoint's request/response shape, field names, the `{"error": "..."}` format, status codes, the SSE payload (`change_percent` from the session-start price), and `GET /api/chat/history`. Backend and frontend both reference it
 
-**Plans**: 8/8 plans executed
+**Plans**: 8/8 plans complete
 Plans:
 **Wave 1**
 - [x] 01-01-PLAN.md — Repo hygiene: untrack build artifacts, fix .gitignore lib/ block, .gitattributes LF, .env.example, db/.gitkeep (W1)
@@ -145,7 +145,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6. Phases 4 and 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Walking Skeleton | 8/8 | In Progress | - |
+| 1. Walking Skeleton | 8/8 | Complete    | 2026-10-08 |
 | 2. Live Market Terminal | 0/TBD | Not started | - |
 | 3. Trading & Watchlist Management | 0/TBD | Not started | - |
 | 4. Charts & Portfolio Visualizations | 0/TBD | Not started | - |

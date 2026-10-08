@@ -9,12 +9,12 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 
 ### Foundation
 
-- [ ] **FND-01**: Committed build artifacts (`backend/static/`, `test/node_modules/`) are removed from git and gitignored; `.gitattributes` forces LF for `.sh`, Dockerfile and env files
+- [x] **FND-01**: Committed build artifacts (`backend/static/`, `test/node_modules/`) are removed from git and gitignored; `.gitattributes` forces LF for `.sh`, Dockerfile and env files
 - [x] **FND-02**: Backend is a uv project in `backend/` (FastAPI app factory, code under `backend/app/`) whose test suite runs with `uv run python -m pytest`
 - [x] **FND-03**: Frontend is a Next.js TypeScript project in `frontend/` that builds to a static export (`output: 'export'`) with Tailwind
-- [ ] **FND-04**: The API/SSE contract (request/response shapes, field names, error format, status codes) is written down in `planning/` and is the single reference for backend and frontend
+- [x] **FND-04**: The API/SSE contract (request/response shapes, field names, error format, status codes) is written down in `planning/` and is the single reference for backend and frontend
 - [x] **FND-05**: Backend reads config from env: `OPENROUTER_API_KEY`, `MASSIVE_API_KEY`, `LLM_MOCK`, `DB_PATH`, `SIM_SEED`, `SIM_EVENT_PROBABILITY`; local dev loads the project-root `.env`
-- [ ] **FND-06**: `README.md` and `CLAUDE.md` status lines reflect the actual state of the code
+- [x] **FND-06**: `README.md` and `CLAUDE.md` status lines reflect the actual state of the code
 
 ### Market Data
 
@@ -136,12 +136,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FND-01 | Phase 1 | Gaps Found |
+| FND-01 | Phase 1 | Complete |
 | FND-02 | Phase 1 | Complete |
 | FND-03 | Phase 1 | Complete |
-| FND-04 | Phase 1 | Gaps Found |
+| FND-04 | Phase 1 | Complete |
 | FND-05 | Phase 1 | Complete |
-| FND-06 | Phase 1 | Gaps Found |
+| FND-06 | Phase 1 | Complete |
 | MKT-01 | Phase 2 | Pending |
 | MKT-02 | Phase 2 | Pending |
 | MKT-03 | Phase 2 | Pending |
