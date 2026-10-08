@@ -64,7 +64,7 @@ status: partial
 
 **Not reproduced:** the reviewer's premise (Massive hits `CERTIFICATE_VERIFY_FAILED` here) did not reproduce. A real `RESTClient(api_key="bogus").get_grouped_daily_aggs(...)` call returned the API's `Unknown API Key` response both without and with the injection, so TLS verified in both cases in this shell (`NODE_EXTRA_CA_CERTS` is set, no other cert env). The change follows the project's documented requirement and does not break the path (verified with the same call after injection). Marked for human verification as a precaution because the benefit depends on the machine's trust setup.
 
-**Reverted:** commit 5b3431b was reverted in 2f110c8 at the user's request. The predicted failure did not reproduce and phase research (02-RESEARCH.md) found certifi reaches api.massive.com on this machine. Add truststore only if CERTIFICATE_VERIFY_FAILED actually appears.
+**Reverted:** commit 5b3431b was reverted in 32a4eef at the user's request. The predicted failure did not reproduce and phase research (02-RESEARCH.md) found certifi reaches api.massive.com on this machine. Add truststore only if CERTIFICATE_VERIFY_FAILED actually appears.
 
 Info findings (IN-01 to IN-07) were out of scope for this run.
 
