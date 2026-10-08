@@ -1,19 +1,19 @@
 ---
 gsd_state_version: "1.0"
-current_phase: 02
-current_phase_name: Live Market Terminal
-status: verifying
-stopped_at: Completed 02-07-PLAN.md
-last_updated: "2026-10-08T14:11:04.291Z"
+current_phase: 3
+current_phase_name: Trading & Watchlist Management
+status: planning
+stopped_at: Phase 02 complete, ready to plan Phase 3
+last_updated: "2026-10-08T15:12:17.129Z"
 last_activity: 2026-10-08
-last_activity_desc: Phase 02 execution started
-state_head: 5323c9199473be717414f8489c0fc189c0efc933
+last_activity_desc: Phase 02 complete, transitioned to Phase 3
+state_head: 98ae1c7fc96a436df4b6b06cbec5121d5923502f
 progress:
   total_phases: 6
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 15
   completed_plans: 15
-  percent: 17
+  percent: 33
 ---
 
 # Project State
@@ -23,21 +23,21 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-08)
 
 **Core value:** One command launches a live, data-dense trading terminal where prices stream, trades fill instantly, and the AI copilot can act on the portfolio — and every specified unit and E2E scenario passes to prove it.
-**Current focus:** Phase 02 — Live Market Terminal
+**Current focus:** Phase 3 — Trading & Watchlist Management
 
 ## Current Position
 
-Phase: 02 (Live Market Terminal) — EXECUTING
-Plan: 7 of 7
-Status: Phase complete — ready for verification
-Last activity: 2026-10-08 — Phase 02 execution started
+Phase: 3 — Trading & Watchlist Management
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-10-08 — Phase 02 complete, transitioned to Phase 3
 
-Progress: [██░░░░░░░░] 17%
+Progress: [███░░░░░░░] 33%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
+- Total plans completed: 15
 - Average duration: -
 - Total execution time: 0.0 hours
 
@@ -46,6 +46,7 @@ Progress: [██░░░░░░░░] 17%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01 | 8 | - | - |
+| 02 | 7 | - | - |
 
 **Recent Trend:**
 - Last 5 plans: -
@@ -120,10 +121,10 @@ None yet.
 
 ### Blockers/Concerns
 
-- [Phase 2]: Decide 405 vs documented 404 for a wrong method on a real route (01-REVIEW WR-01) and pin it with a test before adding routes
-- [Phase 2]: Run `/gsd-ui-phase 2` for a UI-SPEC before any Phase 2 UI work (Phase 1 UI safety-gate override)
-- [Phase 2]: 01-UI-REVIEW suggests showing error detail beyond "down"; that conflicts with accepted risk AR-04 (render fixed text only), so keep fixed strings
-- [Phase 2]: Largest phase (21 requirements). Split along market engine/SSE vs terminal UI at planning time
+- [Phase 3]: `remove_ticker` evicts the price for held tickers (02-REVIEW IN-03); the DELETE /api/watchlist handler must keep tickers in watchlist ∪ positions tracked
+- [Phase 3]: Header and WatchlistPanel have no stale-response guard (02-REVIEW IN-01); matters once trades refetch the portfolio
+- [Phase 2 carry-over]: WR-07 open: free-plan Massive retries after 900 s when the Grouped Daily fetch fails at startup; fix spec in 02-REVIEW.md (60 s retry while no closes). IN-08: bad-key detection relies on the "Unknown API Key" message text
+- [Phase 6]: A `.env` copied from `.env.example` passes an empty `DB_PATH` through `docker run --env-file` (PKG-02)
 - [Phase 5]: Cerebras strict-schema limits and OpenRouter provider pinning need a live smoke call
 
 ## Deferred Items
@@ -136,6 +137,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-08T14:11:04.212Z
-Stopped at: Completed 02-07-PLAN.md
+Last session: 2026-10-08T15:13:10.757Z
+Stopped at: Phase 02 complete, ready to plan Phase 3
 Resume file: None

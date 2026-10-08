@@ -18,7 +18,7 @@ FinAlly is built as a sequence of vertical slices. Each phase leaves the app run
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Walking Skeleton** - Clean repo, backend and frontend skeletons, frozen contract, and a Docker build proven on this machine (completed 2026-10-08)
-- [ ] **Phase 2: Live Market Terminal** - Open the app and watch the 10 default tickers stream with flashes, sparklines and a live header
+- [x] **Phase 2: Live Market Terminal** - Open the app and watch the 10 default tickers stream with flashes, sparklines and a live header (completed 2026-10-08)
 - [ ] **Phase 3: Trading & Watchlist Management** - Buy and sell shares and curate the watchlist, with positions, prices and streams kept consistent
 - [ ] **Phase 4: Charts & Portfolio Visualizations** - Main ticker chart, P&L treemap heatmap and portfolio value history chart
 - [ ] **Phase 5: AI Trading Copilot** - Chat with FinAlly, which reads the portfolio and executes trades and watchlist changes
@@ -72,7 +72,7 @@ Plans:
   4. With `MASSIVE_API_KEY` set, the same UI is fed by the Massive REST poller with no frontend change. With `SIM_SEED` set, simulator output is reproducible, and a non-seed ticker always starts at the same ticker-derived price across restarts
   5. Stopping the server with browsers connected exits promptly (no SSE hang), and the market data unit tests (valid prices, GBM math, Massive parsing, interface conformance) pass
 
-**Plans**: 7/7 plans executed
+**Plans**: 7/7 plans complete
 Plans:
 **Wave 1**
 - [x] 02-01-PLAN.md — Package gate (all Phase 2 PyPI/npm packages), market package + native SSE stream tracer, cache/frame/shutdown tests, Playwright launch flags (W1, checkpoint)
@@ -164,7 +164,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6. Phases 4 and 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Walking Skeleton | 8/8 | Complete    | 2026-10-08 |
-| 2. Live Market Terminal | 7/7 | In Progress | - |
+| 2. Live Market Terminal | 7/7 | Complete    | 2026-10-08 |
 | 3. Trading & Watchlist Management | 0/TBD | Not started | - |
 | 4. Charts & Portfolio Visualizations | 0/TBD | Not started | - |
 | 5. AI Trading Copilot | 0/TBD | Not started | - |
