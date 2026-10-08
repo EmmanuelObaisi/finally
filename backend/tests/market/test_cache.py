@@ -61,3 +61,10 @@ def test_get_all_returns_a_copy():
 def test_to_dict_has_exactly_the_eight_keys():
     update = PriceCache().update("AAPL", 190.0)
     assert set(update.to_dict()) == EIGHT_KEYS
+
+
+def test_a_price_that_rounds_to_zero_is_ignored():
+    cache = PriceCache()
+    assert cache.update("PENNY", 0.004) is None
+    assert cache.get("PENNY") is None
+    assert cache.version == 0

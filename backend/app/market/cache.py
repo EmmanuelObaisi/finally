@@ -19,9 +19,14 @@ class PriceCache:
         ticker: str,
         price: float,
         timestamp: float | None = None,
-    ) -> PriceUpdate:
-        """Record a new price. The first price seen becomes the session start price."""
+    ) -> PriceUpdate | None:
+        """Record a new price. The first price seen becomes the session start price.
+
+        A price that rounds to zero is ignored: it would make change_percent divide by zero.
+        """
         price = round(price, 2)
+        if price <= 0:
+            return None
         with self._lock:
             prev = self._prices.get(ticker)
             update = PriceUpdate(
