@@ -1,6 +1,6 @@
 import { act, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { initialMarketState, useMarketStore } from "../lib/store";
+import { initialMarketState, SPARK_CAP, useMarketStore } from "../lib/store";
 import type { PriceFrame } from "../lib/types";
 
 const lwc = vi.hoisted(() => {
@@ -85,12 +85,19 @@ describe("Sparkline", () => {
     ]);
   });
 
-  it("updates with the newest point and refits after a new frame", () => {
+  it("re-seeds the series from the capped buffer and refits after a new frame", () => {
     render(<Sparkline ticker="AAPL" />);
     lwc.fitContent.mockClear();
     send(12, 102.5);
-    expect(lwc.update).toHaveBeenLastCalledWith({ time: 102, value: 12 });
+    expect(lwc.setData).toHaveBeenLastCalledWith([{ time: 102, value: 12 }]);
     expect(lwc.fitContent).toHaveBeenCalled();
+  });
+
+  it("never holds more points than the store cap", () => {
+    render(<Sparkline ticker="AAPL" />);
+    for (let i = 0; i < SPARK_CAP + 5; i++) send(10 + i, 100 + i);
+    const last = lwc.setData.mock.calls.at(-1)![0] as unknown[];
+    expect(last).toHaveLength(SPARK_CAP);
   });
 
   it("removes the chart on unmount", () => {

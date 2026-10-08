@@ -53,9 +53,8 @@ export default function Sparkline({ ticker }: { ticker: string }) {
   }, [ticker]);
 
   useEffect(() => {
-    const newest = buffer?.at(-1);
-    if (!newest || !series.current) return;
-    series.current.update({ time: newest.time as UTCTimestamp, value: newest.value });
+    if (!buffer || !series.current) return;
+    series.current.setData(toData(buffer));
     fit.current();
   }, [buffer]);
 
