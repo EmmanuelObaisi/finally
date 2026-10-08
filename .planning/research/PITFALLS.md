@@ -79,7 +79,7 @@ Mistakes that cause rewrites, silent wrong money numbers, or a "works on my mach
 **Consequences:** Slow/ugly stop scripts ("idempotent stop" scripts take 10 s), occasionally half-written state, annoying dev loop, flaky E2E teardown.
 **Prevention:**
 - Start uvicorn with `--timeout-graceful-shutdown 2` (or equivalent in code) in the Dockerfile CMD and dev command.
-- In `lifespan`, create an `asyncio.Event` `shutdown` set after `yield`; the SSE generator loop checks `shutdown.is_set()` as well as `is_disconnected()` and returns.
+- ~~In `lifespan`, create an `asyncio.Event` `shutdown` set after `yield`; the SSE generator loop checks it and returns.~~ Disproved (02-RESEARCH.md, Pattern 2): uvicorn waits for open connections before lifespan shutdown runs, so the event is set too late and the stream never ends. `--timeout-graceful-shutdown` is the working fix; do not add the event machinery.
 - Keep the generator trivially cancellable: wrap nothing in `except Exception` that would swallow `asyncio.CancelledError` (catching bare `Exception` does not catch it in 3.8+, but a bare `except:` does).
 - Add `stop_grace_period: 5s` in compose so a slow stop is visible, not silent.
 **Warning signs:** `docker stop` takes ~10 s; uvicorn log line "Waiting for connections to close"; "ASGI callable returned without completing response".

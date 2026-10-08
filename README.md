@@ -4,14 +4,11 @@ An AI-powered trading workstation: live market data, a simulated $10k portfolio,
 
 ## Status
 
-Phase 1 (walking skeleton) is in place:
-- FastAPI app factory with `GET /api/health` and a JSON error envelope
-- Next.js static-export placeholder page, served same-origin by FastAPI
-- Three-stage Docker image on port 8000 with one uvicorn worker
-- Host Playwright smoke test (`test/`)
-- Frozen REST/SSE contract in [planning/API_CONTRACT.md](planning/API_CONTRACT.md)
+Phase 1 (walking skeleton): FastAPI app factory with `GET /api/health` and a JSON error envelope, a three-stage Docker image on port 8000, host Playwright tests (`test/`), and the frozen REST/SSE contract in [planning/API_CONTRACT.md](planning/API_CONTRACT.md).
 
-Not built yet: market data, database, trading, charts, AI chat, and compose with start/stop scripts. See `.planning/ROADMAP.md` for the later phases and [planning/PLAN.md](planning/PLAN.md) for the full specification.
+Phase 2 (live market terminal): market simulator (correlated GBM, events, `SIM_SEED`) with an optional Massive REST poller, SQLite created and seeded on startup, `GET /api/stream/prices` (SSE), `GET /api/watchlist`, `GET /api/portfolio`, and the terminal UI (watchlist with price flash and sparklines, header totals, connection dot).
+
+Not built yet: trading and watchlist add/remove, main chart, heatmap and P&L chart, AI chat, and compose with start/stop scripts. See `.planning/ROADMAP.md` and [planning/PLAN.md](planning/PLAN.md).
 
 ## Architecture
 
@@ -31,16 +28,17 @@ Backend:
 cd backend
 uv sync --extra dev
 uv run python -m pytest
-uv run uvicorn --factory app.main:create_app
+uv run uvicorn --factory app.main:create_app --timeout-graceful-shutdown 2
 ```
 
-Real environment variables beat `.env`, so run mock mode as `LLM_MOCK=true uv run uvicorn --factory app.main:create_app`.
+Without `--timeout-graceful-shutdown`, an open browser stream blocks shutdown. Real environment variables beat `.env`, so run mock mode as `LLM_MOCK=true uv run uvicorn --factory app.main:create_app --timeout-graceful-shutdown 2`.
 
 Frontend (static export to `frontend/out`):
 
 ```bash
 cd frontend
 npm ci
+npm test
 npm run build
 ```
 

@@ -36,7 +36,7 @@
 |---------|---------|---------|-------|
 | pytest | 9.1.1 | Unit tests | Run as `uv run python -m pytest` (App Control blocks the bare `pytest.exe` on this machine) |
 | pytest-asyncio | 1.4.0 | Async tests (cache, simulator, SSE) | Set `asyncio_mode = "auto"` in `pyproject.toml` |
-| httpx | 0.28.1 | Test client | `httpx.ASGITransport` streams SSE incrementally in-process; `fastapi.testclient.TestClient` is fine for non-streaming routes |
+| httpx | 0.28.1 | Test client | `httpx.ASGITransport` does NOT stream an infinite SSE response (02-RESEARCH.md); SSE tests use a real in-process uvicorn server; `fastapi.testclient.TestClient` is fine for non-streaming routes |
 | ruff | 0.16.10 | Lint/format (optional) | Matches the "short modules, clear names" style; one tool, no config sprawl |
 
 ### Frontend core
@@ -317,7 +317,7 @@ All in the session scratchpad, not in the repo:
 1. Next 16.4.0 + React 19.3.0 + TS 7.0.2 + Tailwind 4.3.3 + lightweight-charts 5.2.1: `next build` with `output: 'export'` succeeded, produced `out/`, custom `@theme` colors present in the CSS, a `"use client"` chart component compiled (after casting `time` to `UTCTimestamp`).
 2. `next dev` with a dev-only rewrite proxied `/api/health` and an infinite SSE stream (one event per second) incrementally to a uvicorn server.
 3. Vitest 5.0.3 + RTL + jest-dom + jsdom 30 + plugin-react 6: a d3-hierarchy treemap component test passed.
-4. FastAPI 0.142.2: native `EventSourceResponse` over `httpx.ASGITransport` produced the expected `data:`/`id:` frames.
+4. FastAPI 0.142.2: native `EventSourceResponse` produced the expected `data:`/`id:` frames. Correction (02-RESEARCH.md): this was not reproducible over `httpx.ASGITransport` for an infinite stream; SSE tests use a real in-process uvicorn server.
 5. LiteLLM 1.104.0: Pydantic `response_format` + `reasoning_effort` + `extra_body` call shape accepted for the OpenRouter model with `mock_response`; reply parsed by `model_validate_json`. A real inference call was NOT made (no API key used).
 
 ## Sources
