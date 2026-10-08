@@ -142,7 +142,7 @@ describe("WatchlistPanel rows", () => {
     render(<WatchlistPanel />);
     const row = await screen.findByTestId("watchlist-row-AAPL");
     expect(screen.getAllByTestId(/^watchlist-row-/)).toHaveLength(1);
-    expect(row.querySelectorAll("td")).toHaveLength(4);
+    expect(row.querySelectorAll("td")).toHaveLength(5);
     expect(screen.getByTestId("sparkline-AAPL")).toBeInTheDocument();
   });
 
@@ -185,5 +185,189 @@ describe("WatchlistPanel reconnect", () => {
     act(() => useMarketStore.getState().setStatus("connected"));
     expect(screen.getByTestId("price-AAPL")).not.toHaveClass("opacity-60");
     expect(screen.getByTestId("change-AAPL")).not.toHaveClass("opacity-60");
+  });
+});
+
+function reply(items: WatchlistItem[]) {
+  return Promise.resolve(ok(items));
+}
+
+function fail(status: number, error: string) {
+  return Promise.resolve({ ok: false, status, json: async () => ({ error }) });
+}
+
+async function renderReady(...extra: unknown[]) {
+  const fetchFn = stubFetch(reply([item("AAPL", 190), item("GOOGL", 175)]), ...extra);
+  render(<WatchlistPanel />);
+  await screen.findByTestId("watchlist-row-AAPL");
+  return fetchFn;
+}
+
+function addTicker(text: string) {
+  fireEvent.change(screen.getByTestId("watchlist-add-input"), { target: { value: text } });
+  fireEvent.click(screen.getByTestId("watchlist-add-button"));
+}
+
+function message() {
+  return screen.getByTestId("watchlist-message");
+}
+
+describe("WatchlistPanel add block states", () => {
+  it("disables the input and Add while loading", () => {
+    stubFetch(new Promise(() => {}));
+    render(<WatchlistPanel />);
+    expect(screen.getByTestId("watchlist-add-input")).toBeDisabled();
+    expect(screen.getByTestId("watchlist-add-button")).toBeDisabled();
+  });
+
+  it("disables the input and Add in the error state", async () => {
+    stubFetch(Promise.reject(new Error("down")));
+    render(<WatchlistPanel />);
+    await screen.findByTestId("watchlist-error");
+    expect(screen.getByTestId("watchlist-add-input")).toBeDisabled();
+    expect(screen.getByTestId("watchlist-add-button")).toBeDisabled();
+  });
+
+  it("is enabled in the ready state", async () => {
+    await renderReady();
+    expect(screen.getByTestId("watchlist-add-input")).toBeEnabled();
+    expect(screen.getByTestId("watchlist-add-button")).toBeEnabled();
+  });
+});
+
+describe("WatchlistPanel add", () => {
+  it.each(["", "   "])("rejects %j without a request", async (text) => {
+    const fetchFn = await renderReady();
+    addTicker(text);
+    expect(message()).toHaveTextContent("Enter a ticker symbol");
+    expect(message()).toHaveAttribute("data-kind", "error");
+    expect(fetchFn).toHaveBeenCalledTimes(1);
+  });
+
+  it("locks every control while the add is in flight", async () => {
+    await renderReady(new Promise(() => {}));
+    addTicker("pypl");
+    expect(message()).toHaveTextContent("Adding PYPL...");
+    expect(message()).toHaveAttribute("data-kind", "pending");
+    expect(screen.getByTestId("watchlist-add-input")).toBeDisabled();
+    expect(screen.getByTestId("watchlist-add-button")).toBeDisabled();
+    for (const b of screen.getAllByTestId(/^watchlist-remove-/)) expect(b).toBeDisabled();
+  });
+
+  it("renders the response list without the skeleton, clears the input and refocuses it", async () => {
+    const fetchFn = await renderReady(reply([item("AAPL", 190), item("GOOGL", 175), item("PYPL", 60)]));
+    addTicker("  pypl ");
+    expect(screen.queryByTestId("watchlist-loading")).not.toBeInTheDocument();
+    await screen.findByTestId("watchlist-row-PYPL");
+    expect(screen.queryByTestId("watchlist-loading")).not.toBeInTheDocument();
+    const input = screen.getByTestId("watchlist-add-input");
+    expect(input).toHaveValue("");
+    expect(message()).toHaveAttribute("data-kind", "idle");
+    expect(message()).toHaveTextContent("");
+    await waitFor(() => expect(input).toHaveFocus());
+    expect(fetchFn).toHaveBeenCalledTimes(2);
+    const [url, init] = fetchFn.mock.calls[1];
+    expect(url).toBe("/api/watchlist");
+    expect(init).toMatchObject({ method: "POST", body: JSON.stringify({ ticker: "pypl" }) });
+  });
+
+  it("treats a re-add of an existing ticker as a silent success", async () => {
+    await renderReady(reply([item("AAPL", 190), item("GOOGL", 175)]));
+    addTicker("AAPL");
+    await waitFor(() => expect(screen.getByTestId("watchlist-add-input")).toHaveValue(""));
+    expect(screen.getAllByTestId(/^watchlist-row-/)).toHaveLength(2);
+    expect(message()).toHaveAttribute("data-kind", "idle");
+    expect(message()).toHaveTextContent("");
+  });
+
+  it.each([
+    ["Unknown ticker", "ZZZZ"],
+    ["Invalid ticker: PYPL$", "PYPL$"],
+  ])("shows the server text %j and keeps the input", async (error, typed) => {
+    await renderReady(fail(400, error));
+    addTicker(typed);
+    await waitFor(() => expect(message()).toHaveAttribute("data-kind", "error"));
+    expect(message()).toHaveTextContent(error);
+    expect(message()).toHaveClass("text-down");
+    expect(screen.getByTestId("watchlist-add-input")).toHaveValue(typed);
+    expect(screen.getAllByTestId(/^watchlist-row-/)).toHaveLength(2);
+  });
+
+  it("puts a long server error in the title and truncates the line", async () => {
+    const long = "Invalid ticker: " + "X".repeat(80);
+    await renderReady(fail(400, long));
+    addTicker("X".repeat(80));
+    await waitFor(() => expect(message()).toHaveAttribute("title", long));
+    expect(message()).toHaveClass("truncate");
+  });
+
+  it("clears the message when the input is edited", async () => {
+    await renderReady(fail(400, "Unknown ticker"));
+    addTicker("ZZZZ");
+    await waitFor(() => expect(message()).toHaveAttribute("data-kind", "error"));
+    fireEvent.change(screen.getByTestId("watchlist-add-input"), { target: { value: "ZZZ" } });
+    expect(message()).toHaveAttribute("data-kind", "idle");
+  });
+});
+
+describe("WatchlistPanel remove", () => {
+  it("sends DELETE, locks while pending and drops the row on success", async () => {
+    let finish: (v: unknown) => void = () => {};
+    const pending = new Promise((resolve) => (finish = resolve));
+    const fetchFn = await renderReady(pending);
+    fireEvent.click(screen.getByTestId("watchlist-remove-AAPL"));
+    expect(message()).toHaveTextContent("Removing AAPL...");
+    expect(message()).toHaveAttribute("data-kind", "pending");
+    expect(screen.getByTestId("watchlist-add-button")).toBeDisabled();
+    for (const b of screen.getAllByTestId(/^watchlist-remove-/)) expect(b).toBeDisabled();
+    const [url, init] = fetchFn.mock.calls[1];
+    expect(url).toBe("/api/watchlist/AAPL");
+    expect(init).toMatchObject({ method: "DELETE" });
+    await act(async () => finish(ok([item("GOOGL", 175)])));
+    await waitFor(() => expect(screen.queryByTestId("watchlist-row-AAPL")).not.toBeInTheDocument());
+    expect(screen.getByTestId("watchlist-row-GOOGL")).toBeInTheDocument();
+    expect(message()).toHaveAttribute("data-kind", "idle");
+    expect(screen.queryByTestId("watchlist-loading")).not.toBeInTheDocument();
+  });
+
+  it("shows the server text on a 404 and keeps the row", async () => {
+    await renderReady(fail(404, "Ticker not in watchlist"));
+    fireEvent.click(screen.getByTestId("watchlist-remove-AAPL"));
+    await waitFor(() => expect(message()).toHaveTextContent("Ticker not in watchlist"));
+    expect(message()).toHaveAttribute("data-kind", "error");
+    expect(screen.getByTestId("watchlist-row-AAPL")).toBeInTheDocument();
+    expect(screen.getByTestId("watchlist-remove-AAPL")).toBeEnabled();
+  });
+
+  it("shows the empty state with a usable add block after removing the last ticker", async () => {
+    stubFetch(reply([item("AAPL", 190)]), reply([]));
+    render(<WatchlistPanel />);
+    fireEvent.click(await screen.findByTestId("watchlist-remove-AAPL"));
+    expect(await screen.findByTestId("watchlist-empty")).toBeInTheDocument();
+    expect(screen.getByTestId("watchlist-add-input")).toBeEnabled();
+    expect(screen.getByTestId("watchlist-add-button")).toBeEnabled();
+  });
+
+  it("gives each row five cells and an accessible remove button", async () => {
+    stubFetch(reply([item("AAPL", 190)]));
+    render(<WatchlistPanel />);
+    const row = await screen.findByTestId("watchlist-row-AAPL");
+    expect(row.querySelectorAll("td")).toHaveLength(5);
+    const button = screen.getByTestId("watchlist-remove-AAPL");
+    expect(button).toHaveAttribute("aria-label", "Remove AAPL");
+    expect(button).toHaveAttribute("title", "Remove AAPL");
+    expect(button).toHaveAttribute("type", "button");
+    expect(button.querySelector("span")).toHaveAttribute("aria-hidden", "true");
+    expect(button).toHaveTextContent("×");
+    expect(screen.getByText("Remove", { selector: "th span" })).toHaveClass("sr-only");
+  });
+
+  it("keeps -- in the price and change cells of an unpriced row that has a remove button", async () => {
+    stubFetch(reply([item("ZZZZ")]));
+    render(<WatchlistPanel />);
+    await screen.findByTestId("watchlist-row-ZZZZ");
+    expect(screen.getByTestId("price-ZZZZ")).toHaveTextContent("--");
+    expect(screen.getByTestId("change-ZZZZ")).toHaveTextContent("--");
+    expect(screen.getByTestId("watchlist-remove-ZZZZ")).toBeInTheDocument();
   });
 });
