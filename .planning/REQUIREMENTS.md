@@ -22,8 +22,8 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 - [x] **MKT-02**: Simulator injects occasional random 2-5% "event" moves on a ticker
 - [x] **MKT-03**: Simulator gives non-seed tickers a deterministic ticker-derived starting price (stable across restarts)
 - [x] **MKT-04**: Simulator randomness is seedable (`SIM_SEED`) and event probability configurable (`SIM_EVENT_PROBABILITY`) for deterministic tests
-- [ ] **MKT-05**: When `MASSIVE_API_KEY` is set, a Massive REST poller supplies prices instead (paid: snapshot every 2-15s, default 5s; free: Grouped Daily fallback)
-- [ ] **MKT-06**: Simulator and Massive poller implement one abstract interface; a factory selects by env var; downstream code is source-agnostic
+- [x] **MKT-05**: When `MASSIVE_API_KEY` is set, a Massive REST poller supplies prices instead (paid: snapshot every 2-15s, default 5s; free: Grouped Daily fallback)
+- [x] **MKT-06**: Simulator and Massive poller implement one abstract interface; a factory selects by env var; downstream code is source-agnostic
 - [x] **MKT-07**: An in-memory price cache holds latest price, previous price, timestamp and session-start price per ticker, with a version counter
 - [ ] **MKT-08**: Tracked tickers = watchlist ∪ open positions; a ticker is untracked only when in neither, and buying an untracked ticker starts tracking it before pricing
 - [x] **MKT-09**: `GET /api/stream/prices` streams SSE events, one per cache-version change, each a dict of all tracked tickers with `ticker, price, previous_price, timestamp, change, change_percent, direction` (change measured from session-start price)
@@ -95,7 +95,7 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 
 ### Testing
 
-- [ ] **TEST-01**: Backend pytest covers market data (valid prices, GBM math, Massive parsing, interface conformance)
+- [x] **TEST-01**: Backend pytest covers market data (valid prices, GBM math, Massive parsing, interface conformance)
 - [ ] **TEST-02**: Backend pytest covers portfolio (trade execution, P&L, oversell, insufficient cash, selling at a loss)
 - [ ] **TEST-03**: Backend pytest covers LLM (structured output parsing, malformed responses, trade validation in chat flow)
 - [ ] **TEST-04**: Backend pytest covers API routes (status codes, response shapes, error handling)
@@ -146,8 +146,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MKT-02 | Phase 2 | Complete |
 | MKT-03 | Phase 2 | Complete |
 | MKT-04 | Phase 2 | Complete |
-| MKT-05 | Phase 2 | Pending |
-| MKT-06 | Phase 2 | Pending |
+| MKT-05 | Phase 2 | Complete |
+| MKT-06 | Phase 2 | Complete |
 | MKT-07 | Phase 2 | Complete |
 | MKT-08 | Phase 3 | Pending |
 | MKT-09 | Phase 2 | Complete |
@@ -195,7 +195,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PKG-02 | Phase 6 | Pending |
 | PKG-03 | Phase 6 | Pending |
 | PKG-04 | Phase 6 | Pending |
-| TEST-01 | Phase 2 | Pending |
+| TEST-01 | Phase 2 | Complete |
 | TEST-02 | Phase 3 | Pending |
 | TEST-03 | Phase 5 | Pending |
 | TEST-04 | Phase 6 | Pending |

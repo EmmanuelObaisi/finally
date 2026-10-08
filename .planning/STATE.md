@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 02
 current_phase_name: Live Market Terminal
 status: executing
-stopped_at: Completed 02-03-PLAN.md
-last_updated: "2026-10-08T13:44:17.904Z"
+stopped_at: Completed 02-04-PLAN.md
+last_updated: "2026-10-08T13:48:37.043Z"
 last_activity: 2026-10-08
 last_activity_desc: Phase 02 execution started
-state_head: 36744606d2b417bf93cf58e26b172f360b94bd5a
+state_head: 9bdd5fec5ff3017e256defb921b08d897cdf376f
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 15
-  completed_plans: 11
+  completed_plans: 12
   percent: 17
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-08)
 ## Current Position
 
 Phase: 02 (Live Market Terminal) — EXECUTING
-Plan: 4 of 7
+Plan: 5 of 7
 Status: Ready to execute
 Last activity: 2026-10-08 — Phase 02 execution started
 
@@ -67,6 +67,7 @@ Progress: [██░░░░░░░░] 17%
 | Phase 02 P01 | 3 min | 3 tasks | 16 files |
 | Phase 02 P02 | 3 min | 3 tasks | 10 files |
 | Phase 02 P03 | 2 min | 2 tasks | 2 files |
+| Phase 02 P04 | 4 min | 3 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -101,6 +102,8 @@ Recent decisions affecting current work:
 - [Phase 02]: Held ticker with no cached price is valued at avg_cost with an ERROR log, never null
 - [Phase 02]: Wrong method on a known /api path is 404 (contract states it; API never answers 405)
 - [Phase 02]: Unknown tickers start at a sha256-derived price (first 8 bytes big-endian over 2**64), never hash() or the RNG, so start prices are stable across processes and add order
+- [Phase 02]: 02-04: Grouped Daily walk-back is weekday-only and capped at 5 calls, so a free-plan start costs 2 calls
+- [Phase 02]: 02-04: a rejected Massive key fails start() loudly; no silent fallback to simulated prices
 
 ### Pending Todos
 
@@ -124,6 +127,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-08T13:44:17.825Z
-Stopped at: Completed 02-03-PLAN.md
+Last session: 2026-10-08T13:48:36.968Z
+Stopped at: Completed 02-04-PLAN.md
 Resume file: None
