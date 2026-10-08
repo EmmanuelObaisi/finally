@@ -31,9 +31,9 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 
 ### Database
 
-- [ ] **DB-01**: SQLite at `DB_PATH` (default `<root>/db/finally.db`, `/app/db/finally.db` in Docker) is created and seeded lazily and idempotently on startup
-- [ ] **DB-02**: Schema uses natural primary keys for `users_profile(user_id)`, `watchlist(user_id, ticker)`, `positions(user_id, ticker)`; UUID ids on `trades`, `portfolio_snapshots`, `chat_messages`; all tables carry `user_id` defaulting to `"default"`
-- [ ] **DB-03**: Seed data is one user with $10,000 cash, the 10 default watchlist tickers (AAPL, GOOGL, MSFT, AMZN, TSLA, NVDA, META, JPM, V, NFLX), and an initial $10,000 portfolio snapshot
+- [x] **DB-01**: SQLite at `DB_PATH` (default `<root>/db/finally.db`, `/app/db/finally.db` in Docker) is created and seeded lazily and idempotently on startup
+- [x] **DB-02**: Schema uses natural primary keys for `users_profile(user_id)`, `watchlist(user_id, ticker)`, `positions(user_id, ticker)`; UUID ids on `trades`, `portfolio_snapshots`, `chat_messages`; all tables carry `user_id` defaulting to `"default"`
+- [x] **DB-03**: Seed data is one user with $10,000 cash, the 10 default watchlist tickers (AAPL, GOOGL, MSFT, AMZN, TSLA, NVDA, META, JPM, V, NFLX), and an initial $10,000 portfolio snapshot
 
 ### Watchlist
 
@@ -152,9 +152,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MKT-08 | Phase 3 | Pending |
 | MKT-09 | Phase 2 | Complete |
 | MKT-10 | Phase 2 | Pending |
-| DB-01 | Phase 2 | Pending |
-| DB-02 | Phase 2 | Pending |
-| DB-03 | Phase 2 | Pending |
+| DB-01 | Phase 2 | Complete |
+| DB-02 | Phase 2 | Complete |
+| DB-03 | Phase 2 | Complete |
 | WL-01 | Phase 2 | Pending |
 | WL-02 | Phase 3 | Pending |
 | WL-03 | Phase 3 | Pending |

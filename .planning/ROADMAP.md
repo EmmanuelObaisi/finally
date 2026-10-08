@@ -72,13 +72,13 @@ Plans:
   4. With `MASSIVE_API_KEY` set, the same UI is fed by the Massive REST poller with no frontend change. With `SIM_SEED` set, simulator output is reproducible, and a non-seed ticker always starts at the same ticker-derived price across restarts
   5. Stopping the server with browsers connected exits promptly (no SSE hang), and the market data unit tests (valid prices, GBM math, Massive parsing, interface conformance) pass
 
-**Plans**: 1/7 plans executed
+**Plans**: 2/7 plans executed
 Plans:
 **Wave 1**
 - [x] 02-01-PLAN.md — Package gate (all Phase 2 PyPI/npm packages), market package + native SSE stream tracer, cache/frame/shutdown tests, Playwright launch flags (W1, checkpoint)
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 02-02-PLAN.md — SQLite created and seeded in the lifespan, tracked tickers from the DB, GET /api/watchlist and GET /api/portfolio, wrong-method 404 contract rule (W2)
+- [x] 02-02-PLAN.md — SQLite created and seeded in the lifespan, tracked tickers from the DB, GET /api/watchlist and GET /api/portfolio, wrong-method 404 contract rule (W2)
 - [ ] 02-03-PLAN.md — Realistic, reproducible simulator: sha256-derived start prices, GBM/correlation/event/seed tests (W2)
 - [ ] 02-04-PLAN.md — Massive REST poller behind the same interface: paid snapshot, free-plan Grouped Daily within 5 calls/min, factory branch (W2)
 
@@ -164,7 +164,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6. Phases 4 and 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Walking Skeleton | 8/8 | Complete    | 2026-10-08 |
-| 2. Live Market Terminal | 1/7 | In Progress | - |
+| 2. Live Market Terminal | 2/7 | In Progress | - |
 | 3. Trading & Watchlist Management | 0/TBD | Not started | - |
 | 4. Charts & Portfolio Visualizations | 0/TBD | Not started | - |
 | 5. AI Trading Copilot | 0/TBD | Not started | - |

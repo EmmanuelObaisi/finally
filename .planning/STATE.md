@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 02
 current_phase_name: Live Market Terminal
 status: executing
-stopped_at: Completed 02-01-PLAN.md
-last_updated: "2026-10-08T13:35:57.086Z"
+stopped_at: Completed 02-02-PLAN.md
+last_updated: "2026-10-08T13:40:52.658Z"
 last_activity: 2026-10-08
 last_activity_desc: Phase 02 execution started
-state_head: 606c811f92850db358bb82a2fa57031b545af6cf
+state_head: 2594141f461793c4ecfe3f09847ae4451d676302
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 15
-  completed_plans: 9
+  completed_plans: 10
   percent: 17
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-08)
 ## Current Position
 
 Phase: 02 (Live Market Terminal) — EXECUTING
-Plan: 2 of 7
+Plan: 3 of 7
 Status: Ready to execute
 Last activity: 2026-10-08 — Phase 02 execution started
 
@@ -65,6 +65,7 @@ Progress: [██░░░░░░░░] 17%
 | Phase 01 P07 | 8 min | 2 tasks | 3 files |
 | Phase 01 P08 | 2 min | 2 tasks | 3 files |
 | Phase 02 P01 | 3 min | 3 tasks | 16 files |
+| Phase 02 P02 | 3 min | 3 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -95,6 +96,9 @@ Recent decisions affecting current work:
 - [Phase 02]: 02-01: SSE polls cache.version every 0.1 s (not 0.5 s) to avoid aliasing with the 0.5 s simulator tick; one frame per version change
 - [Phase 02]: 02-01: every uvicorn launch path must pass --timeout-graceful-shutdown (Playwright webServer and tests done; README dev command in 02-07)
 - [Phase 02]: 02-01: Phase 2 packages approved by user; list recorded in 02-01-SUMMARY.md Approved packages (02-04 massive 2.8.0, 02-05 npm set)
+- [Phase 02]: Seed defaults only into a fresh database (no users_profile row): restarts never restore removed tickers or reset cash
+- [Phase 02]: Held ticker with no cached price is valued at avg_cost with an ERROR log, never null
+- [Phase 02]: Wrong method on a known /api path is 404 (contract states it; API never answers 405)
 
 ### Pending Todos
 
@@ -118,6 +122,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-08T13:35:57.005Z
-Stopped at: Completed 02-01-PLAN.md
+Last session: 2026-10-08T13:40:52.577Z
+Stopped at: Completed 02-02-PLAN.md
 Resume file: None
