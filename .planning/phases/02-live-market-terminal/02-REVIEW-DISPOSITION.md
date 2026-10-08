@@ -5,7 +5,7 @@ titles: json
 findings:
   - id: WR-07
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "After a transient startup error on a free plan, prices stay empty for 15 minutes"
   - id: IN-03
     severity: info
@@ -63,16 +63,16 @@ findings:
     severity: info
     disposition: open
     title: "Stale REST price shown for a ticker that has left the live frame"
-open: 9
+open: 8
 total: 15
-recorded: 2026-10-08T15:00:17.838Z
+recorded: 2026-10-08T15:19:37.978Z
 ---
 
 # Phase 02: Code Review Disposition
 
 | Finding | Severity | Disposition | Source |
 |---------|----------|-------------|--------|
-| WR-07 | warning | open | - |
+| WR-07 | warning | fixed | 02-REVIEW-FIX.md |
 | IN-03 | info | open | - |
 | IN-04 | info | open | - |
 | IN-06 | info | open | - |
