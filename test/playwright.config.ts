@@ -26,6 +26,9 @@ export default defineConfig({
           DB_PATH: path.join(os.tmpdir(), "finally-e2e-" + Date.now() + ".db"),
           SIM_SEED: "1",
           SIM_EVENT_PROBABILITY: "0",
+          // Pin the simulator even if the shell or the root .env sets a Massive key.
+          MASSIVE_API_KEY: "",
+          LLM_MOCK: "true",
         },
       },
 });
