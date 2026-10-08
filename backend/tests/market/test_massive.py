@@ -1,5 +1,7 @@
 """MassiveDataSource against a stub client: no network, no API key."""
+import asyncio
 import dataclasses
+import logging
 from datetime import date
 from types import SimpleNamespace
 
@@ -8,6 +10,7 @@ from massive.exceptions import BadResponse
 
 from app.market.cache import PriceCache
 from app.market.factory import create_market_data_source
+from app.market.interface import MarketDataSource
 from app.market.massive_client import MAX_EOD_LOOKBACK, MassiveDataSource, last_trading_day
 from app.market.stream import price_frames
 
@@ -201,3 +204,41 @@ async def test_grouped_daily_walk_back_is_capped_and_skips_weekends():
     assert days == sorted(days, reverse=True) and len(set(days)) == 5
     assert source.cache.get("AAPL") is None
     await source.stop()
+
+
+async def test_a_rejected_key_fails_start_without_falling_back():
+    unknown_key = BadResponse('{"status":"ERROR","request_id":"x","error":"Unknown API Key"}')
+    client = StubClient(snapshots=[unknown_key])
+    source = make_source(client)
+    with pytest.raises(BadResponse):
+        await source.start(["AAPL"])
+    assert source.eod_mode is False
+    assert [c[0] for c in client.calls] == ["get_snapshot_all"]
+    assert source._task is None
+
+
+async def test_poll_loop_survives_an_error_and_never_logs_the_key(caplog):
+    ok = [snap("AAPL", 190.0)]
+    client = StubClient(snapshots=[ok, RuntimeError("boom"), ok])
+    source = make_source(client, interval=0.01)
+    with caplog.at_level(logging.INFO):
+        await source.start(["AAPL"])
+        await asyncio.sleep(0.1)
+        assert not source._task.done()
+        assert source.cache.version >= 3
+        await source.stop()
+    assert "Massive poll failed" in caplog.text
+    assert "test-key-123" not in caplog.text
+
+
+async def test_stop_twice_is_safe():
+    source = make_source(StubClient(snapshots=[[snap("AAPL", 190.0)]]), interval=0.01)
+    await source.start(["AAPL"])
+    await source.stop()
+    await source.stop()
+    assert source._task is None
+
+
+def test_massive_source_implements_the_whole_interface():
+    assert issubclass(MassiveDataSource, MarketDataSource)
+    assert not MassiveDataSource.__abstractmethods__
