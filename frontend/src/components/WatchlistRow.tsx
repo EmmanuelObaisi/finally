@@ -1,16 +1,17 @@
 "use client";
 
-import { fmtMoney, fmtPct, MISSING, toneClass } from "../lib/format";
+import { fmtPct, toneClass } from "../lib/format";
 import { useMarketStore } from "../lib/store";
 import type { WatchlistItem } from "../lib/types";
+import PriceCell from "./PriceCell";
 
 /** One watchlist row; subscribes only to its own ticker's slice of the price map. */
 export default function WatchlistRow({ item }: { item: WatchlistItem }) {
   const { ticker } = item;
   const live = useMarketStore((s) => s.prices[ticker]);
-  const price = fmtMoney(live?.price ?? item.price);
   const change = fmtPct(live?.change_percent ?? item.change_percent);
-  const stale = useMarketStore((s) => s.status === "disconnected") ? " opacity-60" : "";
+  const dim = useMarketStore((s) => s.status === "disconnected");
+  const stale = dim ? " opacity-60" : "";
 
   return (
     <tr data-testid={"watchlist-row-" + ticker} className="h-10 border-b border-border hover:bg-raised">
@@ -18,12 +19,7 @@ export default function WatchlistRow({ item }: { item: WatchlistItem }) {
         {ticker}
       </td>
       <td className="p-0 text-right tabular-nums">
-        <span
-          data-testid={"price-" + ticker}
-          className={"block px-2 rounded-sm" + (price === MISSING ? " text-muted" : "") + stale}
-        >
-          {price}
-        </span>
+        <PriceCell ticker={ticker} price={live?.price ?? item.price} dim={dim} />
       </td>
       <td data-testid={"change-" + ticker} className={"px-2 text-right tabular-nums " + toneClass(change) + stale}>
         {change}

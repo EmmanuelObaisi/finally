@@ -15,13 +15,17 @@ function tick(ticker: string, price: number): PriceUpdate {
   };
 }
 
+function move(ticker: string, timestamp: number, direction: PriceUpdate["direction"]): PriceFrame {
+  return { [ticker]: { ...tick(ticker, 190), timestamp, direction } };
+}
+
 beforeEach(() => {
   useMarketStore.setState(initialMarketState());
 });
 
 describe("initialMarketState", () => {
   it("starts with no prices and reconnecting", () => {
-    expect(initialMarketState()).toEqual({ prices: {}, status: "reconnecting" });
+    expect(initialMarketState()).toEqual({ prices: {}, status: "reconnecting", flash: {} });
   });
 });
 
@@ -42,6 +46,35 @@ describe("applyFrame", () => {
   it("an empty frame leaves no prices", () => {
     const seeded = applyFrame(initialMarketState(), { AAPL: tick("AAPL", 190) });
     expect(applyFrame(seeded, {}).prices).toEqual({});
+  });
+});
+
+describe("applyFrame flash", () => {
+  const first = () => applyFrame(initialMarketState(), move("AAPL", 1, "up"));
+
+  it("the first value a ticker receives never flashes", () => {
+    expect(first().flash).toEqual({});
+  });
+
+  it("a newer up frame then a newer down frame count up the sequence", () => {
+    const up = applyFrame(first(), move("AAPL", 2, "up"));
+    expect(up.flash.AAPL).toEqual({ dir: "up", seq: 1 });
+    expect(applyFrame(up, move("AAPL", 3, "down")).flash.AAPL).toEqual({ dir: "down", seq: 2 });
+  });
+
+  it("a newer flat frame leaves the flash unchanged", () => {
+    const up = applyFrame(first(), move("AAPL", 2, "up"));
+    expect(applyFrame(up, move("AAPL", 3, "flat")).flash.AAPL).toEqual({ dir: "up", seq: 1 });
+  });
+
+  it("a re-sent update with the same timestamp does not flash again", () => {
+    const up = applyFrame(first(), move("AAPL", 2, "up"));
+    expect(applyFrame(up, move("AAPL", 2, "up")).flash.AAPL).toEqual({ dir: "up", seq: 1 });
+  });
+
+  it("two up frames in quick succession reach seq 2", () => {
+    const twice = applyFrame(applyFrame(first(), move("AAPL", 1.2, "up")), move("AAPL", 1.7, "up"));
+    expect(twice.flash.AAPL).toEqual({ dir: "up", seq: 2 });
   });
 });
 
