@@ -4,6 +4,18 @@ import { initialMarketState, useMarketStore } from "../lib/store";
 import type { PriceFrame, WatchlistItem } from "../lib/types";
 import WatchlistPanel from "./WatchlistPanel";
 
+// The canvas chart needs a real browser; sparkline behavior is tested in Sparkline.test.tsx.
+vi.mock("lightweight-charts", () => ({
+  createChart: () => ({
+    addSeries: () => ({ setData: () => {}, update: () => {} }),
+    timeScale: () => ({ fitContent: () => {} }),
+    remove: () => {},
+  }),
+  LineSeries: "LineSeries",
+  CrosshairMode: { Hidden: 3 },
+  ColorType: { Solid: "solid" },
+}));
+
 function item(ticker: string, price: number | null = null): WatchlistItem {
   return {
     ticker,

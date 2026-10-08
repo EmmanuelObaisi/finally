@@ -4,6 +4,7 @@ import { fmtPct, toneClass } from "../lib/format";
 import { useMarketStore } from "../lib/store";
 import type { WatchlistItem } from "../lib/types";
 import PriceCell from "./PriceCell";
+import Sparkline from "./Sparkline";
 
 /** One watchlist row; subscribes only to its own ticker's slice of the price map. */
 export default function WatchlistRow({ item }: { item: WatchlistItem }) {
@@ -25,7 +26,7 @@ export default function WatchlistRow({ item }: { item: WatchlistItem }) {
         {change}
       </td>
       <td className="px-2 hidden sm:table-cell">
-        <div data-testid={"sparkline-" + ticker} className="h-6" aria-hidden="true" />
+        <Sparkline ticker={ticker} />
       </td>
     </tr>
   );
