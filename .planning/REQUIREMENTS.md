@@ -77,7 +77,7 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 
 ### Frontend: Portfolio & Chat UI
 
-- [ ] **PUI-01**: Trade bar with ticker, quantity, Buy and Sell executes market orders; shows inline success/error; buttons disabled while in flight
+- [x] **PUI-01**: Trade bar with ticker, quantity, Buy and Sell executes market orders; shows inline success/error; buttons disabled while in flight
 - [ ] **PUI-02**: Positions table shows ticker, quantity, avg cost, current price, unrealized P&L and % change, updating live
 - [ ] **PUI-03**: Portfolio heatmap (treemap) sizes positions by weight and colors by P&L (green profit, red loss)
 - [ ] **PUI-04**: P&L chart shows total portfolio value over time from snapshots, refetched every 30s with a live "now" point
@@ -183,7 +183,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | UI-06 | Phase 3 | Pending |
 | UI-07 | Phase 4 | Pending |
 | UI-08 | Phase 2 | Complete |
-| PUI-01 | Phase 3 | Pending |
+| PUI-01 | Phase 3 | Complete |
 | PUI-02 | Phase 3 | Pending |
 | PUI-03 | Phase 4 | Pending |
 | PUI-04 | Phase 4 | Pending |
