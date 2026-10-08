@@ -1,5 +1,6 @@
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { resetPortfolioStore, usePortfolioStore } from "../lib/portfolioStore";
 import { initialMarketState, useMarketStore } from "../lib/store";
 import type { Portfolio, PriceFrame } from "../lib/types";
 import Footer from "./Footer";
@@ -19,6 +20,7 @@ function setStatus(status: "connected" | "reconnecting" | "disconnected") {
 
 beforeEach(() => {
   useMarketStore.setState(initialMarketState());
+  resetPortfolioStore();
 });
 
 describe("Header connection behavior", () => {
@@ -125,6 +127,7 @@ describe("Header totals states", () => {
     unmount();
 
     useMarketStore.setState(initialMarketState());
+    resetPortfolioStore();
     stubFetch(held);
     render(<Header />);
     await waitFor(() => expect(screen.getByTestId("header-total-value")).toHaveTextContent("$1,270.00"));
@@ -138,6 +141,21 @@ describe("Header totals states", () => {
     await waitFor(() => expect(screen.getByTestId("header-cash")).toHaveTextContent("$1,000,000,000.00"));
     expect(screen.getByTestId("header-cash")).toHaveClass("whitespace-nowrap");
     expect(screen.getByTestId("header-total-value")).toHaveClass("whitespace-nowrap");
+  });
+});
+
+describe("Header shared portfolio", () => {
+  it("keeps a newer applied portfolio when the older mount fetch resolves afterwards", async () => {
+    let resolveOld: (value: unknown) => void = () => {};
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() => new Promise((resolve) => (resolveOld = resolve))),
+    );
+    render(<Header />);
+    act(() => usePortfolioStore.getState().applyTrade({ ...fresh, cash: 900, total_value: 900 }));
+    expect(screen.getByTestId("header-cash")).toHaveTextContent("$900.00");
+    await act(async () => resolveOld({ ok: true, status: 200, json: async () => fresh }));
+    expect(screen.getByTestId("header-cash")).toHaveTextContent("$900.00");
   });
 });
 
