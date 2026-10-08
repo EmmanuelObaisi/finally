@@ -7,16 +7,26 @@ from fastapi.staticfiles import StaticFiles
 
 from .config import Settings
 from .errors import register_error_handlers
+from .market import stream
+from .market.cache import PriceCache
+from .market.factory import create_market_data_source
+from .market.seed_prices import SEED_PRICES
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
     """Build the app. Static files are mounted last and only if the export exists."""
     settings = settings or Settings.from_env()
+    cache = PriceCache()
+    source = create_market_data_source(cache, settings)
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         app.state.settings = settings
+        app.state.cache = cache
+        app.state.source = source
+        await source.start(list(SEED_PRICES))
         yield
+        await source.stop()
 
     app = FastAPI(lifespan=lifespan)
     register_error_handlers(app)
@@ -24,6 +34,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.get("/api/health")
     def health() -> dict:
         return {"status": "ok"}
+
+    app.include_router(stream.router)
 
     # Later routers are included above this catch-all so unknown /api paths stay JSON 404s.
     # A response instance is a raw ASGI app, so Starlette matches every HTTP method

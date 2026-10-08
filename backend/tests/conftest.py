@@ -1,8 +1,14 @@
 """Shared fixtures: every test runs with no config env vars and a temporary project root."""
+import asyncio
+import types
+
 import pytest
+import pytest_asyncio
+import uvicorn
 
 from app import config
 from app.config import Settings
+from app.main import create_app
 
 CONFIG_VARS = ("OPENROUTER_API_KEY", "MASSIVE_API_KEY", "LLM_MOCK", "DB_PATH", "SIM_SEED",
                "SIM_EVENT_PROBABILITY", "STATIC_DIR")
@@ -25,3 +31,21 @@ def settings(tmp_path) -> Settings:
     return Settings(openrouter_api_key="", massive_api_key="", llm_mock=False,
                     db_path=tmp_path / "t.db", sim_seed=None, sim_event_probability=0.001,
                     static_dir=tmp_path / "static")
+
+
+@pytest_asyncio.fixture
+async def live_server(settings):
+    """Real uvicorn server on a free port: the only transport that streams SSE incrementally."""
+    config_ = uvicorn.Config(create_app(settings), host="127.0.0.1", port=0,
+                             log_level="warning", timeout_graceful_shutdown=1)
+    server = uvicorn.Server(config_)
+    task = asyncio.create_task(server.serve())
+    for _ in range(200):
+        if server.started:
+            break
+        await asyncio.sleep(0.05)
+    assert server.started
+    port = server.servers[0].sockets[0].getsockname()[1]
+    yield types.SimpleNamespace(url=f"http://127.0.0.1:{port}", server=server, task=task)
+    server.should_exit = True
+    await asyncio.wait_for(task, 5)

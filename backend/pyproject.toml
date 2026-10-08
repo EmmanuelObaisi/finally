@@ -5,6 +5,7 @@ description = "FinAlly backend"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi==0.142.2",
+    "numpy==2.5.3",
     "python-dotenv==1.2.4",
     "uvicorn[standard]==0.54.0",
 ]
@@ -13,9 +14,11 @@ dependencies = [
 dev = [
     "httpx==0.28.1",
     "pytest==9.1.1",
+    "pytest-asyncio==1.4.0",
 ]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+asyncio_mode = "auto"
 filterwarnings = ["ignore:Using .httpx. with .starlette.testclient. is deprecated"]
