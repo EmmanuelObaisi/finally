@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getWatchlist } from "../lib/api";
+import { useMarketStore } from "../lib/store";
 import type { WatchlistItem } from "../lib/types";
 import WatchlistRow from "./WatchlistRow";
 
@@ -19,6 +20,11 @@ export default function WatchlistPanel() {
   }
 
   useEffect(load, []);
+
+  const status = useMarketStore((s) => s.status);
+  useEffect(() => {
+    if (status === "connected" && view.kind === "error") load();
+  }, [status]);
 
   return (
     <section data-testid="watchlist-panel" className="flex h-full min-h-0 flex-col bg-panel lg:border-r lg:border-border">
