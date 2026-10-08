@@ -3,6 +3,30 @@ phase: 02
 review: 02-REVIEW.md
 titles: json
 findings:
+  - id: WR-07
+    severity: warning
+    disposition: open
+    title: "After a transient startup error on a free plan, prices stay empty for 15 minutes"
+  - id: IN-03
+    severity: info
+    disposition: open
+    title: "Interface docs say `remove_ticker` evicts from the cache unconditionally (carried over, unchanged)"
+  - id: IN-04
+    severity: info
+    disposition: open
+    title: "Free-plan startup can exceed 5 calls per minute; `_eod_closes` is overwritten with `{}` (carried over, unchanged)"
+  - id: IN-06
+    severity: info
+    disposition: open
+    title: "Minor quality items (carried over, reduced to the files in this scope)"
+  - id: IN-07
+    severity: info
+    disposition: open
+    title: "Timing-based backend test may be flaky under load (carried over, unchanged)"
+  - id: IN-08
+    severity: info
+    disposition: open
+    title: "WR-04 fix relies on error-message text, and the new test can leak a task"
   - id: WR-01
     severity: warning
     disposition: fixed
@@ -35,48 +59,34 @@ findings:
     severity: info
     disposition: open
     title: "Header swallows portfolio errors silently"
-  - id: IN-03
-    severity: info
-    disposition: open
-    title: "Interface docs say `remove_ticker` evicts from the cache unconditionally"
-  - id: IN-04
-    severity: info
-    disposition: open
-    title: "Free-plan startup can exceed the stated 5 calls per minute"
   - id: IN-05
     severity: info
     disposition: open
     title: "Stale REST price shown for a ticker that has left the live frame"
-  - id: IN-06
-    severity: info
-    disposition: open
-    title: "Minor quality items"
-  - id: IN-07
-    severity: info
-    disposition: open
-    title: "Timing-based backend tests may be flaky under load"
-open: 7
-total: 13
-recorded: 2026-10-08T14:44:39.862Z
+open: 9
+total: 15
+recorded: 2026-10-08T15:00:17.838Z
 ---
 
 # Phase 02: Code Review Disposition
 
 | Finding | Severity | Disposition | Source |
 |---------|----------|-------------|--------|
-| WR-01 | warning | fixed | 02-REVIEW-FIX.md |
-| WR-02 | warning | fixed | 02-REVIEW-FIX.md |
-| WR-03 | warning | fixed | 02-REVIEW-FIX.md |
-| WR-04 | warning | fixed | 02-REVIEW-FIX.md |
-| WR-05 | warning | skipped | 02-REVIEW-FIX.md |
-| WR-06 | warning | fixed | 02-REVIEW-FIX.md |
-| IN-01 | info | open | - |
-| IN-02 | info | open | - |
+| WR-07 | warning | open | - |
 | IN-03 | info | open | - |
 | IN-04 | info | open | - |
-| IN-05 | info | open | - |
 | IN-06 | info | open | - |
 | IN-07 | info | open | - |
+| IN-08 | info | open | - |
+| WR-01 | warning | fixed | 02-REVIEW-FIX.md (not in the current review) |
+| WR-02 | warning | fixed | 02-REVIEW-FIX.md (not in the current review) |
+| WR-03 | warning | fixed | 02-REVIEW-FIX.md (not in the current review) |
+| WR-04 | warning | fixed | 02-REVIEW-FIX.md (not in the current review) |
+| WR-05 | warning | skipped | 02-REVIEW-FIX.md (not in the current review) |
+| WR-06 | warning | fixed | 02-REVIEW-FIX.md (not in the current review) |
+| IN-01 | info | open | - (not in the current review) |
+| IN-02 | info | open | - (not in the current review) |
+| IN-05 | info | open | - (not in the current review) |
 
 Dispositions: `open` (recorded, not yet triaged), `fixed`, `skipped`, `deferred`.
 Set `deferred` by hand and put the reason in the Source cell; both are preserved. A `|` in the reason is kept as prose and escaped on the next run.
