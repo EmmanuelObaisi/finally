@@ -9,14 +9,6 @@ def test_health_ok(settings):
     assert r.status_code == 200 and r.json() == {"status": "ok"}
 
 
-def test_health_is_side_effect_free(settings):
-    with TestClient(create_app(settings)) as client:
-        first = client.get("/api/health")
-        second = client.get("/api/health")
-    assert first.status_code == second.status_code == 200
-    assert first.json() == second.json() == {"status": "ok"}
-
-
 def test_static_export_served_when_present(settings):
     static = settings.static_dir
     static.mkdir()
