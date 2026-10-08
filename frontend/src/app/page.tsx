@@ -2,6 +2,7 @@
 
 import Footer from "../components/Footer";
 import Header from "../components/Header";
+import PositionsTable from "../components/PositionsTable";
 import TradeBar from "../components/TradeBar";
 import WatchlistPanel from "../components/WatchlistPanel";
 import { useMarketStream } from "../lib/useMarketStream";
@@ -16,6 +17,7 @@ export default function Home() {
         <WatchlistPanel />
         <section data-testid="workspace" className="flex min-h-0 flex-col lg:h-full">
           <TradeBar />
+          <PositionsTable />
         </section>
       </main>
       <Footer />
