@@ -1,8 +1,9 @@
 // Typed calls to the FinAlly API. Shapes: planning/API_CONTRACT.md.
-export type Health = { status: string };
+import type { WatchlistItem } from "./types";
 
-export async function getHealth(): Promise<Health> {
-  const res = await fetch("/api/health");
-  if (!res.ok) throw new Error(`health ${res.status}`);
-  return (await res.json()) as Health;
+export async function getWatchlist(): Promise<WatchlistItem[]> {
+  const res = await fetch("/api/watchlist");
+  if (!res.ok) throw new Error("watchlist " + res.status);
+  const body = (await res.json()) as { watchlist: WatchlistItem[] };
+  return body.watchlist;
 }
