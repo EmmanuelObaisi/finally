@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 from .db import USER_ID, connect, now_iso, transaction
 from .errors import DomainError
 from .portfolio import build_portfolio
-from .tracking import normalize_ticker
+from .tracking import normalize_ticker, sync_ticker
 
 router = APIRouter()
 
@@ -104,7 +104,12 @@ def run_trade(state, ticker: str, side: str, quantity: float) -> dict:
 async def place_trade(state, raw_ticker: str, side: str, quantity: float) -> dict:
     """Validate the ticker and fill off the event loop; shared with Phase 5 chat."""
     ticker = normalize_ticker(raw_ticker)
-    return await asyncio.to_thread(run_trade, state, ticker, side, quantity)
+    try:
+        if side == "buy":
+            await state.source.add_ticker(ticker)
+        return await asyncio.to_thread(run_trade, state, ticker, side, quantity)
+    finally:
+        await sync_ticker(state, ticker)
 
 
 @router.post("/api/portfolio/trade")

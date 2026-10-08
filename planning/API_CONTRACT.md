@@ -122,11 +122,25 @@ ticker is not on the watchlist.
 Body `{"ticker": "AAPL", "quantity": 1.5, "side": "buy"}`. `side` is `"buy"` or `"sell"`;
 `quantity` must be greater than 0 (fractional shares are allowed).
 
-`200 {"trade": Trade, "portfolio": Portfolio}`. `400 {"error": "..."}` for quantity <= 0, a
-ticker with no price, insufficient cash, insufficient shares, or a bad `side`.
+`200 {"trade": Trade, "portfolio": Portfolio}`. Otherwise `400 {"error": "..."}`. The checks run
+in this order, with these exact messages:
 
-A trade is all-or-nothing: a rejected trade changes nothing (no cash movement, no position
-change, no trade row, no snapshot).
+1. Ticker format: `{"error": "Invalid ticker: AAPL$"}` (quotes the rejected input).
+2. `{"error": "Quantity must be greater than 0"}` (the quantity is rounded to 6 dp first).
+3. A sell of more than is held: `{"error": "Insufficient shares: you hold 1.5 AAPL"}` (held
+   quantity to 6 dp, trailing zeros dropped; a never-held ticker says `you hold 0 AAPL`).
+4. `{"error": "No price available for AAPL"}`.
+5. A buy that costs more than the cash balance: `{"error": "Insufficient cash"}`.
+
+A bad `side`, or a quantity that is non-finite, a string or a boolean, is a body validation 400
+(`{"error": "side: Input should be 'buy' or 'sell'"}`,
+`{"error": "quantity: Input should be a finite number"}`).
+
+A fill moves cash by `round(price x quantity, 2)` at the current cached price, appends one trade
+and records one portfolio snapshot; a sell down to zero removes the position. A trade is
+all-or-nothing: a rejected trade changes nothing (no cash movement, no position change, no
+trade row, no snapshot). A buy starts streaming the ticker before reading its price, and a
+ticker that is afterwards neither watched nor held stops streaming.
 
 ### GET /api/portfolio/history
 

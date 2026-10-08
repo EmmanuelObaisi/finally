@@ -1,5 +1,6 @@
 """MKT-08 trade path: a ticker streams exactly when it is watched or held."""
 from app.db import USER_ID, connect, init_db, now_iso
+from app.tracking import is_wanted
 
 
 def buy(client, ticker, quantity=1):
@@ -62,8 +63,6 @@ def test_rejected_zero_quantity_buy_of_an_unwatched_ticker_is_not_tracked(client
 
 
 def test_is_wanted_covers_watchlist_and_positions(tmp_path):
-    from app.tracking import is_wanted
-
     path = tmp_path / "w.db"
     init_db(path)
     assert is_wanted(path, "AAPL") is True
