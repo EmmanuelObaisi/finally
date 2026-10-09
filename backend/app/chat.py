@@ -22,6 +22,7 @@ MAX_MESSAGE_CHARS = 2000
 MAX_ACTIONS = 10
 HISTORY_ROWS = 100
 OVER_CAP_ERROR = "Too many actions in one reply"
+ACTION_ERROR = "Action could not be completed"
 GENERIC_ERROR = (
     "The AI assistant could not complete that request. "
     "No trades or watchlist changes were made. Try again in a moment."
@@ -109,17 +110,26 @@ async def run_watchlist(state, change) -> dict:
     return watchlist_action(change, True, None)
 
 
+async def guarded(run, state, item, failed) -> dict:
+    """Run one action; an unexpected error becomes a failed action so the batch and the turn go on."""
+    try:
+        return await run(state, item)
+    except Exception:
+        logger.exception("chat action failed")
+        return failed(item, False, ACTION_ERROR)
+
+
 async def execute(state, reply: ChatReply) -> list[dict]:
     """Run trades then watchlist changes one at a time; entries past the cap are not run."""
     actions = []
     for index, order in enumerate(reply.trades):
         if index < MAX_ACTIONS:
-            actions.append(await run_trade(state, order))
+            actions.append(await guarded(run_trade, state, order, trade_action))
         else:
             actions.append(trade_action(order, False, OVER_CAP_ERROR))
     for index, change in enumerate(reply.watchlist_changes):
         if index < MAX_ACTIONS:
-            actions.append(await run_watchlist(state, change))
+            actions.append(await guarded(run_watchlist, state, change, watchlist_action))
         else:
             actions.append(watchlist_action(change, False, OVER_CAP_ERROR))
     return actions

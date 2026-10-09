@@ -177,7 +177,10 @@ Body `{"message": "..."}`.
   the stored `content` stays the model's raw message.
 - Actions run independently, in order: trades first, then watchlist changes, each through the same
   service and transaction as its manual counterpart. There is no all-or-nothing batch, and a failed
-  action never blocks the next.
+  action never blocks the next. An unexpected error inside one action (for example the market
+  source failing) is logged and reported as that action with `ok` false and `error`
+  "Action could not be completed"; the provider error text is never returned and the turn is
+  still stored.
 - At most 10 trades and 10 watchlist changes are executed per reply. Each entry beyond the cap is
   not executed and is reported as an action with `ok` false and `error`
   "Too many actions in one reply". `actions` lists the trade results in model order (executed ones first, then over-cap

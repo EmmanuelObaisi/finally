@@ -264,6 +264,44 @@ def test_failure_does_not_block_the_next_action(client, monkeypatch):
     assert [p["ticker"] for p in body["portfolio"]["positions"]] == ["MSFT"]
 
 
+def break_source_for(client, ticker):
+    """Make the market source raise a provider-style error whenever it is asked to track `ticker`."""
+    source = client.app.state.source
+    real = source.add_ticker
+
+    async def flaky(symbol):
+        if symbol == ticker:
+            raise RuntimeError("provider exploded sk-secret")
+        await real(symbol)
+
+    source.add_ticker = flaky
+
+
+def test_unexpected_error_in_a_trade_is_a_failed_action_and_the_turn_is_stored(
+        client, settings, monkeypatch, caplog):
+    break_source_for(client, "PYPL")
+    with caplog.at_level(logging.ERROR, logger="app.chat"):
+        body = say(client, monkeypatch, reply_json(
+            "Done", trades=[buy("MSFT"), buy("PYPL"), buy("NVDA")]))
+    assert [a["ok"] for a in body["actions"]] == [True, False, True]
+    assert body["actions"][1]["error"] == "Action could not be completed"
+    assert "sk-secret" not in json.dumps(body)
+    assert "provider exploded" in caplog.text
+    assert sorted(p["ticker"] for p in body["portfolio"]["positions"]) == ["MSFT", "NVDA"]
+    user, assistant = chat_rows(settings)
+    assert (user["role"], assistant["role"]) == ("user", "assistant")
+    assert json.loads(assistant["actions"]) == body["actions"]
+
+
+def test_unexpected_error_in_a_watchlist_change_is_a_failed_action(client, settings, monkeypatch):
+    break_source_for(client, "PYPL")
+    body = say(client, monkeypatch, reply_json(changes=[wl("PYPL"), wl("NFLX", "remove")]))
+    assert [(a["ok"], a["error"]) for a in body["actions"]] == [
+        (False, "Action could not be completed"), (True, None)]
+    assert body["actions"][0]["ticker"] == "PYPL"
+    assert count(settings, "chat_messages") == 2
+
+
 def test_tracking_unwatched_ticker_streams_but_is_not_watched(client, monkeypatch):
     body = say(client, monkeypatch, reply_json(trades=[buy("PYPL")]))
     assert body["actions"][0]["ok"] is True
