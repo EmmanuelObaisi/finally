@@ -31,6 +31,11 @@ test("a trade adds points to the portfolio value chart", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByTestId("header-cash")).toHaveText(/^\$[\d,]+\.\d{2}$/);
 
+  // Fresh run: only the seeded snapshot exists, so the chart shows its never-traded empty state.
+  await expect(page.getByTestId("pnl-empty")).toBeVisible();
+  await expect(page.getByTestId("pnl-value")).toHaveText("$10,000.00");
+  await expect(page.getByTestId("pnl-delta")).toHaveText("0.00 (0.00%)");
+
   await page.getByTestId("trade-ticker").fill("AAPL");
   await page.getByTestId("trade-quantity").fill("1");
   await page.getByTestId("trade-buy").click();
@@ -46,4 +51,9 @@ test("a trade adds points to the portfolio value chart", async ({ page }) => {
   await page.getByTestId("trade-sell").click();
   await expect(message).toHaveAttribute("data-kind", "success");
   await expect(page.getByTestId("position-row-AAPL")).toHaveCount(0);
+
+  // Closing every position keeps the chart: history now holds more than the seed point.
+  await expect(page.getByTestId("positions-empty")).toBeVisible();
+  await expect(page.getByTestId("pnl-chart")).toBeVisible();
+  await expect(page.getByTestId("pnl-empty")).toHaveCount(0);
 });
