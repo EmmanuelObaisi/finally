@@ -14,6 +14,10 @@ const SEND =
   "h-8 w-20 rounded-sm bg-secondary px-4 text-body font-semibold text-fg hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50" +
   FOCUS;
 
+const RETRY = "mt-4 h-8 rounded-sm border border-border px-4 text-body hover:bg-raised disabled:opacity-50" + FOCUS;
+const EXAMPLE = "h-8 truncate rounded-sm border border-border px-4 text-left text-body hover:bg-raised" + FOCUS;
+const EXAMPLES = ["How is my portfolio doing?", "Buy 5 shares of NVDA", "Add PYPL to my watchlist"];
+
 /** The AI chat panel: always mounted, hidden when closed, so the draft and transcript survive a close. */
 export default function ChatPanel() {
   const open = useChatStore((s) => s.open);
@@ -72,10 +76,59 @@ export default function ChatPanel() {
         ref={transcriptRef}
         className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4"
       >
-        {messages.map((message) => (
-          <ChatMessageRow key={message.id} message={message} />
-        ))}
-        {sending && (
+        {history === "loading" && (
+          <div
+            data-testid="chat-history-loading"
+            aria-busy="true"
+            aria-label="Loading conversation"
+            className="flex flex-col gap-4"
+          >
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="h-10 rounded-sm bg-raised motion-safe:animate-pulse" />
+            ))}
+          </div>
+        )}
+        {history === "error" && (
+          <div data-testid="chat-history-error" className="p-6">
+            <h3 className="text-heading font-semibold">Conversation unavailable</h3>
+            <p className="text-body">The server did not return your chat history. Check that FinAlly is running, then retry.</p>
+            <button
+              type="button"
+              data-testid="chat-retry"
+              disabled={sending}
+              onClick={() => useChatStore.getState().loadHistory()}
+              className={RETRY}
+            >
+              Retry
+            </button>
+          </div>
+        )}
+        {history === "ready" && messages.length === 0 && !sending && (
+          <div data-testid="chat-empty" className="p-6">
+            <h3 className="text-heading font-semibold">Ask FinAlly anything</h3>
+            <p className="text-body">Ask about your portfolio, or tell FinAlly to trade or change your watchlist.</p>
+            <p className="mt-4 text-label text-muted">Try</p>
+            <div className="mt-2 flex flex-col gap-2">
+              {EXAMPLES.map((prompt) => (
+                <button
+                  key={prompt}
+                  type="button"
+                  data-testid="chat-example"
+                  onClick={() => {
+                    setDraft(prompt);
+                    textareaRef.current?.focus();
+                  }}
+                  className={EXAMPLE}
+                >
+                  {prompt}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        {history !== "loading" &&
+          messages.map((message) => <ChatMessageRow key={message.id} message={message} />)}
+        {history !== "loading" && sending && (
           <div data-testid="chat-loading" aria-busy="true" className="text-body text-muted motion-safe:animate-pulse">
             Thinking...
           </div>
