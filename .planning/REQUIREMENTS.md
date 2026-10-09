@@ -49,7 +49,7 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 - [x] **PORT-04**: Invalid trades (quantity <= 0, no price, insufficient cash, insufficient shares) are rejected with 400 `{"error": "..."}` and change nothing
 - [x] **PORT-05**: Each trade is atomic, appended to the `trades` log, and followed by a portfolio snapshot
 - [x] **PORT-06**: Trade responses include the updated portfolio state
-- [ ] **PORT-07**: User can fetch portfolio value history via `GET /api/portfolio/history`; a snapshot is recorded on request (min-interval guarded)
+- [x] **PORT-07**: User can fetch portfolio value history via `GET /api/portfolio/history`; a snapshot is recorded on request (min-interval guarded)
 - [x] **PORT-08**: `GET /api/health` reports health for Docker
 
 ### AI Chat
@@ -80,7 +80,7 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 - [x] **PUI-01**: Trade bar with ticker, quantity, Buy and Sell executes market orders; shows inline success/error; buttons disabled while in flight
 - [x] **PUI-02**: Positions table shows ticker, quantity, avg cost, current price, unrealized P&L and % change, updating live
 - [ ] **PUI-03**: Portfolio heatmap (treemap) sizes positions by weight and colors by P&L (green profit, red loss)
-- [ ] **PUI-04**: P&L chart shows total portfolio value over time from snapshots, refetched every 30s with a live "now" point
+- [x] **PUI-04**: P&L chart shows total portfolio value over time from snapshots, refetched every 30s with a live "now" point
 - [ ] **PUI-05**: Collapsible AI chat panel with message input (Enter to send), scrolling history restored on load, auto-scroll, and loading indicator
 - [ ] **PUI-06**: Executed trades and watchlist changes (and their failures) appear inline in the chat; portfolio and watchlist views refresh from the response
 - [ ] **PUI-07**: Watchlist, positions, heatmap and P&L chart have explicit empty states
@@ -164,7 +164,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PORT-04 | Phase 3 | Complete |
 | PORT-05 | Phase 3 | Complete |
 | PORT-06 | Phase 3 | Complete |
-| PORT-07 | Phase 4 | Pending |
+| PORT-07 | Phase 4 | Complete |
 | PORT-08 | Phase 1 | Complete |
 | CHAT-01 | Phase 5 | Pending |
 | CHAT-02 | Phase 5 | Pending |
@@ -186,7 +186,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PUI-01 | Phase 3 | Complete |
 | PUI-02 | Phase 3 | Complete |
 | PUI-03 | Phase 4 | Pending |
-| PUI-04 | Phase 4 | Pending |
+| PUI-04 | Phase 4 | Complete |
 | PUI-05 | Phase 5 | Pending |
 | PUI-06 | Phase 5 | Pending |
 | PUI-07 | Phase 4 | Pending |
