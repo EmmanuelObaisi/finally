@@ -73,3 +73,13 @@ def test_same_second_rows_keep_insertion_order(db_path, monkeypatch):
         for i in range(3):
             save_turn(conn, f"u{i}", "2026-01-01T00:00:00Z", f"a{i}", [])
         assert [r["content"] for r in load_recent(conn, 10)] == ["u0", "a0", "u1", "a1", "u2", "a2"]
+
+
+def test_overlapping_turns_keep_each_question_with_its_reply(db_path, monkeypatch):
+    """Turn A asks first but finishes after B asks; each pair must stay together."""
+    with connect(db_path) as conn:
+        monkeypatch.setattr("app.chat_store.now_iso", lambda: "2026-01-01T00:00:20Z")
+        save_turn(conn, "uA", "2026-01-01T00:00:00Z", "aA", [])
+        monkeypatch.setattr("app.chat_store.now_iso", lambda: "2026-01-01T00:00:30Z")
+        save_turn(conn, "uB", "2026-01-01T00:00:10Z", "aB", [])
+        assert [r["content"] for r in load_recent(conn, 10)] == ["uA", "aA", "uB", "aB"]

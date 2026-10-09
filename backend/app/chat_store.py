@@ -21,10 +21,14 @@ def save_turn(conn, user_text: str, asked_at: str, reply_text: str, actions: lis
 
 
 def load_recent(conn, limit: int) -> list[dict]:
-    """The newest `limit` messages, oldest first; actions parsed from JSON."""
+    """The newest `limit` messages by insertion order, oldest first; actions parsed from JSON.
+
+    created_at is display-only: a user row carries the time the question was asked, so ordering by
+    it would interleave overlapping turns.
+    """
     rows = conn.execute(
         "SELECT id, role, content, actions, created_at FROM chat_messages WHERE user_id = ? "
-        "ORDER BY created_at DESC, rowid DESC LIMIT ?",
+        "ORDER BY rowid DESC LIMIT ?",
         (USER_ID, limit),
     ).fetchall()
     return [

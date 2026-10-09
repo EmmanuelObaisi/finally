@@ -189,7 +189,9 @@ Body `{"message": "..."}`.
 ### GET /api/chat/history
 
 `200 {"messages": [{"id", "role", "content", "actions", "created_at"}]}`, oldest first, the most
-recent 100. `role` is `"user"` or `"assistant"`. `actions` is `null` for user messages.
+recent 100. `role` is `"user"` or `"assistant"`. `actions` is `null` for user messages. Order is
+the order the turns were stored (each question stays next to its reply), not `created_at`: a user
+message's `created_at` is when it was asked, which can precede an earlier turn's reply.
 
 ## More shared shapes
 
