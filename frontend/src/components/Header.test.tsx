@@ -119,6 +119,13 @@ describe("Header totals states", () => {
     expect(screen.getByTestId("header-cash")).toHaveTextContent("$1,000.00");
   });
 
+  it("values a position at the server's current price before the first frame, not at cost", async () => {
+    const gained = { ...held.positions[0], avg_cost: 100, unrealized_pnl: 120, pnl_percent: 80 };
+    stubFetch({ ...held, positions: [gained] });
+    render(<Header />);
+    await waitFor(() => expect(screen.getByTestId("header-total-value")).toHaveTextContent("$1,270.00"));
+  });
+
   it("shows the same total whether prices arrive before or after the portfolio", async () => {
     useMarketStore.getState().receiveFrame(aaplFrame);
     stubFetch(held);

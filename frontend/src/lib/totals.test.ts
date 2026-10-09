@@ -39,7 +39,8 @@ describe("liveTotals", () => {
     expect(liveTotals(portfolio([aapl]), frame(190))).toEqual({ cash: 1000, total: 1285 });
   });
 
-  it("falls back to average cost when there is no live price", () => {
-    expect(liveTotals(portfolio([aapl]), {})).toEqual({ cash: 1000, total: 1270 });
+  it("falls back to the server's current price, not average cost, when there is no live price", () => {
+    const gained = { ...aapl, avg_cost: 100, current_price: 180 };
+    expect(liveTotals(portfolio([gained]), {})).toEqual({ cash: 1000, total: 1270 });
   });
 });
