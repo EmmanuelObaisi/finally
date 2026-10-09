@@ -68,15 +68,16 @@ def insert_and_read(state, ticker: str) -> list[dict]:
 async def add_to_watchlist(state, raw_ticker: str) -> list[dict]:
     """Validate, start streaming and store a ticker; shared with Phase 5 chat."""
     ticker = normalize_ticker(raw_ticker)
-    if await asyncio.to_thread(on_watchlist, state.settings.db_path, ticker):
-        return await asyncio.to_thread(read_watchlist, state)
-    try:
-        await state.source.add_ticker(ticker)
-        if state.cache.get_price(ticker) is None:
-            raise DomainError("Unknown ticker")
-        return await asyncio.to_thread(insert_and_read, state, ticker)
-    finally:
-        await sync_ticker(state, ticker)
+    async with state.tracking_lock:
+        if await asyncio.to_thread(on_watchlist, state.settings.db_path, ticker):
+            return await asyncio.to_thread(read_watchlist, state)
+        try:
+            await state.source.add_ticker(ticker)
+            if state.cache.get_price(ticker) is None:
+                raise DomainError("Unknown ticker")
+            return await asyncio.to_thread(insert_and_read, state, ticker)
+        finally:
+            await sync_ticker(state, ticker)
 
 
 @router.post("/api/watchlist")
@@ -99,8 +100,9 @@ def delete_and_read(state, ticker: str) -> list[dict]:
 async def remove_from_watchlist(state, raw_ticker: str) -> list[dict]:
     """Remove a ticker; it keeps streaming while a position is held. Shared with Phase 5 chat."""
     ticker = raw_ticker.upper() if raw_ticker.isascii() else raw_ticker
-    items = await asyncio.to_thread(delete_and_read, state, ticker)
-    await sync_ticker(state, ticker)
+    async with state.tracking_lock:
+        items = await asyncio.to_thread(delete_and_read, state, ticker)
+        await sync_ticker(state, ticker)
     return items
 
 

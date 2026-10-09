@@ -1,6 +1,16 @@
 """MKT-08 trade path: a ticker streams exactly when it is watched or held."""
+import asyncio
+import types
+
+import pytest
+
 from app.db import USER_ID, connect, init_db, now_iso
+from app.errors import DomainError
+from app.market.cache import PriceCache
 from app.tracking import is_wanted
+from app.trading import place_trade
+from app.watchlist import add_to_watchlist
+from tests.conftest import FIXED_PRICES, FixedPriceSource
 
 
 def buy(client, ticker, quantity=1):
@@ -93,3 +103,42 @@ def test_selling_a_removed_held_ticker_stops_streaming_it(client):
     sell(client, "AAPL")
     assert "AAPL" not in client.app.state.source.get_tickers()
     assert client.app.state.cache.get_price("AAPL") is None
+
+
+class SlowPollSource(FixedPriceSource):
+    """Like MassiveDataSource: a ticker counts as tracked before its first price arrives."""
+
+    async def add_ticker(self, ticker):
+        if ticker in self.tracked:
+            return
+        self.tracked.add(ticker)
+        await asyncio.sleep(0.05)
+        self.cache.update(ticker, self.prices[ticker])
+
+
+@pytest.fixture
+def slow_state(tmp_path):
+    path = tmp_path / "slow.db"
+    init_db(path)
+    cache = PriceCache()
+    source = SlowPollSource(cache, dict(FIXED_PRICES))
+    return types.SimpleNamespace(
+        settings=types.SimpleNamespace(db_path=path), cache=cache, source=source,
+        tracking_lock=asyncio.Lock())
+
+
+async def test_concurrent_adds_of_a_slow_ticker_both_succeed_and_stay_tracked(slow_state):
+    results = await asyncio.gather(
+        add_to_watchlist(slow_state, "PYPL"), add_to_watchlist(slow_state, "PYPL"))
+    assert all("PYPL" in [i["ticker"] for i in items] for items in results)
+    assert "PYPL" in slow_state.source.get_tickers()
+    assert slow_state.cache.get_price("PYPL") == 60.0
+
+
+async def test_rejected_buy_does_not_evict_a_ticker_being_added(slow_state):
+    add, rejected = await asyncio.gather(
+        add_to_watchlist(slow_state, "PYPL"), place_trade(slow_state, "PYPL", "buy", 0),
+        return_exceptions=True)
+    assert isinstance(rejected, DomainError)
+    assert "PYPL" in [i["ticker"] for i in add]
+    assert slow_state.cache.get_price("PYPL") == 60.0

@@ -1,4 +1,5 @@
 """FastAPI app factory. Request and response shapes follow planning/API_CONTRACT.md."""
+import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -25,6 +26,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         app.state.settings = settings
         app.state.cache = cache
         app.state.source = source
+        app.state.tracking_lock = asyncio.Lock()
         init_db(settings.db_path)
         with connect(settings.db_path) as conn:
             tickers = load_tracked_tickers(conn)

@@ -104,14 +104,18 @@ def run_trade(state, ticker: str, side: str, quantity: float) -> dict:
 
 
 async def place_trade(state, raw_ticker: str, side: str, quantity: float) -> dict:
-    """Validate the ticker and fill off the event loop; shared with Phase 5 chat."""
+    """Validate the ticker and fill off the event loop; shared with Phase 5 chat.
+
+    The tracking lock keeps a concurrent request from evicting a ticker mid-fill.
+    """
     ticker = normalize_ticker(raw_ticker)
-    try:
-        if side == "buy":
-            await state.source.add_ticker(ticker)
-        return await asyncio.to_thread(run_trade, state, ticker, side, quantity)
-    finally:
-        await sync_ticker(state, ticker)
+    async with state.tracking_lock:
+        try:
+            if side == "buy":
+                await state.source.add_ticker(ticker)
+            return await asyncio.to_thread(run_trade, state, ticker, side, quantity)
+        finally:
+            await sync_ticker(state, ticker)
 
 
 @router.post("/api/portfolio/trade")
