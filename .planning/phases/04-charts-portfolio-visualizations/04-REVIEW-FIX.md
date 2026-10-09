@@ -22,13 +22,13 @@ status: all_fixed
 
 ## Fixed Issues
 
-### WR-01: Selection tests assert effect-derived state right after `findByTestId`
+### WR-01: Selection tests assert effect-derived state right after `findByTestId`, so they can fail intermittently
 
 **Files modified:** `frontend/src/components/WatchlistPanel.test.tsx`
 **Commit:** 4dab4b6
 **Applied fix:** Wrapped the effect-derived assertions in `waitFor`: the first-row `data-selected` check, a wait for `selected()` to be `"AAPL"` before the remove-button click, and a wait for `status` to be `"ready"` in the empty-list test. Verified by running the file three times (38/38 passing each run).
 
-### WR-02: `portfolio-charts.spec.ts` only passes on a pristine database
+### WR-02: `portfolio-charts.spec.ts` only passes on a pristine database, so it is not re-runnable against a long-lived server
 
 **Files modified:** `test/portfolio-charts.spec.ts`
 **Commit:** bd76a60
