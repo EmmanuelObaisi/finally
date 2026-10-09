@@ -5,11 +5,11 @@ titles: json
 findings:
   - id: WR-06
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "The sub-cent guard makes dust positions permanently unsellable"
   - id: WR-07
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "The post-failure watchlist refresh can overwrite a newer result"
   - id: IN-01
     severity: info
@@ -55,17 +55,17 @@ findings:
     severity: info
     disposition: open
     title: "E2E specs depend on each other and cannot be re-run against a persistent container"
-open: 8
+open: 6
 total: 13
-recorded: 2026-10-09T01:04:43.126Z
+recorded: 2026-10-09T01:08:28.785Z
 ---
 
 # Phase 03: Code Review Disposition
 
 | Finding | Severity | Disposition | Source |
 |---------|----------|-------------|--------|
-| WR-06 | warning | open | - |
-| WR-07 | warning | open | - |
+| WR-06 | warning | fixed | 03-REVIEW-FIX.md |
+| WR-07 | warning | fixed | 03-REVIEW-FIX.md |
 | IN-01 | info | open | - |
 | IN-04 | info | open | - |
 | IN-06 | info | open | - |
