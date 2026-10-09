@@ -396,7 +396,7 @@ describe("WatchlistPanel selection", () => {
     stubFetch(ok([item("AAPL", 190), item("GOOGL", 175)]));
     render(<WatchlistPanel />);
     const aapl = await screen.findByTestId("watchlist-row-AAPL");
-    expect(aapl).toHaveAttribute("data-selected", "true");
+    await waitFor(() => expect(aapl).toHaveAttribute("data-selected", "true"));
     expect(screen.getByTestId("watchlist-row-GOOGL")).toHaveAttribute("data-selected", "false");
     expect(screen.getByTestId("select-AAPL")).toHaveAttribute("aria-current", "true");
     expect(screen.getByTestId("select-GOOGL")).not.toHaveAttribute("aria-current");
@@ -426,6 +426,7 @@ describe("WatchlistPanel selection", () => {
     stubFetch(ok([item("AAPL", 190), item("MSFT", 400)]), new Promise(() => {}));
     render(<WatchlistPanel />);
     await screen.findByTestId("watchlist-row-AAPL");
+    await waitFor(() => expect(selected()).toBe("AAPL"));
     fireEvent.click(screen.getByTestId("watchlist-remove-MSFT"));
     expect(selected()).toBe("AAPL");
   });
@@ -443,7 +444,7 @@ describe("WatchlistPanel selection", () => {
     stubFetch(ok([]));
     render(<WatchlistPanel />);
     await screen.findByTestId("watchlist-empty");
+    await waitFor(() => expect(useSelectionStore.getState().status).toBe("ready"));
     expect(selected()).toBeNull();
-    expect(useSelectionStore.getState().status).toBe("ready");
   });
 });
