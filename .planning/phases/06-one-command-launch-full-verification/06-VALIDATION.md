@@ -40,13 +40,19 @@ created: "2026-10-09"
 
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| (filled by planner) | | | PKG-02 | — | Volume persists trades, positions, chat across stop/start | script | `npm --prefix test run persist` | ❌ W0 | ⬜ pending |
-| (filled by planner) | | | PKG-03 | — | Scripts idempotent; compose file valid | script | `docker compose config -q` + `npm --prefix test run persist` | ❌ W0 | ⬜ pending |
-| (filled by planner) | | | PKG-04 | loopback publish | One command prints and serves the URL on 127.0.0.1 | script | `npm --prefix test run persist` | ❌ W0 | ⬜ pending |
-| (filled by planner) | | | PUI-08 | — | Every hook the specs use resolves | E2E | `npm --prefix test run e2e` | ❌ W0 | ⬜ pending |
-| (filled by planner) | | | TEST-04 | — | API route status codes, shapes, errors | unit | `uv run --directory backend python -m pytest -q` | ✅ | ⬜ pending |
-| (filled by planner) | | | TEST-05 | — | Frontend §12 unit bullets | unit | `npm --prefix frontend test` | ✅ | ⬜ pending |
-| (filled by planner) | | | TEST-06 | mock pinned | Every §12 E2E scenario against the container, LLM_MOCK=true | E2E | `npm --prefix test run e2e` | ❌ W0 | ⬜ pending |
+| 06-01-T1 | 01 | 1 | PKG-02, PKG-03, PKG-04 | T-06-01, T-06-03, T-06-04 | Loopback-only publish; mock pins beat a hostile shell and .env; missing .env does not block; user volumes and images unchanged | script | `docker compose config` checks + live start/stop of `start_windows.ps1`/`stop_windows.ps1` under project finally-probe06 on :8011 | ❌ W0 | ⬜ pending |
+| 06-01-T2 | 01 | 1 | PKG-03 | T-06-04 | bash pair: second start keeps the container, second stop harmless, volume kept; mode 100755 LF | script | `bash scripts/start_mac.sh --no-open` x2 + `stop_mac.sh` x2 under finally-probe06 on :8012 | ❌ W0 | ⬜ pending |
+| 06-01-T3 | 01 | 1 | PKG-04 | — | README Run section; no test trades suggested against the user's app | doc | grep checks on README.md | ✅ | ⬜ pending |
+| 06-05-T1 | 05 | 1 | TEST-04 | T-06-13 | Route matrix complete; chat history and portfolio history key sets asserted over HTTP; no db/ residue | unit | `uv run --directory backend python -m pytest -q` | ✅ | ⬜ pending |
+| 06-05-T2 | 05 | 1 | TEST-05 | — | Frontend §12 matrix with rounding and threshold tests cited | unit | `npm --prefix frontend test` | ✅ | ⬜ pending |
+| 06-02-T1 | 02 | 2 | TEST-06 | T-06-05, T-06-06, T-06-07 | LLM_MOCK=true and empty MASSIVE_API_KEY proven inside the container; 17 passed, 0 skipped; no leftovers; user data unchanged | E2E | `npm --prefix test run e2e` + `npm --prefix test run smoke` | ❌ W0 | ⬜ pending |
+| 06-02-T2 | 02 | 2 | TEST-06 | T-06-05 | Failed startup (port taken) exits non-zero with nothing left; dirty leftover project cleaned by pre-clean | script | e2e with 127.0.0.1:8001 occupied; e2e after a dirty finally-test project | ❌ W0 | ⬜ pending |
+| 06-03-T1 | 03 | 3 | TEST-06 | T-06-08 | Real `docker restart` of E2E_CONTAINER only; reconnect without reload; data intact | E2E | `npm --prefix test run e2e` + `npm --prefix test run smoke` | ❌ W0 | ⬜ pending |
+| 06-03-T2 | 03 | 3 | TEST-06 | T-06-09 | Sell cash delta; heatmap hue follows P&L | E2E | `npm --prefix test run smoke` | ❌ W0 | ⬜ pending |
+| 06-03-T3 | 03 | 3 | TEST-06, PUI-08 | T-06-08 | Mocked chat with inline trade; every spec hook exists; user data unchanged | E2E | hook audit (`node -e ...`) + `npm --prefix test run e2e` + `npm --prefix test run smoke` | ❌ W0 | ⬜ pending |
+| 06-04-T1 | 04 | 4 | PKG-02, PKG-04 | T-06-10, T-06-12 | Trade, chat and cash survive real stop/start; private project; user data unchanged | script | `npm --prefix test run persist` | ❌ W0 | ⬜ pending |
+| 06-04-T2 | 04 | 4 | PKG-02, PKG-03 | T-06-11 | Idempotent wrappers; .env delivery checked without printing the key; broken start exits non-zero | script | `npm --prefix test run persist` + `PERSIST_SHELL=bash npm --prefix test run persist` | ❌ W0 | ⬜ pending |
+| 06-04-T3 | 04 | 4 | all phase requirements | — | Full phase gate | gate | backend suite, frontend suite + build + smoke, e2e, persist (both shells) | ✅ | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -68,7 +74,7 @@ created: "2026-10-09"
 
 | Behavior | Requirement | Why Manual | Test Instructions |
 |----------|-------------|------------|-------------------|
-| Browser auto-open from start script | PKG-04 | Opens a desktop browser window | Run `scripts/start_windows.ps1` without `-NoOpen`; confirm a browser opens at the printed URL |
+| Browser auto-open and real launch on the default project and port | PKG-04 | Opens a desktop browser on the user's own app, which automated checks must never touch | Plan 06-04 Task 3 human-check: `.\scripts\start_windows.ps1 -Build`, start again, buy a share, stop, `docker volume ls` shows finally_finally-data, start again and the position is still there |
 
 *All other phase behaviors have automated verification.*
 
