@@ -2,17 +2,17 @@
 gsd_state_version: "1.0"
 current_phase: 04
 current_phase_name: Charts & Portfolio Visualizations
-status: executing
-stopped_at: Completed 04-03-PLAN.md
-last_updated: "2026-10-09T08:36:25.823Z"
+status: verifying
+stopped_at: Completed 04-04-PLAN.md
+last_updated: "2026-10-09T08:51:24.423Z"
 last_activity: 2026-10-09
 last_activity_desc: Phase 04 execution started
-state_head: 990e712e878505b0099406cd3cde50b127f515f9
+state_head: 55d4f8abc9ee5a9729ed1210f8188c5212d73666
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 24
-  completed_plans: 23
+  completed_plans: 24
   percent: 50
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-10-09)
 
 Phase: 04 (Charts & Portfolio Visualizations) — EXECUTING
 Plan: 4 of 4
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-10-09 — Phase 04 execution started
 
 Progress: [█████░░░░░] 50%
@@ -81,6 +81,7 @@ Progress: [█████░░░░░] 50%
 | Phase 04 P02 | 8 min | 3 tasks | 15 files |
 | Phase 04 P01 | 3 min | 3 tasks | 5 files |
 | Phase 04 P03 | 5 min | 3 tasks | 12 files |
+| Phase 04 P04 | 20 min | 3 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -136,6 +137,8 @@ Recent decisions affecting current work:
 - [Phase 04]: 04-01: history request snapshots only after 10 s and when the 2 dp total changed; record_if_due takes now as a parameter
 - [Phase 04]: 04-03: P&L series memo depends on the live total so the chart's live point always matches the header total
 - [Phase 04]: 04-03: P&L empty state means never traded (no positions, at most 1 history point) or fewer than 2 points; closed-out history keeps its chart
+- [Phase 04]: 04-04: buildTiles reads rectangles from the node returned by treemap() (TypeScript 7 types only that node with x0/y0/x1/y1)
+- [Phase 04]: 04-04: portfolioStore.load() sets failed:false on start so every Retry shows its panel loading skeleton; heatmap empty check is independent of measured size
 
 ### Pending Todos
 
@@ -158,6 +161,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-09T08:36:25.682Z
-Stopped at: Completed 04-03-PLAN.md
+Last session: 2026-10-09T08:51:24.280Z
+Stopped at: Completed 04-04-PLAN.md
 Resume file: None
