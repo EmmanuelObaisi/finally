@@ -23,11 +23,11 @@ One command launches a live, data-dense trading terminal where prices stream, tr
 - ✓ Trade bar, positions table and watchlist add/remove UI; header total updates immediately after a trade — Phase 3
 - ✓ Portfolio value history API (`GET /api/portfolio/history`, seed snapshot, 10 s + changed-value snapshot guard) — Phase 4
 - ✓ Main ticker chart (click a watchlist row to select), P&L treemap heatmap and portfolio value chart, each with an explicit empty state — Phase 4
+- ✓ AI chat API: LiteLLM → OpenRouter (`openrouter/openai/gpt-oss-120b`, Cerebras provider) with structured outputs; auto-executes trades and watchlist changes; persists history; deterministic mock mode — Phase 5; live smoke and real-model UAT passed
+- ✓ Collapsible AI chat panel (docked at 1536 px and wider, overlay drawer below) with inline action lines and reload restore — Phase 5
 
 ### Active
 
-- [ ] AI chat API: LiteLLM → OpenRouter (`openrouter/openai/gpt-oss-120b`, Cerebras provider) with structured outputs; auto-executes trades and watchlist changes; persists history; deterministic mock mode
-- [ ] Collapsible AI chat panel in the frontend (watchlist, header, positions, trade bar and charts done in Phases 2-4)
 - [ ] SQLite on a named Docker volume (persists across container restarts)
 - [ ] Start/stop scripts for macOS/Linux and Windows (thin, idempotent wrappers)
 - [ ] Backend pytest suite and frontend component tests covering PLAN.md §12
@@ -104,6 +104,9 @@ One command launches a live, data-dense trading terminal where prices stream, tr
 | One `asyncio.Lock` serializes every tracking change (trade, watchlist add/remove) | The watchlist ∪ positions rule was check-then-act and raced with a slow-poll source | ✓ Good — Phase 3 review fix WR-03 |
 | Snapshots recorded on trades and on history requests (no 30 s background task), guarded by 10 s and a changed 2 dp total | PLAN.md §13 #20; avoids a second background task without flooding the table | ✓ Good — Phase 4 |
 | Treemap is `d3-hierarchy` layout rendering plain divs | Full control of P&L colors and transitions at ~136 KB, unit-testable in jsdom | ✓ Good — Phase 4; UAT legible at 4 viewport sizes |
+| Strict Cerebras pinning (no OpenRouter fallbacks, no LiteLLM Router) | A provider outage must become the graceful assistant error, never a silent reroute | ✓ Good — Phase 5; live smoke confirmed the Cerebras route |
+| Chat text that cannot be encoded as UTF-8 is a 400 before any model call or action | A lone surrogate executed trades and then failed to store the turn (review CR-01) | ✓ Good — Phase 5 |
+| An unexpected exception inside one chat action becomes a failed action with fixed text | Keeps the batch going and the turn stored instead of a 500 after partial commits (review WR-01) | ✓ Good — Phase 5 |
 
 ## Evolution
 
@@ -123,4 +126,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-10-09 after Phase 4*
+*Last updated: 2026-10-09 after Phase 5*

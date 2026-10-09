@@ -21,7 +21,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Live Market Terminal** - Open the app and watch the 10 default tickers stream with flashes, sparklines and a live header (completed 2026-10-08)
 - [x] **Phase 3: Trading & Watchlist Management** - Buy and sell shares and curate the watchlist, with positions, prices and streams kept consistent (completed 2026-10-09)
 - [x] **Phase 4: Charts & Portfolio Visualizations** - Main ticker chart, P&L treemap heatmap and portfolio value history chart (completed 2026-10-09)
-- [ ] **Phase 5: AI Trading Copilot** - Chat with FinAlly, which reads the portfolio and executes trades and watchlist changes
+- [x] **Phase 5: AI Trading Copilot** - Chat with FinAlly, which reads the portfolio and executes trades and watchlist changes (completed 2026-10-09)
 - [ ] **Phase 6: One-Command Launch & Full Verification** - Compose and start/stop scripts, persistent volume, and every §12 unit and E2E scenario green
 
 ## Phase Details
@@ -163,7 +163,7 @@ Plans:
   4. Reloading the page restores the prior conversation, including action lines. An LLM failure (timeout, malformed output, missing key) shows a graceful assistant error and executes nothing
   5. With `LLM_MOCK=true`, keyword messages (buy, sell, watchlist add/remove, analysis) return deterministic responses with no network calls. LLM unit tests (structured output parsing, malformed responses, trade validation in the chat flow) pass
 
-**Plans**: 5/5 plans executed
+**Plans**: 5/5 plans complete
 Plans:
 **Wave 1**
 - [x] 05-01-PLAN.md — Package gate (litellm 1.104.0), LLM seam: reply schema, deterministic mock, `complete()` with pinned Cerebras provider, prompt builder with outcome lines, live smoke script (W1, checkpoint)
@@ -204,5 +204,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6. Phases 4 and 5
 | 2. Live Market Terminal | 7/7 | Complete    | 2026-10-08 |
 | 3. Trading & Watchlist Management | 5/5 | Complete    | 2026-10-09 |
 | 4. Charts & Portfolio Visualizations | 4/4 | Complete    | 2026-10-09 |
-| 5. AI Trading Copilot | 5/5 | In Progress | - |
+| 5. AI Trading Copilot | 5/5 | Complete    | 2026-10-09 |
 | 6. One-Command Launch & Full Verification | 0/TBD | Not started | - |

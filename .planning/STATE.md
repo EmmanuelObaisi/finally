@@ -1,19 +1,19 @@
 ---
 gsd_state_version: "1.0"
-current_phase: 05
-current_phase_name: AI Trading Copilot
-status: verifying
-stopped_at: Completed 05-05-PLAN.md
-last_updated: "2026-10-09T17:54:02.456Z"
+current_phase: 6
+current_phase_name: One-Command Launch & Full Verification
+status: planning
+stopped_at: Phase 05 complete, ready to plan Phase 6
+last_updated: "2026-10-09T22:25:13.193Z"
 last_activity: 2026-10-09
-last_activity_desc: Phase 05 execution started
-state_head: 609cea0acf0d7e5d778da00bdf88dbb040ca959c
+last_activity_desc: Phase 05 complete, transitioned to Phase 6
+state_head: 73aaabe667372d42162de1d2bf53dbd887526c28
 progress:
   total_phases: 6
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 29
   completed_plans: 29
-  percent: 67
+  percent: 83
 ---
 
 # Project State
@@ -23,21 +23,21 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-09)
 
 **Core value:** One command launches a live, data-dense trading terminal where prices stream, trades fill instantly, and the AI copilot can act on the portfolio — and every specified unit and E2E scenario passes to prove it.
-**Current focus:** Phase 05 — AI Trading Copilot
+**Current focus:** Phase 6 — One-Command Launch & Full Verification
 
 ## Current Position
 
-Phase: 05 (AI Trading Copilot) — EXECUTING
-Plan: 5 of 5
-Status: Phase complete — ready for verification
-Last activity: 2026-10-09 — Phase 05 execution started
+Phase: 6 — One-Command Launch & Full Verification
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-10-09 — Phase 05 complete, transitioned to Phase 6
 
-Progress: [███████░░░] 67%
+Progress: [████████░░] 83%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 24
+- Total plans completed: 29
 - Average duration: -
 - Total execution time: 0.0 hours
 
@@ -49,6 +49,7 @@ Progress: [███████░░░] 67%
 | 02 | 7 | - | - |
 | 03 | 5 | - | - |
 | 04 | 4 | - | - |
+| 05 | 5 | - | - |
 
 **Recent Trend:**
 - Last 5 plans: -
@@ -151,7 +152,8 @@ Recent decisions affecting current work:
 - [Phase 05]: 05-01: litellm 1.104.0 approved by user and pinned; installed RECORD has no .pth file
 - [Phase 05]: Chat LLM failures are a 200 with one of two fixed ASCII texts; provider text and API key never reach client or logs
 - [Phase 05]: ChatPanel is always mounted and hidden by class when closed; default-open decided in a mount effect from matchMedia(min-width: 1536px) — Draft, scroll and history survive close and reopen; static export hydrates without a mismatch
-- [Phase 05]: Chat draft limit is draft.length (UTF-16 units) and slow-reply text appears after 8000 ms; Retry is disabled while a reply is pending
+- [Phase 05]: Chat draft limit counts code points after trimming, matching the server (review fix WR-03); slow-reply text appears after 8000 ms; Retry is disabled while a reply is pending
+- [Phase 05]: UAT 29/29 passed (live smoke on Cerebras, real-model grounding and action discipline by user; layout and mock walkthrough via Playwright at 5 widths)
 
 ### Pending Todos
 
@@ -163,8 +165,8 @@ None yet.
 - [Phase 4]: Five info-level review findings remain open (IN-01..IN-05, see 04-REVIEW-DISPOSITION.md); IN-01: a database created before Phase 4 gets no seed snapshot, so its P&L chart is empty until the first trade
 - [Phase 2 carry-over]: IN-08: bad-key detection relies on the "Unknown API Key" message text (WR-07 fixed in dfe4268)
 - [Phase 6]: A `.env` copied from `.env.example` passes an empty `DB_PATH` through `docker run --env-file` (PKG-02)
-- [Phase 5]: Cerebras strict-schema limits and provider pinning were settled by the research live smoke; 05-05 re-proves them with a real-key human check
-- [Phase 5]: Plans were written by a Sonnet planner (Opus weekly limit hit, resets 2026-10-12)
+- [Phase 5]: Four info-level review findings remain open (IN-01..IN-04, see 05-REVIEW-DISPOSITION.md); also a save-time DB failure in finish_turn still returns 500 after actions ran (noted at re-verification, not a reported gap)
+- [Phase 4 carry-over]: at 1536 px with chat docked, the Portfolio value panel title truncates to "Portfolio va..." and "since start" wraps (cosmetic, seen in Phase 5 UAT)
 
 ## Deferred Items
 
@@ -176,6 +178,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-09T17:54:02.303Z
-Stopped at: Completed 05-05-PLAN.md
+Last session: 2026-10-09T22:25:51.628Z
+Stopped at: Phase 05 complete, ready to plan Phase 6
 Resume file: None
