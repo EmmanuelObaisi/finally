@@ -5,6 +5,7 @@ description = "FinAlly backend"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi==0.142.2",
+    "litellm==1.104.0",
     "massive==2.8.0",
     "numpy==2.5.3",
     "python-dotenv==1.2.4",
