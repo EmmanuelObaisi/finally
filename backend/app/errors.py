@@ -27,8 +27,9 @@ def register_error_handlers(app: FastAPI) -> None:
     @app.exception_handler(RequestValidationError)
     async def validation_error(_: Request, exc: RequestValidationError) -> JSONResponse:
         first = exc.errors()[0]
-        loc = ".".join(str(p) for p in first["loc"] if p != "body")
-        return JSONResponse({"error": f"{loc}: {first['msg']}"}, status_code=400)
+        loc = ".".join(str(p) for p in first["loc"] if p != "body" and not isinstance(p, int))
+        message = f"{loc}: {first['msg']}" if loc else first["msg"]
+        return JSONResponse({"error": message}, status_code=400)
 
     @app.exception_handler(DomainError)
     async def domain_error(_: Request, exc: DomainError) -> JSONResponse:

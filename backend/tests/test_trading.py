@@ -224,6 +224,8 @@ def test_route_buy_returns_trade_and_portfolio(client):
     ('{"ticker": "AAPL", "quantity": "1e3", "side": "buy"}', "quantity: Input should be a valid number"),
     ('{"ticker": "AAPL", "quantity": true, "side": "buy"}', "quantity: Input should be a valid number"),
     ('{"ticker": "AAPL", "side": "buy"}', "quantity: Field required"),
+    ("", "Field required"),
+    ("{not json", "JSON decode error"),
     ('{"ticker": "AAPL", "quantity": 1, "side": "hold"}', "side: Input should be 'buy' or 'sell'"),
     ('{"ticker": "AAPL$", "quantity": 1, "side": "buy"}', "Invalid ticker: AAPL$"),
     ('{"ticker": "AAPL", "quantity": 1, "side": "sell"}', "Insufficient shares: you hold 0 AAPL"),
