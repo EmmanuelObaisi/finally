@@ -78,9 +78,13 @@ export default function WatchlistPanel() {
     if (await mutate("Adding " + ticker.toUpperCase() + "...", () => addTicker(ticker))) setInput("");
   }
 
-  function remove(ticker: string) {
+  /** A failed remove may mean the list is stale (removed elsewhere): refresh it, keep the message. */
+  async function remove(ticker: string) {
     if (busy) return;
-    mutate("Removing " + ticker + "...", () => removeTicker(ticker));
+    if (await mutate("Removing " + ticker + "...", () => removeTicker(ticker))) return;
+    getWatchlist()
+      .then((items) => setView({ kind: "ready", items }))
+      .catch(() => {});
   }
 
   const locked = busy || view.kind !== "ready";

@@ -330,13 +330,15 @@ describe("WatchlistPanel remove", () => {
     expect(screen.queryByTestId("watchlist-loading")).not.toBeInTheDocument();
   });
 
-  it("shows the server text on a 404 and keeps the row", async () => {
-    await renderReady(fail(404, "Ticker not in watchlist"));
+  it("shows the server text on a 404 and refreshes the stale list", async () => {
+    const fetchFn = await renderReady(fail(404, "Ticker not in watchlist"), reply([item("GOOGL", 175)]));
     fireEvent.click(screen.getByTestId("watchlist-remove-AAPL"));
-    await waitFor(() => expect(message()).toHaveTextContent("Ticker not in watchlist"));
+    await waitFor(() => expect(screen.queryByTestId("watchlist-row-AAPL")).not.toBeInTheDocument());
+    expect(fetchFn.mock.calls[2][0]).toBe("/api/watchlist");
+    expect(message()).toHaveTextContent("Ticker not in watchlist");
     expect(message()).toHaveAttribute("data-kind", "error");
-    expect(screen.getByTestId("watchlist-row-AAPL")).toBeInTheDocument();
-    expect(screen.getByTestId("watchlist-remove-AAPL")).toBeEnabled();
+    expect(screen.getByTestId("watchlist-row-GOOGL")).toBeInTheDocument();
+    expect(screen.queryByTestId("watchlist-loading")).not.toBeInTheDocument();
   });
 
   it("shows the empty state with a usable add block after removing the last ticker", async () => {
