@@ -55,7 +55,7 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 ### AI Chat
 
 - [ ] **CHAT-01**: User can send a message via `POST /api/chat` and receive a complete JSON response with the assistant message and executed actions
-- [ ] **CHAT-02**: The LLM prompt includes the FinAlly system prompt, current portfolio context (cash, positions with P&L, watchlist prices, total value) and the last 20 messages
+- [x] **CHAT-02**: The LLM prompt includes the FinAlly system prompt, current portfolio context (cash, positions with P&L, watchlist prices, total value) and the last 20 messages
 - [ ] **CHAT-03**: LLM is called via LiteLLM → OpenRouter (`openrouter/openai/gpt-oss-120b`, Cerebras provider) per the cerebras skill, async, with structured output `{message, trades[], watchlist_changes[]}`
 - [ ] **CHAT-04**: Trades and watchlist changes in the response auto-execute through the same validation as manual actions; each action's success or error is returned
 - [ ] **CHAT-05**: User and assistant messages (with actions JSON) are persisted in `chat_messages`
@@ -167,7 +167,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PORT-07 | Phase 4 | Complete |
 | PORT-08 | Phase 1 | Complete |
 | CHAT-01 | Phase 5 | Pending |
-| CHAT-02 | Phase 5 | Pending |
+| CHAT-02 | Phase 5 | Complete |
 | CHAT-03 | Phase 5 | Pending |
 | CHAT-04 | Phase 5 | Pending |
 | CHAT-05 | Phase 5 | Pending |

@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 05
 current_phase_name: AI Trading Copilot
 status: executing
-stopped_at: Completed 05-03-PLAN.md
-last_updated: "2026-10-09T17:24:45.570Z"
+stopped_at: Completed 05-01-PLAN.md
+last_updated: "2026-10-09T17:32:01.441Z"
 last_activity: 2026-10-09
 last_activity_desc: Phase 05 execution started
-state_head: becf25f2e61d8fb7b881c5f153a86021a47b8e4e
+state_head: 55f2e82dfe084586e114af2e684f382368a41d0f
 progress:
   total_phases: 6
   completed_phases: 4
   total_plans: 29
-  completed_plans: 25
+  completed_plans: 26
   percent: 67
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-09)
 ## Current Position
 
 Phase: 05 (AI Trading Copilot) — EXECUTING
-Plan: 2 of 5
+Plan: 3 of 5
 Status: Ready to execute
 Last activity: 2026-10-09 — Phase 05 execution started
 
@@ -84,6 +84,7 @@ Progress: [███████░░░] 67%
 | Phase 04 P03 | 5 min | 3 tasks | 12 files |
 | Phase 04 P04 | 20 min | 3 tasks | 14 files |
 | Phase 05 P03 | 8min | 2 tasks | 11 files |
+| Phase 05 P01 | 6 min | 3 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -143,6 +144,8 @@ Recent decisions affecting current work:
 - [Phase 04]: 04-04: portfolioStore.load() sets failed:false on start so every Retry shows its panel loading skeleton; heatmap empty check is independent of measured size
 - [Phase 05]: Plan check passed with override: checker blocker "05-05 redundantly claims CHAT-03" rejected (its evidence was wrong, 05-02 does not claim CHAT-03; 05-05 holds the live real-model CHAT-03 human check)
 - [Phase 05]: 05-03: chat reply refreshes other panels via applyTrade(reply.portfolio) and watchlistStore.publish(reply.watchlist); one request per send, no retry; chatStore never reads stream status
+- [Phase 05]: 05-01: Provider pinned to Cerebras (allow_fallbacks False, require_parameters True); litellm imported lazily in the real branch of complete() only
+- [Phase 05]: 05-01: litellm 1.104.0 approved by user and pinned; installed RECORD has no .pth file
 
 ### Pending Todos
 
@@ -167,6 +170,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-09T17:24:45.419Z
-Stopped at: Completed 05-03-PLAN.md
+Last session: 2026-10-09T17:32:01.289Z
+Stopped at: Completed 05-01-PLAN.md
 Resume file: None
