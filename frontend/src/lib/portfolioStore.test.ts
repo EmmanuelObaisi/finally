@@ -95,3 +95,12 @@ describe("portfolio store", () => {
     expect(initialPortfolioState()).toEqual({ portfolio: null, failed: false });
   });
 });
+
+describe("portfolio store load start", () => {
+  it("load clears failed when it starts", () => {
+    manualFetch();
+    usePortfolioStore.setState({ failed: true });
+    state().load();
+    expect(state().failed).toBe(false);
+  });
+});

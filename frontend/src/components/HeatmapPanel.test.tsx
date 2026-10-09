@@ -1,5 +1,5 @@
-import { act, render, screen, within } from "@testing-library/react";
-import { beforeEach, describe, expect, it } from "vitest";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Tile } from "../lib/heatmap";
 import { resetPortfolioStore, usePortfolioStore } from "../lib/portfolioStore";
 import { applyFrame, initialMarketState, useMarketStore } from "../lib/store";
@@ -129,5 +129,85 @@ describe("HeatmapPanel tiles", () => {
     act(() => useMarketStore.setState((s) => applyFrame(s, frame("AAPL", 80), 2)));
     expect(screen.getByTestId("heatmap-tile-AAPL")).toHaveAttribute("data-pnl", "down");
     expect(screen.getByTestId("heatmap-tile-AAPL").getAttribute("style")).not.toBe(before);
+  });
+});
+
+describe("HeatmapPanel states", () => {
+  it("shows the loading skeleton before the first portfolio", () => {
+    render(<HeatmapPanel />);
+    const loading = screen.getByTestId("heatmap-loading");
+    expect(loading).toHaveAttribute("aria-busy", "true");
+    expect(loading).toHaveAttribute("aria-label", "Loading heatmap");
+    expect(screen.queryByTestId("heatmap-tiles")).toBeNull();
+    expect(screen.queryByTestId("heatmap-error")).toBeNull();
+  });
+
+  it("shows the fixed error copy when the portfolio never loaded", () => {
+    usePortfolioStore.setState({ portfolio: null, failed: true });
+    render(<HeatmapPanel />);
+    const error = screen.getByTestId("heatmap-error");
+    expect(error).toHaveTextContent("Heatmap unavailable");
+    expect(error).toHaveTextContent(
+      "The server did not return your portfolio. Check that FinAlly is running, then retry.",
+    );
+    expect(screen.queryByTestId("heatmap-loading")).toBeNull();
+  });
+
+  it("retry shows loading while the fetch is pending, then the tiles on success", async () => {
+    let finish: (p: unknown) => void = () => {};
+    const fetchMock = vi.fn(
+      (_url: string) => new Promise((resolve) => (finish = (p) => resolve({ ok: true, status: 200, json: async () => p }))),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    usePortfolioStore.setState({ portfolio: null, failed: true });
+    render(<HeatmapPanel />);
+    fireEvent.click(screen.getByTestId("heatmap-retry"));
+    expect(fetchMock).toHaveBeenCalledWith("/api/portfolio");
+    expect(screen.getByTestId("heatmap-loading")).toBeInTheDocument();
+    expect(screen.queryByTestId("heatmap-error")).toBeNull();
+
+    measure(400, 200);
+    await act(async () => {
+      finish({ cash: 1, total_value: 2, unrealized_pnl: 0, positions: [position("AAPL", 1, 100, 90)] });
+    });
+    expect(screen.getByTestId("heatmap-tile-AAPL")).toBeInTheDocument();
+    expect(screen.queryByTestId("heatmap-loading")).toBeNull();
+  });
+
+  it("a retry that fails again shows the error and Retry again", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => Promise.reject(new Error("down"))));
+    usePortfolioStore.setState({ portfolio: null, failed: true });
+    render(<HeatmapPanel />);
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("heatmap-retry"));
+    });
+    expect(screen.getByTestId("heatmap-error")).toBeInTheDocument();
+    expect(screen.getByTestId("heatmap-retry")).toBeInTheDocument();
+  });
+
+  it("shows the empty copy with no positions", () => {
+    show([]);
+    render(<HeatmapPanel />);
+    const empty = screen.getByTestId("heatmap-empty");
+    expect(empty).toHaveTextContent("No positions to map");
+    expect(empty).toHaveTextContent("Buy shares with the trade bar to see your portfolio by weight and P&L.");
+  });
+
+  it("shows the empty state when the only position is worth 0 at the live price", () => {
+    show([position("AAPL", 1, 100, 90)]);
+    useMarketStore.setState((s) => applyFrame(s, frame("AAPL", 0), 1));
+    render(<HeatmapPanel />);
+    measure(400, 200);
+    expect(screen.getByTestId("heatmap-empty")).toBeInTheDocument();
+    expect(screen.queryByTestId("heatmap-tiles")).toBeNull();
+  });
+
+  it("lets one position fill the whole measured box and shows no overlay", () => {
+    show([position("AAPL", 2, 100, 150)]);
+    render(<HeatmapPanel />);
+    measure(400, 200);
+    expect(screen.getByTestId("heatmap-tile-AAPL")).toHaveStyle({ left: "0px", top: "0px", width: "400px", height: "200px" });
+    expect(screen.queryByTestId("heatmap-empty")).toBeNull();
+    expect(screen.queryByTestId("heatmap-loading")).toBeNull();
   });
 });
