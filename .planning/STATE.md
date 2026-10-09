@@ -1,43 +1,43 @@
 ---
 gsd_state_version: "1.0"
-current_phase: 03
-current_phase_name: Trading & Watchlist Management
-status: verifying
-stopped_at: Completed 03-05-PLAN.md
-last_updated: "2026-10-08T21:26:20.736Z"
-last_activity: 2026-10-08
-last_activity_desc: Phase 03 execution started
-state_head: 5ff6c9c9f5246ed8a21dbf925b331f8a9fee5041
+current_phase: 4
+current_phase_name: Charts & Portfolio Visualizations
+status: planning
+stopped_at: Phase 03 complete, ready to plan Phase 4
+last_updated: "2026-10-09T01:15:39.089Z"
+last_activity: 2026-10-09
+last_activity_desc: Phase 03 complete, transitioned to Phase 4
+state_head: 78d4fdc1db9bdace1252f0ace8895f23582e9aa9
 progress:
   total_phases: 6
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 20
   completed_plans: 20
-  percent: 33
+  percent: 50
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-10-08)
+See: .planning/PROJECT.md (updated 2026-10-09)
 
 **Core value:** One command launches a live, data-dense trading terminal where prices stream, trades fill instantly, and the AI copilot can act on the portfolio — and every specified unit and E2E scenario passes to prove it.
-**Current focus:** Phase 03 — Trading & Watchlist Management
+**Current focus:** Phase 4 — Charts & Portfolio Visualizations
 
 ## Current Position
 
-Phase: 03 (Trading & Watchlist Management) — EXECUTING
-Plan: 5 of 5
-Status: Phase complete — ready for verification
-Last activity: 2026-10-08 — Phase 03 execution started
+Phase: 4 — Charts & Portfolio Visualizations
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-10-09 — Phase 03 complete, transitioned to Phase 4
 
-Progress: [███░░░░░░░] 33%
+Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 15
+- Total plans completed: 20
 - Average duration: -
 - Total execution time: 0.0 hours
 
@@ -47,6 +47,7 @@ Progress: [███░░░░░░░] 33%
 |-------|-------|-------|----------|
 | 01 | 8 | - | - |
 | 02 | 7 | - | - |
+| 03 | 5 | - | - |
 
 **Recent Trend:**
 - Last 5 plans: -
@@ -126,6 +127,7 @@ Recent decisions affecting current work:
 - [Phase 03]: 03-04: PositionRow uses plain td cells with position-* testids and no flash; price-{TICKER} stays unique to the watchlist
 - [Phase 03]: 03-04: PositionsTable never loads itself; Header's mount and reconnect loads feed the shared portfolio store
 - [Phase 03]: 03-05: add and remove share one busy lock; input and Add disabled outside the ready state (completes IN-01)
+- [Phase 03]: Review fixes: orders that round to $0.00 are rejected except a whole-position sell (WR-01/WR-06); one asyncio tracking_lock serializes tracking changes (WR-03); a failed watchlist remove refreshes the list inside the busy window (WR-05/WR-07)
 
 ### Pending Todos
 
@@ -133,8 +135,7 @@ None yet.
 
 ### Blockers/Concerns
 
-- [Phase 3]: `remove_ticker` evicts the price for held tickers (02-REVIEW IN-03); the DELETE /api/watchlist handler must keep tickers in watchlist ∪ positions tracked
-- [Phase 3]: Header and WatchlistPanel have no stale-response guard (02-REVIEW IN-01); matters once trades refetch the portfolio
+- [Phase 3]: Six info-level review findings remain open (IN-01..IN-06, see 03-REVIEW-DISPOSITION.md); IN-01 (rejected buy still spends a Massive poll) and IN-06 (cancellation vs final sync_ticker, unproven) touch `place_trade`
 - [Phase 2 carry-over]: IN-08: bad-key detection relies on the "Unknown API Key" message text (WR-07 fixed in dfe4268)
 - [Phase 6]: A `.env` copied from `.env.example` passes an empty `DB_PATH` through `docker run --env-file` (PKG-02)
 - [Phase 5]: Cerebras strict-schema limits and OpenRouter provider pinning need a live smoke call
@@ -149,6 +150,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-08T21:26:20.619Z
-Stopped at: Completed 03-05-PLAN.md
+Last session: 2026-10-09T01:20:00Z
+Stopped at: Phase 03 complete, ready to plan Phase 4
 Resume file: None

@@ -18,13 +18,15 @@ One command launches a live, data-dense trading terminal where prices stream, tr
 - ✓ SSE stream `GET /api/stream/prices` pushing all tracked tickers on cache change — Phase 2
 - ✓ SQLite database lazily created and seeded (default user with $10,000 cash, 10 default watchlist tickers) — Phase 2
 - ✓ Dark terminal visual design per PLAN.md §2 (UI-SPEC theme tokens; UI audit 23/24) — Phase 2
+- ✓ Watchlist API: list with prices, add (validated), remove; tracked tickers = watchlist ∪ positions — Phase 3
+- ✓ Market-order trades with validation (atomic, 400 `{error}` on rejection), returning updated portfolio state — Phase 3
+- ✓ Trade bar, positions table and watchlist add/remove UI; header total updates immediately after a trade — Phase 3
 
 ### Active
 
-- [ ] Watchlist API: list with prices (done in Phase 2), add (validated), remove
-- [ ] Portfolio API: positions/cash/total value/unrealized P&L (read done in Phase 2), market-order trades with validation, value history
+- [ ] Portfolio API: value history (`GET /api/portfolio/history`)
 - [ ] AI chat API: LiteLLM → OpenRouter (`openrouter/openai/gpt-oss-120b`, Cerebras provider) with structured outputs; auto-executes trades and watchlist changes; persists history; deterministic mock mode
-- [ ] Next.js static-export frontend: watchlist with flashing prices and sparklines (done in Phase 2), main ticker chart, portfolio treemap heatmap, P&L chart, positions table, trade bar, collapsible AI chat panel, header with live total value, cash and connection dot (done in Phase 2)
+- [ ] Next.js static-export frontend: main ticker chart, portfolio treemap heatmap, P&L chart, collapsible AI chat panel (watchlist, header, positions table and trade bar done in Phases 2-3)
 - [ ] SQLite on a named Docker volume (persists across container restarts)
 - [ ] Start/stop scripts for macOS/Linux and Windows (thin, idempotent wrappers)
 - [ ] Backend pytest suite and frontend component tests covering PLAN.md §12
@@ -97,6 +99,8 @@ One command launches a live, data-dense trading terminal where prices stream, tr
 | Wrong method on a known `/api/*` path is 404, never 405 | One JSON envelope via the existing catch-all; settles the Phase 1 open question | ✓ Good — Phase 2; written into `planning/API_CONTRACT.md` |
 | One blocking-human package gate before any phase install | Supply-chain check (registry repo, version, install scripts) in one place | ✓ Good — Phase 2; all 12 packages approved, exact pins, locked installs |
 | No `truststore` for the Massive client unless `CERTIFICATE_VERIFY_FAILED` is observed | Research and a real call show certifi verifies on this machine; fix only proven problems | ✓ Good — Phase 2; review fix WR-05 reverted at user request |
+| Reject orders whose value rounds to $0.00 ("Order value is too small"), except a sell of the whole position | Sub-cent buys acquired shares for free; the exemption keeps dust positions closable without allowing $0.00 partial sells | ✓ Good — Phase 3 review fixes WR-01/WR-06; in `planning/API_CONTRACT.md` |
+| One `asyncio.Lock` serializes every tracking change (trade, watchlist add/remove) | The watchlist ∪ positions rule was check-then-act and raced with a slow-poll source | ✓ Good — Phase 3 review fix WR-03 |
 
 ## Evolution
 
@@ -116,4 +120,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-10-08 after Phase 2*
+*Last updated: 2026-10-09 after Phase 3*
