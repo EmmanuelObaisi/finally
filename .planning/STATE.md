@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 05
 current_phase_name: AI Trading Copilot
 status: executing
-stopped_at: Completed 05-02-PLAN.md
-last_updated: "2026-10-09T17:39:59.493Z"
+stopped_at: Completed 05-04-PLAN.md
+last_updated: "2026-10-09T17:46:45.124Z"
 last_activity: 2026-10-09
 last_activity_desc: Phase 05 execution started
-state_head: 8810349d68291154f9db8a809acb016562bd0629
+state_head: "0bd6e972f27df61e15934efbfece7b2b79dc794a"
 progress:
   total_phases: 6
   completed_phases: 4
   total_plans: 29
-  completed_plans: 27
+  completed_plans: 28
   percent: 67
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-09)
 ## Current Position
 
 Phase: 05 (AI Trading Copilot) — EXECUTING
-Plan: 4 of 5
+Plan: 5 of 5
 Status: Ready to execute
 Last activity: 2026-10-09 — Phase 05 execution started
 
@@ -86,6 +86,7 @@ Progress: [███████░░░] 67%
 | Phase 05 P03 | 8min | 2 tasks | 11 files |
 | Phase 05 P01 | 6 min | 3 tasks | 12 files |
 | Phase 05 P02 | 5 min | 3 tasks | 6 files |
+| Phase 05 P04 | 5 min | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -148,6 +149,7 @@ Recent decisions affecting current work:
 - [Phase 05]: 05-01: Provider pinned to Cerebras (allow_fallbacks False, require_parameters True); litellm imported lazily in the real branch of complete() only
 - [Phase 05]: 05-01: litellm 1.104.0 approved by user and pinned; installed RECORD has no .pth file
 - [Phase 05]: Chat LLM failures are a 200 with one of two fixed ASCII texts; provider text and API key never reach client or logs
+- [Phase 05]: ChatPanel is always mounted and hidden by class when closed; default-open decided in a mount effect from matchMedia(min-width: 1536px) — Draft, scroll and history survive close and reopen; static export hydrates without a mismatch
 
 ### Pending Todos
 
@@ -172,6 +174,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-09T17:39:59.342Z
-Stopped at: Completed 05-02-PLAN.md
+Last session: 2026-10-09T17:46:44.943Z
+Stopped at: Completed 05-04-PLAN.md
 Resume file: None
