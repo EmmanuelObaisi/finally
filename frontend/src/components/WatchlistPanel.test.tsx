@@ -341,6 +341,19 @@ describe("WatchlistPanel remove", () => {
     expect(screen.queryByTestId("watchlist-loading")).not.toBeInTheDocument();
   });
 
+  it("stays locked until the refresh after a failed remove resolves", async () => {
+    let finish: (v: unknown) => void = () => {};
+    const refresh = new Promise((resolve) => (finish = resolve));
+    await renderReady(fail(404, "Ticker not in watchlist"), refresh);
+    fireEvent.click(screen.getByTestId("watchlist-remove-AAPL"));
+    await waitFor(() => expect(message()).toHaveAttribute("data-kind", "error"));
+    expect(screen.getByTestId("watchlist-add-button")).toBeDisabled();
+    for (const b of screen.getAllByTestId(/^watchlist-remove-/)) expect(b).toBeDisabled();
+    await act(async () => finish(ok([item("GOOGL", 175)])));
+    expect(screen.getByTestId("watchlist-add-button")).toBeEnabled();
+    expect(screen.queryByTestId("watchlist-row-AAPL")).not.toBeInTheDocument();
+  });
+
   it("shows the empty state with a usable add block after removing the last ticker", async () => {
     stubFetch(reply([item("AAPL", 190)]), reply([]));
     render(<WatchlistPanel />);

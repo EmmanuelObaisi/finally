@@ -50,8 +50,15 @@ export default function WatchlistPanel() {
     }
   }, [busy]);
 
-  /** Runs one add or remove; the response list replaces the table, so load() is never re-run. */
-  async function mutate(pending: string, run: () => Promise<WatchlistItem[]>): Promise<boolean> {
+  /**
+   * Runs one add or remove; the response list replaces the table, so load() is never re-run.
+   * onFail is awaited while the panel is still busy, so no later mutation can race it.
+   */
+  async function mutate(
+    pending: string,
+    run: () => Promise<WatchlistItem[]>,
+    onFail?: () => Promise<void>,
+  ): Promise<boolean> {
     setBusy(true);
     setMessage({ kind: "pending", text: pending });
     try {
@@ -60,6 +67,7 @@ export default function WatchlistPanel() {
       return true;
     } catch (e) {
       setMessage({ kind: "error", text: (e as Error).message });
+      await onFail?.();
       return false;
     } finally {
       setBusy(false);
@@ -81,10 +89,15 @@ export default function WatchlistPanel() {
   /** A failed remove may mean the list is stale (removed elsewhere): refresh it, keep the message. */
   async function remove(ticker: string) {
     if (busy) return;
-    if (await mutate("Removing " + ticker + "...", () => removeTicker(ticker))) return;
-    getWatchlist()
-      .then((items) => setView({ kind: "ready", items }))
-      .catch(() => {});
+    await mutate("Removing " + ticker + "...", () => removeTicker(ticker), refresh);
+  }
+
+  async function refresh() {
+    try {
+      setView({ kind: "ready", items: await getWatchlist() });
+    } catch {
+      // Keep the current list; the error message from the failed remove stays visible.
+    }
   }
 
   const locked = busy || view.kind !== "ready";
