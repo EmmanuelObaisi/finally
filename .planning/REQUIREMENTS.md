@@ -98,8 +98,8 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 - [x] **TEST-01**: Backend pytest covers market data (valid prices, GBM math, Massive parsing, interface conformance)
 - [x] **TEST-02**: Backend pytest covers portfolio (trade execution, P&L, oversell, insufficient cash, selling at a loss)
 - [x] **TEST-03**: Backend pytest covers LLM (structured output parsing, malformed responses, trade validation in chat flow)
-- [ ] **TEST-04**: Backend pytest covers API routes (status codes, response shapes, error handling)
-- [ ] **TEST-05**: Frontend unit tests cover component rendering, price flash triggering, watchlist CRUD, portfolio calculations, chat rendering and loading state
+- [x] **TEST-04**: Backend pytest covers API routes (status codes, response shapes, error handling)
+- [x] **TEST-05**: Frontend unit tests cover component rendering, price flash triggering, watchlist CRUD, portfolio calculations, chat rendering and loading state
 - [ ] **TEST-06**: Playwright E2E (host against container, `LLM_MOCK=true`) covers: fresh start (watchlist, $10k, streaming), add/remove ticker, buy, sell, heatmap and P&L chart, mocked AI chat with inline trade, SSE reconnection
 
 ## v2 Requirements
@@ -198,8 +198,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TEST-01 | Phase 2 | Complete |
 | TEST-02 | Phase 3 | Complete |
 | TEST-03 | Phase 5 | Complete |
-| TEST-04 | Phase 6 | Pending |
-| TEST-05 | Phase 6 | Pending |
+| TEST-04 | Phase 6 | Complete |
+| TEST-05 | Phase 6 | Complete |
 | TEST-06 | Phase 6 | Pending |
 
 **Coverage:**
