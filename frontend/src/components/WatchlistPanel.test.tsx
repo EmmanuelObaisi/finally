@@ -489,4 +489,57 @@ describe("WatchlistPanel chat push", () => {
     expect(fetchFn.mock.calls.filter(([url]) => url === "/api/chat")).toHaveLength(1);
     expect(useWatchlistStore.getState().seq).toBe(1);
   });
+
+  const publish = (items: WatchlistItem[]) => act(() => useWatchlistStore.getState().publish(items));
+
+  it("a published list replaces the loading view", async () => {
+    stubFetch(new Promise(() => {}));
+    render(<WatchlistPanel />);
+    expect(screen.getByTestId("watchlist-loading")).toBeInTheDocument();
+    publish([item("AAPL", 190)]);
+    expect(await screen.findByTestId("watchlist-row-AAPL")).toBeInTheDocument();
+    expect(screen.queryByTestId("watchlist-loading")).not.toBeInTheDocument();
+  });
+
+  it("a published list replaces the error view", async () => {
+    stubFetch(Promise.reject(new Error("down")));
+    render(<WatchlistPanel />);
+    await screen.findByTestId("watchlist-error");
+    publish([item("AAPL", 190)]);
+    expect(await screen.findByTestId("watchlist-row-AAPL")).toBeInTheDocument();
+    expect(screen.queryByTestId("watchlist-error")).not.toBeInTheDocument();
+  });
+
+  it("a published empty list shows the empty state", async () => {
+    await renderReady();
+    publish([]);
+    expect(await screen.findByTestId("watchlist-empty")).toBeInTheDocument();
+  });
+
+  it("moves the selection to the first pushed ticker when the selected one is gone", async () => {
+    stubFetch(ok(SEED.map((t) => item(t, 100))));
+    render(<WatchlistPanel />);
+    await screen.findByTestId("watchlist-row-NFLX");
+    act(() => useSelectionStore.getState().select("NFLX"));
+    publish([item("AAPL", 190), item("GOOGL", 175)]);
+    await waitFor(() => expect(useSelectionStore.getState().selected).toBe("AAPL"));
+  });
+
+  it("the manual mutation response wins over a list pushed while it was in flight", async () => {
+    let finish: (v: unknown) => void = () => {};
+    const pending = new Promise((resolve) => (finish = resolve));
+    await renderReady(pending);
+    addTicker("pypl");
+    publish([item("TSLA", 250)]);
+    expect(await screen.findByTestId("watchlist-row-TSLA")).toBeInTheDocument();
+    await act(async () => finish(ok([item("AAPL", 190), item("PYPL", 60)])));
+    expect(await screen.findByTestId("watchlist-row-PYPL")).toBeInTheDocument();
+    expect(screen.queryByTestId("watchlist-row-TSLA")).not.toBeInTheDocument();
+  });
+
+  it("changes nothing while seq is 0 and nothing was pushed", async () => {
+    await renderReady();
+    expect(useWatchlistStore.getState().seq).toBe(0);
+    expect(screen.getAllByTestId(/^watchlist-row-/)).toHaveLength(2);
+  });
 });

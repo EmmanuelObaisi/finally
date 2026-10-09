@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { getPortfolio, getPortfolioHistory, NETWORK_ERROR, postTrade } from "./api";
+import { getChatHistory, getPortfolio, getPortfolioHistory, NETWORK_ERROR, postChat, postTrade } from "./api";
 
 const reply = (ok: boolean, status: number, body: () => Promise<unknown>) => ({ ok, status, json: body });
 
@@ -60,6 +60,47 @@ describe("GET helpers", () => {
     vi.stubGlobal("fetch", vi.fn(async () => reply(false, 503, async () => ({ error: "secret detail" }))));
     const error = await getPortfolioHistory().catch((e: Error) => e);
     expect((error as Error).message).toBe("history 503");
+    expect((error as Error).message).not.toContain("secret detail");
+  });
+});
+
+describe("postChat", () => {
+  it("posts the message as JSON and resolves the parsed body", async () => {
+    const body = { message: "hi", actions: [], portfolio: { cash: 1 }, watchlist: [] };
+    const fetchFn = vi.fn(async () => reply(true, 200, async () => body));
+    vi.stubGlobal("fetch", fetchFn);
+    await expect(postChat("hello")).resolves.toEqual(body);
+    expect(fetchFn).toHaveBeenCalledWith("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: "hello" }),
+    });
+  });
+
+  it("rejects with the server error text on a 400", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => reply(false, 400, async () => ({ error: "Message must not be empty" }))));
+    await expect(postChat("")).rejects.toThrow("Message must not be empty");
+  });
+
+  it("rejects with NETWORK_ERROR when fetch itself rejects", async () => {
+    vi.stubGlobal("fetch", vi.fn(() => Promise.reject(new TypeError("Failed to fetch"))));
+    await expect(postChat("hello")).rejects.toThrow(NETWORK_ERROR);
+  });
+});
+
+describe("getChatHistory", () => {
+  it("fetches the history URL and resolves the messages array", async () => {
+    const messages = [{ id: "1", role: "user", content: "hi", actions: null, created_at: "2026-10-09T10:00:00Z" }];
+    const fetchFn = vi.fn(async () => reply(true, 200, async () => ({ messages })));
+    vi.stubGlobal("fetch", fetchFn);
+    await expect(getChatHistory()).resolves.toEqual(messages);
+    expect(fetchFn).toHaveBeenCalledWith("/api/chat/history");
+  });
+
+  it("never echoes the status body", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => reply(false, 503, async () => ({ error: "secret detail" }))));
+    const error = await getChatHistory().catch((e: Error) => e);
+    expect((error as Error).message).toBe("chat history 503");
     expect((error as Error).message).not.toContain("secret detail");
   });
 });
