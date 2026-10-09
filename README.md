@@ -16,6 +16,19 @@ Phase 5 (AI copilot): `POST /api/chat` and `GET /api/chat/history` through LiteL
 
 Not built yet: compose and start/stop scripts, the Docker volume, and the full Playwright suite (Phase 6). See `.planning/ROADMAP.md` and [planning/PLAN.md](planning/PLAN.md).
 
+## Run
+
+Needs Docker. Start with `./scripts/start_mac.sh` (macOS/Linux) or `.\scripts\start_windows.ps1` (Windows PowerShell). The first run builds the image, waits until the app is healthy, then prints and opens http://localhost:8000.
+
+- Rebuild after code changes: `--build` / `-Build`.
+- Skip the browser: `--no-open` / `-NoOpen`. Plain `docker compose up -d --wait` does the same without a browser.
+- Another port: set `FINALLY_PORT`. The app is published on 127.0.0.1 only.
+- Stop: `./scripts/stop_mac.sh` or `.\scripts\stop_windows.ps1` (same as `docker compose down`). The container is removed, the data volume is kept.
+- Fresh start (deletes trades, positions and chat): `docker compose down -v`.
+- `.env` is optional. AI chat needs `OPENROUTER_API_KEY` in it. Compose passes `.env` to the container and fixes `DB_PATH` to `/app/db/finally.db` on the volume.
+- A `.ps1` downloaded from a browser may be blocked: run `Unblock-File scripts\*.ps1` once.
+- Data from the earlier manual `docker run -v finally-data:...` setup lives in the volume `finally-data`. Compose does not reuse it; it uses `finally_finally-data`.
+
 ## Architecture
 
 Target design, one Docker container on port 8000:
@@ -56,15 +69,7 @@ Local full stack plus browser smoke test (starts the backend itself; port 8000 m
 npm --prefix test run smoke
 ```
 
-Docker:
-
-```bash
-docker build -t finally .
-docker run --rm -p 8000:8000 finally
-```
-
-On a TLS-intercepting machine, pass the interception root as a build secret (used only in throwaway build stages, never in the final image): `docker build --secret id=extra_ca,src=<path-to-root.pem> -t finally .`
-Smoke-test a running container with `BASE_URL=http://localhost:8000 npm --prefix test run smoke`.
+Docker: see [Run](#run). On a TLS-intercepting machine, pass the interception root as a build secret (used only in throwaway build stages, never in the final image): `docker build --secret id=extra_ca,src=<path-to-root.pem> -t finally .` and then start without `--build`, because compose reuses the `finally` image.
 
 ## Environment Variables
 
