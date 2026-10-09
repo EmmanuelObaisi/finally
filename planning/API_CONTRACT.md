@@ -131,7 +131,8 @@ in this order, with these exact messages:
    quantity to 6 dp, trailing zeros dropped; a never-held ticker says `you hold 0 AAPL`).
 4. `{"error": "No price available for AAPL"}`.
 5. An order worth less than a cent (`round(price x quantity, 2)` is 0), so no shares change
-   hands for free: `{"error": "Order value is too small"}`.
+   hands for free: `{"error": "Order value is too small"}`. The one exception is a sell of the
+   whole position, which always fills (even for $0.00) so a dust position can be closed.
 6. A buy that costs more than the cash balance: `{"error": "Insufficient cash"}`.
 
 A bad `side`, or a quantity that is non-finite, a string or a boolean, is a body validation 400

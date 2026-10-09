@@ -156,6 +156,18 @@ def test_sub_cent_sell_is_rejected(db, cache):
     assert state(db) == before
 
 
+def test_dust_position_can_be_closed_after_the_price_falls(db, cache):
+    cache.update("AAPL", 190.0)
+    trade(db, cache, "buy", quantity=0.000027)
+    cache.update("AAPL", 150.0)
+    before = state(db)
+    with pytest.raises(DomainError, match="^Order value is too small$"):
+        trade(db, cache, "sell", quantity=0.000013)
+    assert state(db) == before
+    trade(db, cache, "sell", quantity=0.000027)
+    assert state(db)[:2] == (9999.99, [])
+
+
 def test_selling_one_micro_share_too_many(db, cache):
     trade(db, cache, "buy", quantity=4)
     before = state(db)
