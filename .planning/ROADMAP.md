@@ -163,14 +163,14 @@ Plans:
   4. Reloading the page restores the prior conversation, including action lines. An LLM failure (timeout, malformed output, missing key) shows a graceful assistant error and executes nothing
   5. With `LLM_MOCK=true`, keyword messages (buy, sell, watchlist add/remove, analysis) return deterministic responses with no network calls. LLM unit tests (structured output parsing, malformed responses, trade validation in the chat flow) pass
 
-**Plans**: 2/5 plans executed
+**Plans**: 3/5 plans executed
 Plans:
 **Wave 1**
 - [x] 05-01-PLAN.md — Package gate (litellm 1.104.0), LLM seam: reply schema, deterministic mock, `complete()` with pinned Cerebras provider, prompt builder with outcome lines, live smoke script (W1, checkpoint)
 - [x] 05-03-PLAN.md — Browser data layer: chat types and API calls, `chatStore`, `watchlistStore` push channel, `actionText`, WatchlistPanel refresh from a chat reply (W1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 05-02-PLAN.md — Chat turn backend: `POST /api/chat` and `GET /api/chat/history`, per-action execution with caps, graceful LLM failures, persistence, contract edits D-07/D-08/D-10/D-11/D-13 (W2)
+- [x] 05-02-PLAN.md — Chat turn backend: `POST /api/chat` and `GET /api/chat/history`, per-action execution with caps, graceful LLM failures, persistence, contract edits D-07/D-08/D-10/D-11/D-13 (W2)
 - [ ] 05-04-PLAN.md — Chat panel: transcript, message rows, inline action lines, composer with Enter to send, Header toggle, docked column or overlay drawer (W2)
 
 **Wave 3** *(blocked on Wave 2 completion)*
@@ -204,5 +204,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6. Phases 4 and 5
 | 2. Live Market Terminal | 7/7 | Complete    | 2026-10-08 |
 | 3. Trading & Watchlist Management | 5/5 | Complete    | 2026-10-09 |
 | 4. Charts & Portfolio Visualizations | 4/4 | Complete    | 2026-10-09 |
-| 5. AI Trading Copilot | 2/5 | In Progress | - |
+| 5. AI Trading Copilot | 3/5 | In Progress | - |
 | 6. One-Command Launch & Full Verification | 0/TBD | Not started | - |

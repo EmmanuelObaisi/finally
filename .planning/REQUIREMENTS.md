@@ -54,15 +54,15 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 
 ### AI Chat
 
-- [ ] **CHAT-01**: User can send a message via `POST /api/chat` and receive a complete JSON response with the assistant message and executed actions
+- [x] **CHAT-01**: User can send a message via `POST /api/chat` and receive a complete JSON response with the assistant message and executed actions
 - [x] **CHAT-02**: The LLM prompt includes the FinAlly system prompt, current portfolio context (cash, positions with P&L, watchlist prices, total value) and the last 20 messages
 - [ ] **CHAT-03**: LLM is called via LiteLLM → OpenRouter (`openrouter/openai/gpt-oss-120b`, Cerebras provider) per the cerebras skill, async, with structured output `{message, trades[], watchlist_changes[]}`
-- [ ] **CHAT-04**: Trades and watchlist changes in the response auto-execute through the same validation as manual actions; each action's success or error is returned
-- [ ] **CHAT-05**: User and assistant messages (with actions JSON) are persisted in `chat_messages`
-- [ ] **CHAT-06**: User can reload prior conversation via `GET /api/chat/history`
-- [ ] **CHAT-07**: Chat responses include the updated portfolio state
-- [ ] **CHAT-08**: LLM failures (timeout, malformed output, missing key) return a graceful assistant error message and execute no actions
-- [ ] **CHAT-09**: With `LLM_MOCK=true`, deterministic keyword-driven mock responses are returned (buy, sell, watchlist add/remove, plain analysis) without network calls
+- [x] **CHAT-04**: Trades and watchlist changes in the response auto-execute through the same validation as manual actions; each action's success or error is returned
+- [x] **CHAT-05**: User and assistant messages (with actions JSON) are persisted in `chat_messages`
+- [x] **CHAT-06**: User can reload prior conversation via `GET /api/chat/history`
+- [x] **CHAT-07**: Chat responses include the updated portfolio state
+- [x] **CHAT-08**: LLM failures (timeout, malformed output, missing key) return a graceful assistant error message and execute no actions
+- [x] **CHAT-09**: With `LLM_MOCK=true`, deterministic keyword-driven mock responses are returned (buy, sell, watchlist add/remove, plain analysis) without network calls
 
 ### Frontend: Market UI
 
@@ -97,7 +97,7 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 
 - [x] **TEST-01**: Backend pytest covers market data (valid prices, GBM math, Massive parsing, interface conformance)
 - [x] **TEST-02**: Backend pytest covers portfolio (trade execution, P&L, oversell, insufficient cash, selling at a loss)
-- [ ] **TEST-03**: Backend pytest covers LLM (structured output parsing, malformed responses, trade validation in chat flow)
+- [x] **TEST-03**: Backend pytest covers LLM (structured output parsing, malformed responses, trade validation in chat flow)
 - [ ] **TEST-04**: Backend pytest covers API routes (status codes, response shapes, error handling)
 - [ ] **TEST-05**: Frontend unit tests cover component rendering, price flash triggering, watchlist CRUD, portfolio calculations, chat rendering and loading state
 - [ ] **TEST-06**: Playwright E2E (host against container, `LLM_MOCK=true`) covers: fresh start (watchlist, $10k, streaming), add/remove ticker, buy, sell, heatmap and P&L chart, mocked AI chat with inline trade, SSE reconnection
@@ -166,15 +166,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PORT-06 | Phase 3 | Complete |
 | PORT-07 | Phase 4 | Complete |
 | PORT-08 | Phase 1 | Complete |
-| CHAT-01 | Phase 5 | Pending |
+| CHAT-01 | Phase 5 | Complete |
 | CHAT-02 | Phase 5 | Complete |
 | CHAT-03 | Phase 5 | Pending |
-| CHAT-04 | Phase 5 | Pending |
-| CHAT-05 | Phase 5 | Pending |
-| CHAT-06 | Phase 5 | Pending |
-| CHAT-07 | Phase 5 | Pending |
-| CHAT-08 | Phase 5 | Pending |
-| CHAT-09 | Phase 5 | Pending |
+| CHAT-04 | Phase 5 | Complete |
+| CHAT-05 | Phase 5 | Complete |
+| CHAT-06 | Phase 5 | Complete |
+| CHAT-07 | Phase 5 | Complete |
+| CHAT-08 | Phase 5 | Complete |
+| CHAT-09 | Phase 5 | Complete |
 | UI-01 | Phase 2 | Complete |
 | UI-02 | Phase 2 | Complete |
 | UI-03 | Phase 2 | Complete |
@@ -197,7 +197,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PKG-04 | Phase 6 | Pending |
 | TEST-01 | Phase 2 | Complete |
 | TEST-02 | Phase 3 | Complete |
-| TEST-03 | Phase 5 | Pending |
+| TEST-03 | Phase 5 | Complete |
 | TEST-04 | Phase 6 | Pending |
 | TEST-05 | Phase 6 | Pending |
 | TEST-06 | Phase 6 | Pending |
