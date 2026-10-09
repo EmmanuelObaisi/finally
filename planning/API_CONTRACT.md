@@ -160,7 +160,10 @@ Body `{"message": "..."}`.
 
 - `400 {"error": "Message must not be empty"}` for an empty or whitespace-only message, and
   `400 {"error": "Message is too long"}` for a message of more than 2000 characters (Unicode code
-  points, counted after trimming). A missing or non-string `message` is the standard body-validation `400`.
+  points, counted after trimming), and `400 {"error": "Message contains invalid characters"}` for text
+  that cannot be encoded as UTF-8 (such as a lone surrogate). All three are rejected before any model
+  call or action, so nothing is executed or stored. A missing or non-string `message` is the standard
+  body-validation `400`.
 - An LLM failure (timeout, malformed output, missing key) is not an HTTP error: the response is
   `200` with an assistant error message in `message` and `"actions": []`. The message is one of two
   fixed texts: "The AI assistant is not configured: OPENROUTER_API_KEY is missing." when no key is

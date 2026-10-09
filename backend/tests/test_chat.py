@@ -183,6 +183,17 @@ def test_too_long_counts_code_points(mock_client, settings):
     assert count(settings, "chat_messages") == 2
 
 
+def test_unencodable_text_is_400_with_no_side_effects(mock_client, settings):
+    body = '{"message": "buy \\ud800"}'  # httpx cannot encode a lone surrogate, so send the escape
+    response = mock_client.post(
+        "/api/chat", content=body, headers={"content-type": "application/json"})
+    assert response.status_code == 400
+    assert response.json() == {"error": "Message contains invalid characters"}
+    assert mock_client.get("/api/portfolio").json()["cash"] == 10000.0
+    assert count(settings, "trades") == 0
+    assert mock_client.get("/api/chat/history").json() == {"messages": []}
+
+
 # --- execution ---
 
 def test_execute_buy_then_sell(client, settings, monkeypatch):

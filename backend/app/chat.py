@@ -137,13 +137,23 @@ def finish_turn(state, text: str, asked_at: str, message: str, actions: list[dic
         }
 
 
-async def run_turn(state, raw_text: str) -> dict:
-    """One whole chat turn; no connection is held while the model call is awaited."""
+def check_message(raw_text: str) -> str:
+    """The stripped message; rejected before any side effect if it cannot be stored."""
     text = raw_text.strip()
     if not text:
         raise DomainError("Message must not be empty")
     if len(text) > MAX_MESSAGE_CHARS:
         raise DomainError("Message is too long")
+    try:
+        text.encode("utf-8")
+    except UnicodeEncodeError:
+        raise DomainError("Message contains invalid characters") from None
+    return text
+
+
+async def run_turn(state, raw_text: str) -> dict:
+    """One whole chat turn; no connection is held while the model call is awaited."""
+    text = check_message(raw_text)
     asked_at = now_iso()
     portfolio, watchlist, history = await asyncio.to_thread(read_context, state)
     reply, error = await get_reply(state, build_messages(portfolio, watchlist, history, text))
