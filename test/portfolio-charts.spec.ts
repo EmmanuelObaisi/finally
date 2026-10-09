@@ -15,3 +15,14 @@ test("the main chart shows the first watchlist ticker and follows a row click", 
   await expect(page.getByTestId("watchlist-row-MSFT")).toHaveAttribute("data-selected", "true");
   await expect(page.getByTestId("watchlist-row-AAPL")).toHaveAttribute("data-selected", "false");
 });
+
+test("keyboard Enter on a ticker selects it", async ({ page }) => {
+  await page.goto("/");
+  const chart = page.getByTestId("main-chart");
+  await expect(chart).toHaveAttribute("data-ticker", "AAPL", { timeout: 10_000 });
+
+  await page.getByTestId("select-GOOGL").focus();
+  await page.keyboard.press("Enter");
+  await expect(chart).toHaveAttribute("data-ticker", "GOOGL");
+  await expect(page.getByTestId("select-GOOGL")).toHaveAttribute("aria-current", "true");
+});

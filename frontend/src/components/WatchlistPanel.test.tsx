@@ -1,5 +1,6 @@
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { resetSelectionStore, useSelectionStore } from "../lib/selectionStore";
 import { initialMarketState, useMarketStore } from "../lib/store";
 import type { PriceFrame, WatchlistItem } from "../lib/types";
 import WatchlistPanel from "./WatchlistPanel";
@@ -384,5 +385,64 @@ describe("WatchlistPanel remove", () => {
     expect(screen.getByTestId("price-ZZZZ")).toHaveTextContent("--");
     expect(screen.getByTestId("change-ZZZZ")).toHaveTextContent("--");
     expect(screen.getByTestId("watchlist-remove-ZZZZ")).toBeInTheDocument();
+  });
+});
+
+describe("WatchlistPanel selection", () => {
+  const selected = () => useSelectionStore.getState().selected;
+
+  it("selects the first ticker once the list loads and marks only its row", async () => {
+    stubFetch(ok([item("AAPL", 190), item("GOOGL", 175)]));
+    render(<WatchlistPanel />);
+    const aapl = await screen.findByTestId("watchlist-row-AAPL");
+    expect(aapl).toHaveAttribute("data-selected", "true");
+    expect(screen.getByTestId("watchlist-row-GOOGL")).toHaveAttribute("data-selected", "false");
+    expect(screen.getByTestId("select-AAPL")).toHaveAttribute("aria-current", "true");
+    expect(screen.getByTestId("select-GOOGL")).not.toHaveAttribute("aria-current");
+    expect(screen.getByTestId("select-AAPL").closest("td")).toHaveClass("border-primary");
+    expect(screen.getByTestId("select-GOOGL").closest("td")).toHaveClass("border-transparent");
+  });
+
+  it("selects a row when its cell is clicked", async () => {
+    stubFetch(ok([item("AAPL", 190), item("GOOGL", 175)]));
+    render(<WatchlistPanel />);
+    await screen.findByTestId("watchlist-row-AAPL");
+    fireEvent.click(screen.getByTestId("change-GOOGL"));
+    expect(selected()).toBe("GOOGL");
+    expect(screen.getByTestId("watchlist-row-GOOGL")).toHaveAttribute("data-selected", "true");
+  });
+
+  it("selects a ticker through its select button", async () => {
+    stubFetch(ok([item("AAPL", 190), item("GOOGL", 175)]));
+    render(<WatchlistPanel />);
+    await screen.findByTestId("watchlist-row-AAPL");
+    expect(screen.getByTestId("select-GOOGL")).toHaveAttribute("aria-label", "Show GOOGL chart");
+    fireEvent.click(screen.getByTestId("select-GOOGL"));
+    expect(selected()).toBe("GOOGL");
+  });
+
+  it("does not select a row whose remove button is clicked", async () => {
+    stubFetch(ok([item("AAPL", 190), item("MSFT", 400)]), new Promise(() => {}));
+    render(<WatchlistPanel />);
+    await screen.findByTestId("watchlist-row-AAPL");
+    fireEvent.click(screen.getByTestId("watchlist-remove-MSFT"));
+    expect(selected()).toBe("AAPL");
+  });
+
+  it("moves the selection to the first remaining ticker when the selected one is removed", async () => {
+    stubFetch(ok([item("AAPL", 190), item("GOOGL", 175)]), reply([item("GOOGL", 175)]));
+    render(<WatchlistPanel />);
+    await screen.findByTestId("watchlist-row-AAPL");
+    fireEvent.click(screen.getByTestId("watchlist-remove-AAPL"));
+    await waitFor(() => expect(selected()).toBe("GOOGL"));
+    expect(screen.getByTestId("watchlist-row-GOOGL")).toHaveAttribute("data-selected", "true");
+  });
+
+  it("selects nothing for an empty list", async () => {
+    stubFetch(ok([]));
+    render(<WatchlistPanel />);
+    await screen.findByTestId("watchlist-empty");
+    expect(selected()).toBeNull();
+    expect(useSelectionStore.getState().status).toBe("ready");
   });
 });
