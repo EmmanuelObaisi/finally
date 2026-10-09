@@ -148,8 +148,10 @@ ticker that is afterwards neither watched nor held stops streaming.
 ### GET /api/portfolio/history
 
 `200 {"history": [{"total_value": 10000.0, "recorded_at": "2026-10-07T12:00:00Z"}]}`, ascending by
-`recorded_at`, at most the 2000 most recent entries. The server may first record a snapshot,
-guarded by a minimum interval.
+`recorded_at`, at most the 2000 most recent entries. Before reading, the server records one
+snapshot only when at least 10 seconds (`MIN_INTERVAL_SECONDS`) have passed since the latest
+snapshot and the current total value differs from it, so a never-traded portfolio keeps exactly
+one history point; every trade still records its own snapshot.
 
 ### POST /api/chat
 
