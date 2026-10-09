@@ -1,5 +1,5 @@
 // Typed calls to the FinAlly API. Shapes: planning/API_CONTRACT.md.
-import type { HistoryPoint, Portfolio, Trade, WatchlistItem } from "./types";
+import type { ChatMessage, ChatReply, HistoryPoint, Portfolio, Trade, WatchlistItem } from "./types";
 
 export async function getWatchlist(): Promise<WatchlistItem[]> {
   const res = await fetch("/api/watchlist");
@@ -54,4 +54,15 @@ export function postTrade(ticker: string, quantity: number, side: "buy" | "sell"
     quantity,
     side,
   });
+}
+
+export function postChat(message: string) {
+  return send<ChatReply>("POST", "/api/chat", { message });
+}
+
+export async function getChatHistory(): Promise<ChatMessage[]> {
+  const res = await fetch("/api/chat/history");
+  if (!res.ok) throw new Error("chat history " + res.status);
+  const body = (await res.json()) as { messages: ChatMessage[] };
+  return body.messages;
 }

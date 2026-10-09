@@ -58,3 +58,23 @@ export type ConnectionStatus = "connected" | "reconnecting" | "disconnected";
 
 /** One portfolio value snapshot from the history endpoint. */
 export type HistoryPoint = { total_value: number; recorded_at: string };
+
+/** POST /api/chat and GET /api/chat/history shapes. */
+export type ChatAction =
+  | { type: "trade"; ticker: string; side: "buy" | "sell"; quantity: number; price: number | null; ok: boolean; error: string | null }
+  | { type: "watchlist"; ticker: string; action: "add" | "remove"; ok: boolean; error: string | null };
+
+export type ChatMessage = {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  actions: ChatAction[] | null;
+  created_at: string;
+};
+
+export type ChatReply = {
+  message: string;
+  actions: ChatAction[];
+  portfolio: Portfolio;
+  watchlist: WatchlistItem[];
+};

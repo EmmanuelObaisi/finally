@@ -5,6 +5,7 @@ import { addTicker, getWatchlist, removeTicker } from "../lib/api";
 import { useSelectionStore } from "../lib/selectionStore";
 import { useMarketStore } from "../lib/store";
 import type { WatchlistItem } from "../lib/types";
+import { useWatchlistStore } from "../lib/watchlistStore";
 import FormMessage, { type MessageKind } from "./FormMessage";
 import WatchlistRow from "./WatchlistRow";
 
@@ -48,6 +49,13 @@ export default function WatchlistPanel() {
   useEffect(() => {
     useSelectionStore.getState().sync(view.kind, view.kind === "ready" ? view.items.map((i) => i.ticker) : []);
   }, [view]);
+
+  // A chat reply publishes the server's list; last write wins over an in-flight manual mutation.
+  const seq = useWatchlistStore((s) => s.seq);
+  useEffect(() => {
+    const pushed = useWatchlistStore.getState().pushed;
+    if (pushed) setView({ kind: "ready", items: pushed });
+  }, [seq]);
 
   // A disabled input cannot take focus inside the handler, so focus returns once busy clears.
   useEffect(() => {

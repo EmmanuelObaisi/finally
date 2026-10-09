@@ -1,8 +1,11 @@
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { resetChatStore, useChatStore } from "../lib/chatStore";
+import { resetPortfolioStore, usePortfolioStore } from "../lib/portfolioStore";
 import { resetSelectionStore, useSelectionStore } from "../lib/selectionStore";
 import { initialMarketState, useMarketStore } from "../lib/store";
 import type { PriceFrame, WatchlistItem } from "../lib/types";
+import { resetWatchlistStore, useWatchlistStore } from "../lib/watchlistStore";
 import WatchlistPanel from "./WatchlistPanel";
 
 // The canvas chart needs a real browser; sparkline behavior is tested in Sparkline.test.tsx.
@@ -446,5 +449,44 @@ describe("WatchlistPanel selection", () => {
     await screen.findByTestId("watchlist-empty");
     await waitFor(() => expect(useSelectionStore.getState().status).toBe("ready"));
     expect(selected()).toBeNull();
+  });
+});
+
+const EMPTY_PORTFOLIO = { cash: 9000, total_value: 9000, unrealized_pnl: 0, positions: [] };
+
+/** Routes by URL: the seed list for /api/watchlist, the given chat body for /api/chat. */
+function routeFetch(chatBody: unknown) {
+  const fn = vi.fn(async (url: string) => {
+    if (url === "/api/chat") return { ok: true, status: 200, json: async () => chatBody };
+    return ok(SEED.map((t) => item(t, 100)));
+  });
+  vi.stubGlobal("fetch", fn);
+  return fn;
+}
+
+describe("WatchlistPanel chat push", () => {
+  beforeEach(() => {
+    resetChatStore();
+    resetWatchlistStore();
+    resetPortfolioStore();
+  });
+
+  it("a chat reply that adds PYPL shows the PYPL row and applies the portfolio", async () => {
+    const fetchFn = routeFetch({
+      message: "Added PYPL",
+      actions: [{ type: "watchlist", ticker: "PYPL", action: "add", ok: true, error: null }],
+      portfolio: EMPTY_PORTFOLIO,
+      watchlist: [...SEED, "PYPL"].map((t) => item(t, 100)),
+    });
+    render(<WatchlistPanel />);
+    await screen.findByTestId("watchlist-row-AAPL");
+    expect(screen.queryByTestId("watchlist-row-PYPL")).not.toBeInTheDocument();
+    await act(async () => {
+      await useChatStore.getState().send("add PYPL");
+    });
+    expect(screen.getByTestId("watchlist-row-PYPL")).toBeInTheDocument();
+    expect(usePortfolioStore.getState().portfolio).toEqual(EMPTY_PORTFOLIO);
+    expect(fetchFn.mock.calls.filter(([url]) => url === "/api/chat")).toHaveLength(1);
+    expect(useWatchlistStore.getState().seq).toBe(1);
   });
 });
