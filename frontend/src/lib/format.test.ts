@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { fmtMoney, fmtPct, fmtQty, fmtSigned, MISSING, toneClass } from "./format";
+import { fmtClock, fmtDateTime, fmtDay, fmtMoney, fmtPct, fmtQty, fmtSigned, MISSING, toneClass } from "./format";
 
 const missing = [null, undefined, NaN, Infinity, -Infinity];
 
@@ -61,5 +61,24 @@ describe("toneClass", () => {
     expect(toneClass("+0.63%")).toBe("text-up");
     expect(toneClass("-0.63%")).toBe("text-down");
     expect(toneClass("0.00%")).toBe("text-fg");
+  });
+});
+
+describe("time formatters", () => {
+  // Built from local-time components, so the expectations hold in any timezone.
+  const at = (h: number, m: number, sec: number) => new Date(2026, 9, 9, h, m, sec).getTime() / 1000;
+
+  it("formats the local 24-hour clock", () => {
+    expect(fmtClock(at(0, 5, 3))).toBe("00:05:03");
+    expect(fmtClock(at(14, 30, 5))).toBe("14:30:05");
+  });
+
+  it("formats the local month and day", () => {
+    expect(fmtDay(at(0, 5, 3))).toBe("Oct 9");
+  });
+
+  it("joins day and clock with a space and no comma", () => {
+    expect(fmtDateTime(at(0, 5, 3))).toBe("Oct 9 00:05:03");
+    expect(fmtDateTime(at(14, 30, 5))).toBe("Oct 9 14:30:05");
   });
 });
