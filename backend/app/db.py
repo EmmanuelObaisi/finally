@@ -55,9 +55,9 @@ CREATE TABLE IF NOT EXISTS chat_messages (
 """
 
 
-def now_iso() -> str:
-    """Current UTC time in the contract's REST timestamp format."""
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+def now_iso(now: datetime | None = None) -> str:
+    """Current UTC time, or the given one, in the contract's REST timestamp format."""
+    return (now or datetime.now(timezone.utc)).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 @contextmanager
