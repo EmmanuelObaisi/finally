@@ -1,0 +1,17 @@
+# Start with scripts/start_* or `docker compose up -d --wait`; fresh start with `docker compose down -v`.
+name: finally
+services:
+  finally:
+    image: finally
+    build: .
+    ports:
+      - "127.0.0.1:${FINALLY_PORT:-8000}:8000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DB_PATH: /app/db/finally.db
+    volumes:
+      - finally-data:/app/db
+volumes:
+  finally-data:

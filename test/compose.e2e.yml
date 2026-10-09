@@ -1,0 +1,11 @@
+# Always layer after docker-compose.yml (the first file fixes the project directory at the repo root).
+# environment beats env_file and literals ignore the caller's shell, which may export LLM_MOCK
+# and OPENROUTER_API_KEY. The separate image tag keeps test builds from retagging the user's finally image.
+services:
+  finally:
+    image: finally-e2e
+    environment:
+      LLM_MOCK: "true"
+      SIM_SEED: "1"
+      SIM_EVENT_PROBABILITY: "0"
+      MASSIVE_API_KEY: ""
