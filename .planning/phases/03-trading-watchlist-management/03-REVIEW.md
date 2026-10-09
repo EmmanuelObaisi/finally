@@ -1,165 +1,94 @@
 ---
 phase: 03-trading-watchlist-management
-reviewed: 2026-10-08T00:00:00Z
+reviewed: 2026-10-09T00:00:00Z
 depth: standard
-files_reviewed: 33
+files_reviewed: 12
 files_reviewed_list:
-  - backend/app/db.py
   - backend/app/errors.py
   - backend/app/main.py
-  - backend/app/market/interface.py
-  - backend/app/tracking.py
   - backend/app/trading.py
   - backend/app/watchlist.py
-  - backend/tests/conftest.py
   - backend/tests/test_tracking.py
   - backend/tests/test_trading.py
-  - backend/tests/test_watchlist.py
-  - frontend/src/app/page.tsx
-  - frontend/src/components/FormMessage.tsx
   - frontend/src/components/Header.test.tsx
-  - frontend/src/components/Header.tsx
-  - frontend/src/components/PositionRow.tsx
-  - frontend/src/components/PositionsTable.test.tsx
-  - frontend/src/components/PositionsTable.tsx
-  - frontend/src/components/TradeBar.test.tsx
-  - frontend/src/components/TradeBar.tsx
   - frontend/src/components/WatchlistPanel.test.tsx
   - frontend/src/components/WatchlistPanel.tsx
-  - frontend/src/components/WatchlistRow.tsx
-  - frontend/src/lib/api.test.ts
-  - frontend/src/lib/api.ts
-  - frontend/src/lib/portfolioStore.test.ts
-  - frontend/src/lib/portfolioStore.ts
-  - frontend/src/lib/positions.test.ts
-  - frontend/src/lib/positions.ts
-  - frontend/src/lib/types.ts
+  - frontend/src/lib/totals.test.ts
+  - frontend/src/lib/totals.ts
   - planning/API_CONTRACT.md
-  - test/trade.spec.ts
-  - test/watchlist.spec.ts
 findings:
   critical: 0
-  warning: 5
-  info: 5
-  total: 10
+  warning: 2
+  info: 3
+  total: 5
 status: issues_found
 ---
 
-# Phase 3: Code Review Report
+# Phase 3: Code Review Report (re-review after WR-01..WR-05 fixes)
 
-**Reviewed:** 2026-10-08
+**Reviewed:** 2026-10-09
 **Depth:** standard
-**Files Reviewed:** 33
+**Files Reviewed:** 12
 **Status:** issues_found
 
 ## Summary
 
-I reviewed the trading and watchlist backend (atomic trade fill, ticker tracking, error envelope), the trade bar, positions table and watchlist panel, the shared portfolio store, and their unit and E2E tests. I checked behavior against `planning/API_CONTRACT.md`.
+I re-reviewed the five fix commits against `0265aa4`. Backend (184 passed) and frontend suites pass. Structural (fallow) findings were not supplied.
 
-No injection or auth problems turned up. All SQL is parameterized, ticker input is validated by a strict regex, and the React UI renders server text as text. The trade transaction (`BEGIN IMMEDIATE`, rollback on any error) is sound, and the check order matches the contract.
-
-The defects are in accounting rounding, the tracking rule's concurrency, one frontend fallback that disagrees with the server, and a few contract-adjacent message and recovery gaps. I ran one probe against the real app to prove WR-01 and WR-04. Structural (fallow) findings were not supplied for this review.
+Fix verification:
+- WR-02 (totals fallback to `current_price`) and WR-04 (validation message prefix) are correct and tested. For a body-root error the location is `("body",)` or `("body", <int>)`, so the prefix is dropped as intended. Nested locations still render, e.g. `trades.ticker`.
+- WR-03 (tracking lock): `place_trade`, `add_to_watchlist` and `remove_from_watchlist` all take the lock and `sync_ticker` does not, so there is no re-entry or deadlock. The lock is created in the lifespan, bound to the running loop. The two new tests exercise the real races.
+- WR-01 (sub-cent guard) is correct for what it targets, but it introduces a sell-side lock-in (WR-06 below).
+- WR-05 (refresh after failed remove) fixes the stale row but adds a small ordering race (WR-07 below).
 
 ## Warnings
 
-### WR-01: Sub-cent fills move no cash, so shares can be acquired for free
+### WR-06: The sub-cent guard makes dust positions permanently unsellable
 
-**File:** `backend/app/trading.py:52-59`
-**Issue:** The cash movement is `round(price * quantity, 2)`, but the position quantity is updated from the unrounded `quantity` (6 dp). When `price * quantity < 0.005`, the buy costs `$0.00` and still adds shares and a trade row.
-
-I confirmed this with the real app. At AAPL = 190.00, five buys of 0.000026 shares left cash at `10000.0` while the portfolio showed a position of 0.00013 shares. The position's `avg_cost` is computed from the unrounded price, so the ledger is inconsistent: `total_value` rises with no cash spent.
-
-Selling has the mirror problem. A tiny sell deletes shares for `$0.00`. A script, or an LLM auto-executing trades in Phase 5, can repeat tiny buys and then sell the accumulated position in one order, which is rounded once. That nets a few dollars of free cash per thousand requests.
-
-The contract states "cash moves by `round(price x quantity, 2)`", but it does not intend free inventory.
-**Fix:** Reject orders whose rounded amount is zero, and add the message to the contract (the contract is the only place the API may change). For example, after computing `amount`:
+**File:** `backend/app/trading.py:52-54`
+**Issue:** The `amount <= 0` check now applies to sells too, and it runs after the "insufficient shares" check. A position can be opened when `round(price x quantity, 2)` is 0.01 and later be worth less than half a cent. Example: buy 0.000027 AAPL at 190.00 (value 0.00513, charged 0.01); the price falls to 150.00 and a full sell is worth 0.00405, which rounds to 0.00. Every sell of the whole position, or any part of it, fails with "Order value is too small" until the price recovers. The user can never close it, and `is_wanted` keeps that ticker streaming forever. The contract describes the rule as "so no shares change hands for free", which is not the case when the user is closing out a position they own.
+**Fix:** Apply the minimum-value rule to buys only, or allow a sell that closes the whole position:
 ```python
-if amount <= 0:
+closes_all = side == "sell" and quantity == held
+if amount <= 0 and not closes_all:
     raise DomainError("Order value is too small")
 ```
-Place this after the "No price available" check and before the cash check, or compute amount first. Add a test for a sub-cent buy and a sub-cent sell.
+Update the contract (check 5) and add a test where the price drops after a minimal buy and the full sell succeeds. A full sell for $0.00 pays nothing but frees the user's dust, which is not an exploit because the inventory is removed.
 
-### WR-02: Header total values missing-stream positions at avg_cost, not the server's current_price
+### WR-07: The post-failure watchlist refresh can overwrite a newer result
 
-**File:** `frontend/src/lib/totals.ts:5-8` (used at `frontend/src/components/Header.tsx:25`)
-**Issue:** `liveTotals` falls back to `p.avg_cost` when `prices[p.ticker]` is absent. The server values positions at the cached price and returns it as `current_price` and `total_value`. The two agree only when the position is flat versus cost.
-
-On page load, before the first SSE frame arrives (or whenever the stream is down), the header total shows every position at cost, hiding all unrealized P&L. It then jumps once frames arrive. `PositionRow` correctly falls back to `position.current_price` (`PositionRow.tsx:14,31`), so the header and the table disagree on the same data.
-
-The Header tests miss this because their fixtures use `avg_cost === current_price` (180 and 180).
-**Fix:** Use the server's own price as the fallback:
+**File:** `frontend/src/components/WatchlistPanel.tsx:82-88`
+**Issue:** `mutate` clears `busy` in its `finally`, then `remove` fires an un-awaited `getWatchlist()`. Until it resolves the controls are enabled again. If the user adds or removes another ticker in that window and that response arrives first, the older refresh then calls `setView` and replaces the newer list. The panel shows a state that does not match the server, and it is the same stale-row symptom WR-05 fixed. There is also no guard against the component unmounting.
+**Fix:** Keep the panel busy through the refresh by doing it inside the mutation's busy window:
 ```ts
-(sum, p) => sum + p.quantity * (prices[p.ticker]?.price ?? p.current_price),
+async function remove(ticker: string) {
+  if (busy) return;
+  const ok = await mutate("Removing " + ticker + "...", () => removeTicker(ticker), refreshOnFail);
 ```
-Add a Header test where `avg_cost !== current_price` and no frame has arrived.
-
-### WR-03: The tracking rule is check-then-act with no serialization
-
-**File:** `backend/app/tracking.py:30-35`, `backend/app/watchlist.py:68-79`, `backend/app/trading.py:104-112`
-**Issue:** `sync_ticker` reads the DB in a worker thread (`is_wanted`), then adds or removes the ticker from the source. Between the read and the action, a concurrent request can change the answer. Every mutation path pre-adds the ticker and calls `sync_ticker` in a `finally`, so overlapping requests interleave in ways that evict a wanted ticker. Two cases:
-
-1. A failed request for ticker X (rejected buy, or add that raised "Unknown ticker") runs `sync_ticker` while a concurrent successful add or buy of X is still inside its thread and uncommitted. `is_wanted` returns false and `remove_ticker(X)` drops X from the cache. The successful request then reads "No price available", or commits a position with no price. Its own final sync re-adds X, but on the simulator that resets the price to the seed and resets `session_start_price`, so a held position jumps in price.
-2. `MassiveDataSource.add_ticker` inserts the ticker into `_tickers` before `await self._poll()` (`massive_client.py:77-83`). A second concurrent add of the same symbol sees it as already tracked, returns immediately, finds no cached price, and gets a spurious `400 Unknown ticker`. Its `finally` then removes the ticker the first request is still polling for.
-
-The UI locks controls while a request is in flight, so this is narrow for a single user. It is reachable from two tabs, from the Phase 5 chat path (which calls the same helpers concurrently with the UI), and from scripts. The existing concurrency tests only exercise the simulator, where `add_ticker` never awaits.
-**Fix:** Serialize ticker lifecycle changes with a single `asyncio.Lock` on app state that covers `add_ticker`, the DB read in `sync_ticker`, and `remove_ticker`. Hold it from the pre-add through the final sync in `place_trade` and `add_to_watchlist`. This is a small change and keeps the current structure.
-
-### WR-04: Body-level validation errors produce malformed messages
-
-**File:** `backend/app/errors.py:29-31`
-**Issue:** The handler builds the message as `"{loc}: {msg}"` with `loc` stripped of `"body"`. For errors at the body root, `loc` is empty or a bare index. I confirmed with the real app:
-
-- `POST /api/portfolio/trade` with an empty body returns `{"error": ": Field required"}`.
-- With invalid JSON, `{"error": "1: JSON decode error"}`.
-
-Both show up verbatim in the UI error line. A client that omits the body, or any non-browser caller, gets an unreadable message. This contradicts the contract's "human-readable message string".
-**Fix:** Omit the prefix when it is empty or numeric:
-```python
-loc = ".".join(str(p) for p in first["loc"] if p != "body" and not isinstance(p, int))
-message = f"{loc}: {first['msg']}" if loc else first["msg"]
-return JSONResponse({"error": message}, status_code=400)
-```
-
-### WR-05: A failed remove leaves a stale row that can never be cleared
-
-**File:** `frontend/src/components/WatchlistPanel.tsx:81-84` (and `mutate`, lines 54-67)
-**Issue:** On a failed `DELETE`, `mutate` only sets the error message. If the failure is the contract's `404 Ticker not in watchlist` (the ticker was removed from another tab, or the chat in Phase 5), the row stays. Every further click returns the same 404, and only a page reload fixes it. The panel's local list is the source of truth, but it never reconciles with the server after this kind of failure.
-**Fix:** After a failed mutation, refresh the list with `getWatchlist()` and keep the error message, or at least do so for 404 on remove. Keep the message visible while refreshing, and leave `load()`'s skeleton out of this path so the panel does not flash.
+or, more simply, have `mutate` accept an `onFail` callback that is awaited before `setBusy(false)`.
 
 ## Info
 
-### IN-01: Rejected buys of unknown tickers still hit the market source
+### IN-01: Rejected buys of unknown tickers still hit the market source (carried forward)
 
-**File:** `backend/app/trading.py:107-110`
-**Issue:** A buy calls `source.add_ticker(ticker)` before the quantity is validated. A zero, negative or sub-micro quantity (rejected at `trading.py:36`) still adds the ticker and removes it again. With `MassiveDataSource`, `add_ticker` triggers a full snapshot poll (`massive_client.py:77-83`). Each rejected request therefore spends one of the free tier's 5 calls per minute.
-**Fix:** Round and check the quantity in `place_trade` before `add_ticker` (the contract order is unchanged: ticker format first, quantity second). `execute_trade` can keep its own check for the chat caller.
+**File:** `backend/app/trading.py:114-116`
+**Issue:** Unchanged. `place_trade` calls `source.add_ticker(ticker)` before the quantity is validated. A zero, negative or sub-micro quantity still adds the ticker and then removes it. With `MassiveDataSource`, `add_ticker` polls, which spends one of the free tier's 5 calls per minute. The same applies to the new "Order value is too small" rejection, which can only be detected after the price is fetched.
+**Fix:** Round and check the quantity in `place_trade` before `add_ticker`.
 
-### IN-02: Micro positions show a spurious P&L in the table
-
-**File:** `frontend/src/lib/positions.ts:7-12`
-**Issue:** The cost basis is derived as `market_value - unrealized_pnl`, both rounded to 2 dp by the server. For positions worth only a few cents (fractional shares are supported), that cost can be off by up to a cent, which is a large fraction of the position. A fresh 0.0005-share position that has no P&L can display about `-0.01` and about `-5%`. The test at `positions.test.ts:29` only covers the case where the basis rounds to exactly zero.
-**Fix:** Prefer the server's `pnl_percent` and `unrealized_pnl` until a live price differs from `current_price`, or extend the contract so the server exposes an unrounded cost basis.
-
-### IN-03: The portfolio is fetched twice on every page load
-
-**File:** `frontend/src/components/Header.tsx:17-23`
-**Issue:** `useEffect(load, [load])` fetches on mount. The status effect then fetches again when the first SSE open moves the status from "reconnecting" to "connected", because `previous.current` starts as `"reconnecting"`. The first fetch is wasted. The Header test at `Header.test.tsx:28-35` encodes this behavior, so it will need updating with the fix.
-**Fix:** Initialize `previous` so the first "connected" does not count as a reconnect (for example, skip when the portfolio is already loaded), or document that the double fetch is intentional.
-
-### IN-04: Effect dependency list is incomplete
+### IN-04: Effect dependency list is incomplete (carried forward)
 
 **File:** `frontend/src/components/WatchlistPanel.tsx:41-43`
-**Issue:** The effect reads `view.kind` and calls `load` but lists only `[status]`. It is correct today because it runs only on status changes, but the missing dependencies mean an error that happens while already "connected" never retries automatically. It would also fail an exhaustive-deps lint rule.
-**Fix:** Add `view.kind` to the dependencies, or add a comment saying the effect is deliberately status-triggered.
+**Issue:** Unchanged. The effect reads `view.kind` and calls `load` but lists only `[status]`. An error that happens while already "connected" never retries automatically, and the effect fails an exhaustive-deps rule.
+**Fix:** Add `view.kind` to the dependencies, or comment that the effect is deliberately status-triggered.
 
-### IN-05: E2E specs depend on each other and cannot be re-run against a persistent container
+### IN-06: Cancellation can run the final sync while the trade thread is still committing
 
-**File:** `test/trade.spec.ts:30-44`, `test/watchlist.spec.ts:22-40`
-**Issue:** `trade.spec.ts` leaves an IBM position behind. `watchlist.spec.ts` buys NFLX and removes it from the watchlist permanently. With the default `webServer` config each run gets a throwaway DB, so this works. With `BASE_URL` set (the container path in `playwright.config.ts`), the DB persists. A second run fails at `watchlist-remove-NFLX` because NFLX is no longer on the watchlist. Cash also shrinks on every run.
-**Fix:** Have the tests clean up in a `finally` or `afterEach` (sell the position, re-add NFLX through the API), or document that `BASE_URL` runs need a fresh volume.
+**File:** `backend/app/trading.py:112-118`
+**Issue:** If the request task is cancelled while awaiting `asyncio.to_thread(run_trade, ...)`, the worker thread keeps running. The `finally` then runs `sync_ticker`, which may read the DB before the trade commits and evict the ticker, and the lock is released. A buy can then commit with an untracked, unpriced position. This is narrow: Starlette normally does not cancel a non-streaming handler on client disconnect, so I did not prove it.
+**Fix:** Shield the worker call (`await asyncio.shield(asyncio.to_thread(...))`) so `finally` runs after the thread completes, or accept the narrow risk and document it.
 
 ---
 
-_Reviewed: 2026-10-08_
+_Reviewed: 2026-10-09_
 _Reviewer: Claude (gsd-code-reviewer)_
 _Depth: standard_
