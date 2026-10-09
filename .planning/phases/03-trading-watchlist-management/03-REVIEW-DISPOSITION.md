@@ -3,14 +3,6 @@ phase: 03
 review: 03-REVIEW.md
 titles: json
 findings:
-  - id: WR-06
-    severity: warning
-    disposition: fixed
-    title: "The sub-cent guard makes dust positions permanently unsellable"
-  - id: WR-07
-    severity: warning
-    disposition: fixed
-    title: "The post-failure watchlist refresh can overwrite a newer result"
   - id: IN-01
     severity: info
     disposition: open
@@ -22,7 +14,15 @@ findings:
   - id: IN-06
     severity: info
     disposition: open
-    title: "Cancellation can run the final sync while the trade thread is still committing"
+    title: "Cancellation can run the final sync while the trade thread is still committing (carried forward)"
+  - id: WR-06
+    severity: warning
+    disposition: fixed
+    title: "The sub-cent guard makes dust positions permanently unsellable"
+  - id: WR-07
+    severity: warning
+    disposition: fixed
+    title: "The post-failure watchlist refresh can overwrite a newer result"
   - id: WR-01
     severity: warning
     disposition: fixed
@@ -57,18 +57,18 @@ findings:
     title: "E2E specs depend on each other and cannot be re-run against a persistent container"
 open: 6
 total: 13
-recorded: 2026-10-09T01:08:28.785Z
+recorded: 2026-10-09T01:12:40.601Z
 ---
 
 # Phase 03: Code Review Disposition
 
 | Finding | Severity | Disposition | Source |
 |---------|----------|-------------|--------|
-| WR-06 | warning | fixed | 03-REVIEW-FIX.md |
-| WR-07 | warning | fixed | 03-REVIEW-FIX.md |
 | IN-01 | info | open | - |
 | IN-04 | info | open | - |
 | IN-06 | info | open | - |
+| WR-06 | warning | fixed | 03-REVIEW-FIX.md (not in the current review) |
+| WR-07 | warning | fixed | 03-REVIEW-FIX.md (not in the current review) |
 | WR-01 | warning | fixed | 03-REVIEW-FIX.md (not in the current review) |
 | WR-02 | warning | fixed | 03-REVIEW-FIX.md (not in the current review) |
 | WR-03 | warning | fixed | 03-REVIEW-FIX.md (not in the current review) |
