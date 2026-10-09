@@ -5,23 +5,23 @@ titles: json
 findings:
   - id: WR-01
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "Sub-cent fills move no cash, so shares can be acquired for free"
   - id: WR-02
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "Header total values missing-stream positions at avg_cost, not the server's current_price"
   - id: WR-03
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "The tracking rule is check-then-act with no serialization"
   - id: WR-04
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "Body-level validation errors produce malformed messages"
   - id: WR-05
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "A failed remove leaves a stale row that can never be cleared"
   - id: IN-01
     severity: info
@@ -43,20 +43,20 @@ findings:
     severity: info
     disposition: open
     title: "E2E specs depend on each other and cannot be re-run against a persistent container"
-open: 10
+open: 5
 total: 10
-recorded: 2026-10-08T21:41:54.559Z
+recorded: 2026-10-09T00:52:51.890Z
 ---
 
 # Phase 03: Code Review Disposition
 
 | Finding | Severity | Disposition | Source |
 |---------|----------|-------------|--------|
-| WR-01 | warning | open | - |
-| WR-02 | warning | open | - |
-| WR-03 | warning | open | - |
-| WR-04 | warning | open | - |
-| WR-05 | warning | open | - |
+| WR-01 | warning | fixed | 03-REVIEW-FIX.md |
+| WR-02 | warning | fixed | 03-REVIEW-FIX.md |
+| WR-03 | warning | fixed | 03-REVIEW-FIX.md |
+| WR-04 | warning | fixed | 03-REVIEW-FIX.md |
+| WR-05 | warning | fixed | 03-REVIEW-FIX.md |
 | IN-01 | info | open | - |
 | IN-02 | info | open | - |
 | IN-03 | info | open | - |
