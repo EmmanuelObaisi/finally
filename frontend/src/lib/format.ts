@@ -43,3 +43,26 @@ export function toneClass(text: string): string {
   if (text.startsWith("-")) return "text-down";
   return "text-fg";
 }
+
+const clock = new Intl.DateTimeFormat("en-US", {
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hourCycle: "h23",
+});
+const day = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" });
+
+/** Local 24-hour HH:mm:ss of a UTC-seconds timestamp. */
+export function fmtClock(seconds: number): string {
+  return clock.format(seconds * 1000);
+}
+
+/** Local month and day, for example "Oct 9". */
+export function fmtDay(seconds: number): string {
+  return day.format(seconds * 1000);
+}
+
+/** Day and clock joined by a space; one combined Intl format would insert a comma. */
+export function fmtDateTime(seconds: number): string {
+  return fmtDay(seconds) + " " + fmtClock(seconds);
+}

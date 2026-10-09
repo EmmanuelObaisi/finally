@@ -1,16 +1,12 @@
 "use client";
 
 import { ColorType, createChart, CrosshairMode, LineSeries } from "lightweight-charts";
-import type { ISeriesApi, UTCTimestamp } from "lightweight-charts";
+import type { ISeriesApi } from "lightweight-charts";
 import { useEffect, useRef } from "react";
-import { CHART_COLORS } from "../lib/chartTheme";
-import { useMarketStore, type SparkPoint } from "../lib/store";
+import { CHART_COLORS, toData } from "../lib/chartTheme";
+import { useMarketStore } from "../lib/store";
 
 const hidden = { visible: false };
-
-function toData(points: SparkPoint[]) {
-  return points.map((p) => ({ time: p.time as UTCTimestamp, value: p.value }));
-}
 
 /** Non-interactive line of the prices streamed since page load; empty until two points exist. */
 export default function Sparkline({ ticker }: { ticker: string }) {

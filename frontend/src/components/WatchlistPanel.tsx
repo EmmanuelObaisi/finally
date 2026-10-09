@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { addTicker, getWatchlist, removeTicker } from "../lib/api";
+import { useSelectionStore } from "../lib/selectionStore";
 import { useMarketStore } from "../lib/store";
 import type { WatchlistItem } from "../lib/types";
 import FormMessage, { type MessageKind } from "./FormMessage";
@@ -41,6 +42,12 @@ export default function WatchlistPanel() {
   useEffect(() => {
     if (status === "connected" && view.kind === "error") load();
   }, [status]);
+
+  const selected = useSelectionStore((s) => s.selected);
+  const select = useSelectionStore((s) => s.select);
+  useEffect(() => {
+    useSelectionStore.getState().sync(view.kind, view.kind === "ready" ? view.items.map((i) => i.ticker) : []);
+  }, [view]);
 
   // A disabled input cannot take focus inside the handler, so focus returns once busy clears.
   useEffect(() => {
@@ -158,7 +165,14 @@ export default function WatchlistPanel() {
             </thead>
             <tbody>
               {view.items.map((item) => (
-                <WatchlistRow key={item.ticker} item={item} busy={busy} onRemove={remove} />
+                <WatchlistRow
+                  key={item.ticker}
+                  item={item}
+                  busy={busy}
+                  selected={item.ticker === selected}
+                  onSelect={select}
+                  onRemove={remove}
+                />
               ))}
             </tbody>
           </table>

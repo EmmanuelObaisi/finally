@@ -10,10 +10,14 @@ import Sparkline from "./Sparkline";
 export default function WatchlistRow({
   item,
   busy,
+  selected,
+  onSelect,
   onRemove,
 }: {
   item: WatchlistItem;
   busy: boolean;
+  selected: boolean;
+  onSelect: (ticker: string) => void;
   onRemove: (ticker: string) => void;
 }) {
   const { ticker } = item;
@@ -23,9 +27,23 @@ export default function WatchlistRow({
   const stale = dim ? " opacity-60" : "";
 
   return (
-    <tr data-testid={"watchlist-row-" + ticker} className="h-10 border-b border-border hover:bg-raised">
-      <td className="px-4 font-semibold truncate" title={ticker}>
-        {ticker}
+    <tr
+      data-testid={"watchlist-row-" + ticker}
+      data-selected={selected ? "true" : "false"}
+      onClick={() => onSelect(ticker)}
+      className={"h-10 cursor-pointer border-b border-border hover:bg-raised" + (selected ? " bg-raised" : "")}
+    >
+      <td className={"px-4 border-l-2 " + (selected ? "border-primary" : "border-transparent")}>
+        <button
+          type="button"
+          data-testid={"select-" + ticker}
+          aria-label={"Show " + ticker + " chart"}
+          aria-current={selected ? "true" : undefined}
+          title={ticker}
+          className="block w-full truncate text-left font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        >
+          {ticker}
+        </button>
       </td>
       <td className="p-0 text-right tabular-nums">
         <PriceCell ticker={ticker} price={live?.price ?? item.price} dim={dim} />
@@ -43,7 +61,10 @@ export default function WatchlistRow({
           aria-label={"Remove " + ticker}
           title={"Remove " + ticker}
           disabled={busy}
-          onClick={() => onRemove(ticker)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove(ticker);
+          }}
           className="size-8 rounded-sm text-body text-muted hover:text-down disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           <span aria-hidden="true">×</span>
