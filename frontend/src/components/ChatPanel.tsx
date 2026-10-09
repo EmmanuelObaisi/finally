@@ -16,6 +16,8 @@ const SEND =
 
 const RETRY = "mt-4 h-8 rounded-sm border border-border px-4 text-body hover:bg-raised disabled:opacity-50" + FOCUS;
 const EXAMPLE = "h-8 truncate rounded-sm border border-border px-4 text-left text-body hover:bg-raised" + FOCUS;
+const MAX_DRAFT = 2000;
+const SLOW_AFTER_MS = 8000;
 const EXAMPLES = ["How is my portfolio doing?", "Buy 5 shares of NVDA", "Add PYPL to my watchlist"];
 
 /** The AI chat panel: always mounted, hidden when closed, so the draft and transcript survive a close. */
@@ -24,10 +26,15 @@ export default function ChatPanel() {
   const messages = useChatStore((s) => s.messages);
   const history = useChatStore((s) => s.history);
   const sending = useChatStore((s) => s.sending);
+  const localError = useChatStore((s) => s.localError);
+  const focusSeq = useChatStore((s) => s.focusSeq);
   const setOpen = useChatStore((s) => s.setOpen);
   const [draft, setDraft] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const transcriptRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const [slow, setSlow] = useState(false);
+  const tooLong = draft.length > MAX_DRAFT;
 
   useEffect(() => {
     useChatStore.getState().setOpen(window.matchMedia("(min-width: 1536px)").matches);
@@ -37,11 +44,30 @@ export default function ChatPanel() {
   useEffect(() => {
     const el = transcriptRef.current;
     if (el) el.scrollTop = el.scrollHeight;
-  }, [messages.length, sending, history, open]);
+  }, [messages.length, sending, history, open, localError]);
+
+  useEffect(() => {
+    if (!sending) {
+      setSlow(false);
+      return;
+    }
+    const timer = setTimeout(() => setSlow(true), SLOW_AFTER_MS);
+    return () => clearTimeout(timer);
+  }, [sending]);
+
+  useEffect(() => {
+    if (focusSeq === 0) return;
+    (textareaRef.current?.disabled ? titleRef.current : textareaRef.current)?.focus();
+  }, [focusSeq]);
+
+  function closePanel() {
+    setOpen(false);
+    document.querySelector<HTMLElement>('[data-testid="chat-toggle"]')?.focus();
+  }
 
   async function submit() {
     const text = draft.trim();
-    if (!text || sending || history === "loading") return;
+    if (!text || tooLong || sending || history === "loading") return;
     setDraft("");
     textareaRef.current?.focus();
     const ok = await useChatStore.getState().send(text);
@@ -55,14 +81,19 @@ export default function ChatPanel() {
       data-open={open ? "true" : "false"}
       aria-label="FinAlly AI chat"
       className={open ? OPEN : "hidden"}
+      onKeyDown={(event) => {
+        if (event.key === "Escape" && !window.matchMedia("(min-width: 1536px)").matches) closePanel();
+      }}
     >
       <div className="flex h-10 shrink-0 items-center justify-between border-b border-border px-4">
-        <h2 className="text-heading font-semibold">FinAlly AI</h2>
+        <h2 ref={titleRef} tabIndex={-1} className="text-heading font-semibold">
+          FinAlly AI
+        </h2>
         <button
           type="button"
           data-testid="chat-close"
           aria-label="Close AI chat"
-          onClick={() => setOpen(false)}
+          onClick={closePanel}
           className={CLOSE}
         >
           Close
@@ -130,7 +161,17 @@ export default function ChatPanel() {
           messages.map((message) => <ChatMessageRow key={message.id} message={message} />)}
         {history !== "loading" && sending && (
           <div data-testid="chat-loading" aria-busy="true" className="text-body text-muted motion-safe:animate-pulse">
-            Thinking...
+            {slow ? "Still thinking. This can take up to 30 seconds." : "Thinking..."}
+          </div>
+        )}
+        {history !== "loading" && localError && (
+          <div data-testid="chat-error" className="self-stretch text-body text-down">
+            {localError.text}
+            {localError.network && (
+              <p className="text-label text-muted">
+                The message may not have been processed. Check your positions before sending it again.
+              </p>
+            )}
           </div>
         )}
       </div>
@@ -163,13 +204,17 @@ export default function ChatPanel() {
           className={INPUT}
         />
         <div className="flex h-8 items-center justify-between gap-2">
-          <p data-testid="chat-hint" aria-live="polite" className="truncate text-label text-muted">
-            Enter sends, Shift+Enter adds a line
+          <p
+            data-testid="chat-hint"
+            aria-live="polite"
+            className={"truncate text-label " + (tooLong ? "text-down" : "text-muted")}
+          >
+            {tooLong ? "Message is too long: 2000 characters maximum" : "Enter sends, Shift+Enter adds a line"}
           </p>
           <button
             type="submit"
             data-testid="chat-send"
-            disabled={draft.trim() === "" || sending || history === "loading"}
+            disabled={draft.trim() === "" || tooLong || sending || history === "loading"}
             className={SEND}
           >
             Send
