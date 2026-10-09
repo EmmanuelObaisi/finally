@@ -45,6 +45,7 @@ const SEED = ["AAPL", "GOOGL", "MSFT", "AMZN", "TSLA", "NVDA", "META", "JPM", "V
 
 beforeEach(() => {
   useMarketStore.setState(initialMarketState());
+  resetSelectionStore();
 });
 
 describe("WatchlistPanel states", () => {
