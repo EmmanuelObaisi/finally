@@ -62,6 +62,17 @@ def test_fresh_database_returns_the_seeded_point(client):
     assert client.get("/api/portfolio/history").json() == response.json()
 
 
+def test_history_points_have_the_contract_keys(client):
+    """GET /api/portfolio/history returns exactly {history}, each point with the two contract keys."""
+    response = client.get("/api/portfolio/history")
+    assert response.status_code == 200
+    body = response.json()
+    assert set(body) == {"history"}
+    assert body["history"]
+    for point in body["history"]:
+        assert set(point) == {"total_value", "recorded_at"}
+
+
 def test_unchanged_value_keeps_one_point_however_old_the_seed(client):
     db = client.app.state.settings.db_path
     backdate_all(db)

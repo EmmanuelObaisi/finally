@@ -434,6 +434,20 @@ def test_history_caps_at_100_newest_oldest_first(client, settings):
     assert messages[0]["content"] == "m6" and messages[-1]["content"] == "m105"
 
 
+def test_history_items_have_the_contract_keys(mock_client):
+    """GET /api/chat/history returns exactly {messages}, each item with the five contract keys."""
+    mock_client.post("/api/chat", json={"message": "buy"})
+    response = mock_client.get("/api/chat/history")
+    assert response.status_code == 200
+    body = response.json()
+    assert set(body) == {"messages"}
+    assert len(body["messages"]) == 2
+    for message in body["messages"]:
+        assert set(message) == {"id", "role", "content", "actions", "created_at"}
+        assert isinstance(message["id"], str) and message["id"]
+    assert len({m["id"] for m in body["messages"]}) == 2
+
+
 def test_history_empty(client):
     assert client.get("/api/chat/history").json() == {"messages": []}
 
