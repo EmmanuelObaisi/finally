@@ -1,5 +1,6 @@
 "use client";
 
+import ChatPanel from "../components/ChatPanel";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import HeatmapPanel from "../components/HeatmapPanel";
@@ -8,15 +9,22 @@ import PnlChartPanel from "../components/PnlChartPanel";
 import PositionsTable from "../components/PositionsTable";
 import TradeBar from "../components/TradeBar";
 import WatchlistPanel from "../components/WatchlistPanel";
+import { useChatStore } from "../lib/chatStore";
 import { useMarketStream } from "../lib/useMarketStream";
 
 export default function Home() {
   useMarketStream();
+  const chatOpen = useChatStore((s) => s.open);
 
   return (
     <div className="flex h-dvh flex-col">
       <Header />
-      <main className="min-h-0 flex-1 overflow-y-auto lg:grid lg:grid-cols-[480px_1fr] lg:overflow-hidden">
+      <main
+        className={
+          "min-h-0 flex-1 overflow-y-auto lg:grid lg:grid-cols-[480px_1fr] lg:overflow-hidden" +
+          (chatOpen ? " 2xl:grid-cols-[480px_1fr_360px]" : "")
+        }
+      >
         <WatchlistPanel />
         <section data-testid="workspace" className="flex min-h-0 flex-col lg:grid lg:h-full lg:grid-rows-[minmax(0,5fr)_minmax(0,4fr)_auto_minmax(0,4fr)] lg:overflow-hidden">
           <MainChartPanel />
@@ -27,6 +35,7 @@ export default function Home() {
           <TradeBar />
           <PositionsTable />
         </section>
+        <ChatPanel />
       </main>
       <Footer />
     </div>

@@ -5,9 +5,10 @@ import { fmtMoney, MISSING } from "../lib/format";
 import { usePortfolioStore } from "../lib/portfolioStore";
 import { useMarketStore } from "../lib/store";
 import { liveTotals } from "../lib/totals";
+import ChatToggle from "./ChatToggle";
 import ConnectionDot from "./ConnectionDot";
 
-/** Wordmark, live total value and cash from GET /api/portfolio, and the connection dot. */
+/** Wordmark, live total value and cash from GET /api/portfolio, the connection dot and the chat toggle. */
 export default function Header() {
   const portfolio = usePortfolioStore((s) => s.portfolio);
   const load = usePortfolioStore((s) => s.load);
@@ -56,6 +57,7 @@ export default function Header() {
           </span>
         </div>
         <ConnectionDot />
+        <ChatToggle />
       </div>
     </header>
   );

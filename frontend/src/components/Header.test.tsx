@@ -1,5 +1,6 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { resetChatStore, useChatStore } from "../lib/chatStore";
 import { resetPortfolioStore, usePortfolioStore } from "../lib/portfolioStore";
 import { initialMarketState, useMarketStore } from "../lib/store";
 import type { Portfolio, PriceFrame } from "../lib/types";
@@ -197,5 +198,42 @@ describe("Footer", () => {
     expect(link).toHaveAttribute("href", "https://www.tradingview.com/");
     expect(link).toHaveAttribute("target", "_blank");
     expect(link).toHaveAttribute("rel", "noopener noreferrer");
+  });
+});
+
+describe("Header chat toggle", () => {
+  const toggle = () => screen.getByTestId("chat-toggle");
+
+  it("starts closed, labelled Chat and wired to the panel, after the connection dot", () => {
+    stubFetch();
+    render(<Header />);
+    expect(toggle()).toHaveTextContent("Chat");
+    expect(toggle()).toHaveAttribute("aria-expanded", "false");
+    expect(toggle()).toHaveAttribute("aria-controls", "chat-panel");
+    expect(toggle()).toHaveAttribute("title", "Show AI chat");
+    const dot = screen.getByTestId("connection-dot");
+    expect(dot.compareDocumentPosition(toggle()) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it("opens with a focus request and closes without one", () => {
+    stubFetch();
+    render(<Header />);
+    fireEvent.click(toggle());
+    expect(useChatStore.getState().open).toBe(true);
+    expect(useChatStore.getState().focusSeq).toBe(1);
+    expect(toggle()).toHaveAttribute("aria-expanded", "true");
+    expect(toggle()).toHaveAttribute("title", "Hide AI chat");
+    expect(toggle()).toHaveClass("bg-raised");
+    fireEvent.click(toggle());
+    expect(useChatStore.getState().open).toBe(false);
+    expect(useChatStore.getState().focusSeq).toBe(1);
+    expect(toggle()).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("is an outline button, not a purple or accent fill", () => {
+    stubFetch();
+    render(<Header />);
+    expect(toggle()).toHaveClass("h-8", "self-center", "rounded-sm", "border-border", "px-4");
+    expect(toggle()).not.toHaveClass("bg-secondary", "bg-accent");
   });
 });
