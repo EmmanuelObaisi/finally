@@ -5,19 +5,19 @@ titles: json
 findings:
   - id: CR-01
     severity: critical
-    disposition: open
+    disposition: fixed
     title: "A message containing a lone surrogate executes trades, then returns 500 and stores nothing"
   - id: WR-01
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "Any non-DomainError during an action aborts the whole turn after earlier actions committed"
   - id: WR-02
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "Chat history order depends on request-start time, so overlapping turns interleave"
   - id: WR-03
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "Client length limit differs from the server rule, so valid messages are blocked"
   - id: IN-01
     severity: info
@@ -35,19 +35,19 @@ findings:
     severity: info
     disposition: open
     title: "Every chat reply replaces the portfolio object and so refetches portfolio history"
-open: 8
+open: 4
 total: 8
-recorded: 2026-10-09T18:02:59.903Z
+recorded: 2026-10-09T22:03:08.820Z
 ---
 
 # Phase 05: Code Review Disposition
 
 | Finding | Severity | Disposition | Source |
 |---------|----------|-------------|--------|
-| CR-01 | critical | open | - |
-| WR-01 | warning | open | - |
-| WR-02 | warning | open | - |
-| WR-03 | warning | open | - |
+| CR-01 | critical | fixed | 05-REVIEW-FIX.md |
+| WR-01 | warning | fixed | 05-REVIEW-FIX.md |
+| WR-02 | warning | fixed | 05-REVIEW-FIX.md |
+| WR-03 | warning | fixed | 05-REVIEW-FIX.md |
 | IN-01 | info | open | - |
 | IN-02 | info | open | - |
 | IN-03 | info | open | - |
