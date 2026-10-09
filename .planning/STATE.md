@@ -1,18 +1,18 @@
 ---
 gsd_state_version: "1.0"
-current_phase: 4
+current_phase: 04
 current_phase_name: Charts & Portfolio Visualizations
 status: executing
-stopped_at: Phase 4 UI-SPEC approved
-last_updated: "2026-10-09T08:13:36.017Z"
+stopped_at: Completed 04-02-PLAN.md
+last_updated: "2026-10-09T08:23:28.270Z"
 last_activity: 2026-10-09
-last_activity_desc: Phase 03 complete, transitioned to Phase 4
-state_head: 9ac1a9d8be2905ac61b57d9064b236e870b3b018
+last_activity_desc: Phase 04 execution started
+state_head: 90906a9d5b8d5f6be362beffb48c2736ab65a130
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 24
-  completed_plans: 20
+  completed_plans: 21
   percent: 50
 ---
 
@@ -23,14 +23,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-09)
 
 **Core value:** One command launches a live, data-dense trading terminal where prices stream, trades fill instantly, and the AI copilot can act on the portfolio — and every specified unit and E2E scenario passes to prove it.
-**Current focus:** Phase 4 — Charts & Portfolio Visualizations
+**Current focus:** Phase 04 — Charts & Portfolio Visualizations
 
 ## Current Position
 
-Phase: 4 (Charts & Portfolio Visualizations) — READY TO EXECUTE
-Plan: Not started
+Phase: 04 (Charts & Portfolio Visualizations) — EXECUTING
+Plan: 2 of 4
 Status: Ready to execute
-Last activity: 2026-10-09 — Phase 03 complete, transitioned to Phase 4
+Last activity: 2026-10-09 — Phase 04 execution started
 
 Progress: [█████░░░░░] 50%
 
@@ -78,6 +78,7 @@ Progress: [█████░░░░░] 50%
 | Phase 03 P03 | 6 min | 3 tasks | 12 files |
 | Phase 03 P04 | 3 min | 2 tasks | 7 files |
 | Phase 03 P05 | 4 min | 2 tasks | 7 files |
+| Phase 04 P02 | 8 min | 3 tasks | 15 files |
 
 ## Accumulated Context
 
@@ -128,6 +129,8 @@ Recent decisions affecting current work:
 - [Phase 03]: 03-04: PositionsTable never loads itself; Header's mount and reconnect loads feed the shared portfolio store
 - [Phase 03]: 03-05: add and remove share one busy lock; input and Add disabled outside the ready state (completes IN-01)
 - [Phase 03]: Review fixes: orders that round to $0.00 are rejected except a whole-position sell (WR-01/WR-06); one asyncio tracking_lock serializes tracking changes (WR-03); a failed watchlist remove refreshes the list inside the busy window (WR-05/WR-07)
+- [Phase 04]: 04-02: main-chart testid requires selection status ready, so a watchlist reload never exposes a stale chart
+- [Phase 04]: 04-02: selection lives in a zustand selectionStore synced from WatchlistPanel's view; ChartOverlay, baseChartOptions and toData are shared by the other chart panels
 
 ### Pending Todos
 
@@ -150,6 +153,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-09T01:28:48.444Z
-Stopped at: Phase 4 UI-SPEC approved
-Resume file: .planning/phases/04-charts-portfolio-visualizations/04-UI-SPEC.md
+Last session: 2026-10-09T08:23:28.140Z
+Stopped at: Completed 04-02-PLAN.md
+Resume file: None

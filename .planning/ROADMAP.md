@@ -136,11 +136,11 @@ Plans:
   3. The P&L chart shows total portfolio value over time from snapshots, starting with the seeded $10,000 point on first launch. It refetches every 30s and ends in a live "now" point. A new trade adds a point, and repeated history requests do not flood the snapshot table
   4. With no positions or an emptied watchlist, the watchlist, positions table, heatmap and P&L chart each show an explicit empty state instead of a blank or broken panel
 
-**Plans**: 4 plans
+**Plans**: 1/4 plans executed
 Plans:
 **Wave 1**
 - [ ] 04-01-PLAN.md — Package gate (d3-hierarchy pins), GET /api/portfolio/history with the 10 s + unchanged-value snapshot guard, PORT-07 suite, contract sentence (W1, checkpoint)
-- [ ] 04-02-PLAN.md — Watchlist row selection and the main price chart with every state; shared ChartOverlay, chart theme, time formatters, workspace grid (W1)
+- [x] 04-02-PLAN.md — Watchlist row selection and the main price chart with every state; shared ChartOverlay, chart theme, time formatters, workspace grid (W1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 04-03-PLAN.md — Portfolio value (P&L) chart: history store, live "now" point, 30 s refetch, never-traded empty state, title-bar delta (W2)
@@ -191,6 +191,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6. Phases 4 and 5
 | 1. Walking Skeleton | 8/8 | Complete    | 2026-10-08 |
 | 2. Live Market Terminal | 7/7 | Complete    | 2026-10-08 |
 | 3. Trading & Watchlist Management | 5/5 | Complete    | 2026-10-09 |
-| 4. Charts & Portfolio Visualizations | 0/4 | Not started | - |
+| 4. Charts & Portfolio Visualizations | 1/4 | In Progress | - |
 | 5. AI Trading Copilot | 0/TBD | Not started | - |
 | 6. One-Command Launch & Full Verification | 0/TBD | Not started | - |

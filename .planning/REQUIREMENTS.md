@@ -72,7 +72,7 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 - [x] **UI-04**: Watchlist panel shows ticker, price, change % and a sparkline accumulated since page load
 - [x] **UI-05**: Prices flash green on uptick / red on downtick, fading over ~500ms
 - [x] **UI-06**: User can add and remove watchlist tickers from the panel
-- [ ] **UI-07**: Clicking a ticker shows it in the main chart (price over time); a default ticker is selected on load
+- [x] **UI-07**: Clicking a ticker shows it in the main chart (price over time); a default ticker is selected on load
 - [x] **UI-08**: Prices show "--" before the first value arrives (never NaN or 0); numbers use shared currency/quantity/sign/percent formatters with tabular numerals
 
 ### Frontend: Portfolio & Chat UI
@@ -181,7 +181,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | UI-04 | Phase 2 | Complete |
 | UI-05 | Phase 2 | Complete |
 | UI-06 | Phase 3 | Complete |
-| UI-07 | Phase 4 | Pending |
+| UI-07 | Phase 4 | Complete |
 | UI-08 | Phase 2 | Complete |
 | PUI-01 | Phase 3 | Complete |
 | PUI-02 | Phase 3 | Complete |
