@@ -1,1 +1,1 @@
-No external API integration: Phase 3 adds only FinAlly's own FastAPI routes (POST /api/portfolio/trade, POST and DELETE /api/watchlist), SQLite writes and calls to the existing in-process market source; the detector's signal was the phrase "wrap the rest in try/finally", and the Massive client integrated in Phase 2 is unchanged.
+No external API integration: Phase 3 adds only FinAlly's own FastAPI routes, SQLite writes and the in-process market source; the Phase 2 Massive client is unchanged.
