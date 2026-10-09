@@ -1,7 +1,7 @@
 ---
 phase: "5"
 slug: "ai-trading-copilot"
-status: draft
+status: approved
 shadcn_initialized: false
 preset: none
 created: "2026-10-09"
@@ -282,7 +282,7 @@ Strings marked (server) are authored by the backend and are part of this contrac
 
 ## UI Considerations
 
-> Researcher-authored from the shape-rooted taxonomy against the elements below; the ui-phase probe engine run after checker approval confirms the element kinds. Elements: E1 Chat toggle (interactive-control), E2 Conversation transcript (list-collection), E3 Message text (static-content), E4 Composer (form), E5 Action line (static-content), E6 Example prompt and Retry buttons (interactive-control). Empty and error COPY lives in the Copywriting Contract; these rows cover state coverage only.
+> Researcher-authored from the shape-rooted taxonomy against the elements below. The ui-phase probe engine (run after checker approval, 2026-10-09) confirmed the element kinds: 27 applicable categories, 0 unclassified. It surfaced three uncovered states (E4 partial, E5 empty, E5 overflow); the user resolved them as explicit truths, added at the end of the list. Elements: E1 Chat toggle (interactive-control), E2 Conversation transcript (list-collection), E3 Message text (static-content), E4 Composer (form), E5 Action line (static-content), E6 Example prompt and Retry buttons (interactive-control). Empty and error COPY lives in the Copywriting Contract; these rows cover state coverage only.
 
 ### Resolved (explicit) — lift into must_haves.truths
 
@@ -312,6 +312,9 @@ truths:
   - "[E6 Buttons / loading] Clicking chat-retry shows the history loading skeleton until the fetch settles"
   - "[E6 Buttons / error] If the retried history fetch fails again the chat-history-error block and its Retry render again"
   - "[E6 Buttons / long-text] Example prompt buttons truncate on one line and keep h-8; Retry and Close are fixed one-word labels"
+  - "[E4 Composer / partial] A partly typed draft survives closing and reopening the panel (the panel stays mounted), and after a request failure the sent text is put back into an empty textarea"
+  - "[E5 Action line / empty] An assistant reply with no actions renders no action block and no divider line"
+  - "[E5 Action line / overflow] Many action rows (up to 20) grow the assistant bubble and the transcript scrolls; the action block itself never scrolls or clips"
 ```
 
 ### Dismissed (with reason)
@@ -364,7 +367,7 @@ New hooks only. All Phase 2 to 4 hooks keep their meaning (PUI-08 audits the who
 Researcher defaults (no discuss-phase and no way to question the user from this agent; each is the option most consistent with PLAN.md sections 2 and 10, the prior UI-SPECs and the fixed stack; the user may override any). The first group answers the two questions the orchestrator named; the second group lists where this contract differs from the defaults in `05-RESEARCH.md` "UI Design Inputs".
 
 Settled questions:
-1. Dock versus overlay breakpoint: docked third column at 1536px and wider (workspace stays at least 696px, so Phase 4's mid row and positions table need no re-flow); a non-modal 360px overlay drawer below, with no scrim, no focus trap and no shadow. Default open at 1536px and wider, closed below, decided after mount and not persisted. (Confirms research A7.)
+1. **Confirmed by the user 2026-10-09.** Dock versus overlay breakpoint: docked third column at 1536px and wider (workspace stays at least 696px, so Phase 4's mid row and positions table need no re-flow); a non-modal 360px overlay drawer below, with no scrim, no focus trap and no shadow. Default open at 1536px and wider, closed below, decided after mount and not persisted. (Confirms research A7.)
 2. Failed turns after a reload: an LLM-failure turn is persisted by the backend (A5) and restored as an ordinary assistant message with no actions, the same rendering path as a live one. There is no special error styling for it, because the API carries no failure flag and the UI must not match error text. A request failure (network or 400) is a local, non-persisted `chat-error` row that disappears on reload, matching the fact that the server stored nothing.
 
 Differences from the research defaults:
@@ -375,7 +378,7 @@ Differences from the research defaults:
 7. Example prompts in the empty state are buttons that fill the textarea and focus it; they never send (research: plain text). Filling without sending keeps "no trade without an explicit user action".
 8. A slow-reply message after 8 seconds, because the backend timeout is 30 seconds.
 9. Request-failure rows restore the draft and, for network failures, warn that the message may have been processed. There is no resend button: a lost response could hide an executed trade.
-10. Messages longer than 2000 characters are blocked in the UI with an inline message. This mirrors research assumption A8, which needs a `planning/API_CONTRACT.md` edit (400 `{"error": "Message is too long"}`) before the backend enforces it; if A8 is rejected, drop only the UI limit.
+10. **Confirmed by the user 2026-10-09.** Messages longer than 2000 characters are blocked in the UI with an inline message. This mirrors research assumption A8, which needs a `planning/API_CONTRACT.md` edit (400 `{"error": "Message is too long"}`) before the backend enforces it; if A8 is rejected, drop only the UI limit.
 11. Assistant error strings (server) are specified here so the backend and the UI copy agree. The generic one states that nothing was executed (CHAT-08).
 12. No chat unread indicator, no persisted open state, no "new messages" chip, no timestamps beyond `HH:mm`, no markdown rendering, no clear-conversation control (no endpoint exists).
 
@@ -394,12 +397,14 @@ Impacts on existing code the executor must handle: `page.tsx` (third child, cond
 
 ## Checker Sign-Off
 
-- [ ] Dimension 1 Copywriting: PASS
-- [ ] Dimension 2 Visuals: PASS
-- [ ] Dimension 3 Color: PASS
-- [ ] Dimension 4 Typography: PASS
-- [ ] Dimension 5 Spacing: PASS
-- [ ] Dimension 6 Registry Safety: PASS
-- [ ] Dimension 7 Inventory Provenance: PASS
+- [x] Dimension 1 Copywriting: PASS
+- [x] Dimension 2 Visuals: PASS
+- [x] Dimension 3 Color: PASS
+- [x] Dimension 4 Typography: PASS
+- [x] Dimension 5 Spacing: PASS
+- [x] Dimension 6 Registry Safety: PASS
+- [x] Dimension 7 Inventory Provenance: PASS
 
 **Approval:** pending
+
+**Approval:** approved 2026-10-09
