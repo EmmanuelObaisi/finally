@@ -148,13 +148,23 @@ describe("composer length", () => {
     expect(chatCalls(fn)).toHaveLength(0);
   });
 
-  it("counts UTF-16 units: 1000 emoji pass, 1001 emoji are blocked", async () => {
+  it("counts code points like the server: 2000 emoji pass, 2001 emoji are blocked", async () => {
     await renderReady();
-    type("😀".repeat(1000));
+    type("😀".repeat(2000));
     expect(send()).toBeEnabled();
-    type("😀".repeat(1001));
+    type("😀".repeat(2001));
     expect(send()).toBeDisabled();
     expect(screen.getByTestId("chat-hint")).toHaveTextContent("too long");
+  });
+
+  it("counts the trimmed draft like the server: 2000 characters plus spaces still pass", async () => {
+    const { fn } = await renderReady();
+    type("  " + "a".repeat(2000) + "  ");
+    expect(screen.getByTestId("chat-hint")).toHaveTextContent("Enter sends, Shift+Enter adds a line");
+    expect(send()).toBeEnabled();
+    enter();
+    await screen.findByTestId("chat-loading");
+    expect(chatCalls(fn)).toHaveLength(1);
   });
 
   it("textarea is two rows, fixed height, no resize, labelled, autocomplete off", async () => {

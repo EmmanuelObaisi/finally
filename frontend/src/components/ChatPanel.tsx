@@ -17,6 +17,8 @@ const SEND =
 const RETRY = "mt-4 h-8 rounded-sm border border-border px-4 text-body hover:bg-raised disabled:opacity-50" + FOCUS;
 const EXAMPLE = "h-8 truncate rounded-sm border border-border px-4 text-left text-body hover:bg-raised" + FOCUS;
 const MAX_DRAFT = 2000;
+/** Unicode code points of the trimmed text: the unit the server counts. */
+const codePoints = (text: string) => Array.from(text.trim()).length;
 const SLOW_AFTER_MS = 8000;
 const EXAMPLES = ["How is my portfolio doing?", "Buy 5 shares of NVDA", "Add PYPL to my watchlist"];
 
@@ -34,7 +36,7 @@ export default function ChatPanel() {
   const transcriptRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const [slow, setSlow] = useState(false);
-  const tooLong = draft.length > MAX_DRAFT;
+  const tooLong = codePoints(draft) > MAX_DRAFT;
 
   useEffect(() => {
     useChatStore.getState().setOpen(window.matchMedia("(min-width: 1536px)").matches);
