@@ -5,11 +5,11 @@ titles: json
 findings:
   - id: WR-01
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "Selection tests assert effect-derived state right after `findByTestId`, so they can fail intermittently"
   - id: WR-02
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "`portfolio-charts.spec.ts` only passes on a pristine database, so it is not re-runnable against a long-lived server"
   - id: IN-01
     severity: info
@@ -31,17 +31,17 @@ findings:
     severity: info
     disposition: open
     title: "Test hygiene: fetch stubs leak across tests in two files"
-open: 7
+open: 5
 total: 7
-recorded: 2026-10-09T09:02:42.382Z
+recorded: 2026-10-09T09:41:30.892Z
 ---
 
 # Phase 04: Code Review Disposition
 
 | Finding | Severity | Disposition | Source |
 |---------|----------|-------------|--------|
-| WR-01 | warning | open | - |
-| WR-02 | warning | open | - |
+| WR-01 | warning | fixed | 04-REVIEW-FIX.md |
+| WR-02 | warning | fixed | 04-REVIEW-FIX.md |
 | IN-01 | info | open | - |
 | IN-02 | info | open | - |
 | IN-03 | info | open | - |
