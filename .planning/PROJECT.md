@@ -21,12 +21,13 @@ One command launches a live, data-dense trading terminal where prices stream, tr
 - ✓ Watchlist API: list with prices, add (validated), remove; tracked tickers = watchlist ∪ positions — Phase 3
 - ✓ Market-order trades with validation (atomic, 400 `{error}` on rejection), returning updated portfolio state — Phase 3
 - ✓ Trade bar, positions table and watchlist add/remove UI; header total updates immediately after a trade — Phase 3
+- ✓ Portfolio value history API (`GET /api/portfolio/history`, seed snapshot, 10 s + changed-value snapshot guard) — Phase 4
+- ✓ Main ticker chart (click a watchlist row to select), P&L treemap heatmap and portfolio value chart, each with an explicit empty state — Phase 4
 
 ### Active
 
-- [ ] Portfolio API: value history (`GET /api/portfolio/history`)
 - [ ] AI chat API: LiteLLM → OpenRouter (`openrouter/openai/gpt-oss-120b`, Cerebras provider) with structured outputs; auto-executes trades and watchlist changes; persists history; deterministic mock mode
-- [ ] Next.js static-export frontend: main ticker chart, portfolio treemap heatmap, P&L chart, collapsible AI chat panel (watchlist, header, positions table and trade bar done in Phases 2-3)
+- [ ] Collapsible AI chat panel in the frontend (watchlist, header, positions, trade bar and charts done in Phases 2-4)
 - [ ] SQLite on a named Docker volume (persists across container restarts)
 - [ ] Start/stop scripts for macOS/Linux and Windows (thin, idempotent wrappers)
 - [ ] Backend pytest suite and frontend component tests covering PLAN.md §12
@@ -101,6 +102,8 @@ One command launches a live, data-dense trading terminal where prices stream, tr
 | No `truststore` for the Massive client unless `CERTIFICATE_VERIFY_FAILED` is observed | Research and a real call show certifi verifies on this machine; fix only proven problems | ✓ Good — Phase 2; review fix WR-05 reverted at user request |
 | Reject orders whose value rounds to $0.00 ("Order value is too small"), except a sell of the whole position | Sub-cent buys acquired shares for free; the exemption keeps dust positions closable without allowing $0.00 partial sells | ✓ Good — Phase 3 review fixes WR-01/WR-06; in `planning/API_CONTRACT.md` |
 | One `asyncio.Lock` serializes every tracking change (trade, watchlist add/remove) | The watchlist ∪ positions rule was check-then-act and raced with a slow-poll source | ✓ Good — Phase 3 review fix WR-03 |
+| Snapshots recorded on trades and on history requests (no 30 s background task), guarded by 10 s and a changed 2 dp total | PLAN.md §13 #20; avoids a second background task without flooding the table | ✓ Good — Phase 4 |
+| Treemap is `d3-hierarchy` layout rendering plain divs | Full control of P&L colors and transitions at ~136 KB, unit-testable in jsdom | ✓ Good — Phase 4; UAT legible at 4 viewport sizes |
 
 ## Evolution
 
@@ -120,4 +123,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-10-09 after Phase 3*
+*Last updated: 2026-10-09 after Phase 4*
