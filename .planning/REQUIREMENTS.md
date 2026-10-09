@@ -56,7 +56,7 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 
 - [x] **CHAT-01**: User can send a message via `POST /api/chat` and receive a complete JSON response with the assistant message and executed actions
 - [x] **CHAT-02**: The LLM prompt includes the FinAlly system prompt, current portfolio context (cash, positions with P&L, watchlist prices, total value) and the last 20 messages
-- [ ] **CHAT-03**: LLM is called via LiteLLM → OpenRouter (`openrouter/openai/gpt-oss-120b`, Cerebras provider) per the cerebras skill, async, with structured output `{message, trades[], watchlist_changes[]}`
+- [x] **CHAT-03**: LLM is called via LiteLLM → OpenRouter (`openrouter/openai/gpt-oss-120b`, Cerebras provider) per the cerebras skill, async, with structured output `{message, trades[], watchlist_changes[]}`
 - [x] **CHAT-04**: Trades and watchlist changes in the response auto-execute through the same validation as manual actions; each action's success or error is returned
 - [x] **CHAT-05**: User and assistant messages (with actions JSON) are persisted in `chat_messages`
 - [x] **CHAT-06**: User can reload prior conversation via `GET /api/chat/history`
@@ -81,8 +81,8 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 - [x] **PUI-02**: Positions table shows ticker, quantity, avg cost, current price, unrealized P&L and % change, updating live
 - [x] **PUI-03**: Portfolio heatmap (treemap) sizes positions by weight and colors by P&L (green profit, red loss)
 - [x] **PUI-04**: P&L chart shows total portfolio value over time from snapshots, refetched every 30s with a live "now" point
-- [ ] **PUI-05**: Collapsible AI chat panel with message input (Enter to send), scrolling history restored on load, auto-scroll, and loading indicator
-- [ ] **PUI-06**: Executed trades and watchlist changes (and their failures) appear inline in the chat; portfolio and watchlist views refresh from the response
+- [x] **PUI-05**: Collapsible AI chat panel with message input (Enter to send), scrolling history restored on load, auto-scroll, and loading indicator
+- [x] **PUI-06**: Executed trades and watchlist changes (and their failures) appear inline in the chat; portfolio and watchlist views refresh from the response
 - [x] **PUI-07**: Watchlist, positions, heatmap and P&L chart have explicit empty states
 - [ ] **PUI-08**: Key elements carry stable `data-testid` attributes for E2E
 
@@ -168,7 +168,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PORT-08 | Phase 1 | Complete |
 | CHAT-01 | Phase 5 | Complete |
 | CHAT-02 | Phase 5 | Complete |
-| CHAT-03 | Phase 5 | Pending |
+| CHAT-03 | Phase 5 | Complete |
 | CHAT-04 | Phase 5 | Complete |
 | CHAT-05 | Phase 5 | Complete |
 | CHAT-06 | Phase 5 | Complete |
@@ -187,8 +187,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PUI-02 | Phase 3 | Complete |
 | PUI-03 | Phase 4 | Complete |
 | PUI-04 | Phase 4 | Complete |
-| PUI-05 | Phase 5 | Pending |
-| PUI-06 | Phase 5 | Pending |
+| PUI-05 | Phase 5 | Complete |
+| PUI-06 | Phase 5 | Complete |
 | PUI-07 | Phase 4 | Complete |
 | PUI-08 | Phase 6 | Pending |
 | PKG-01 | Phase 1 | Complete |
