@@ -69,6 +69,8 @@ test("the heatmap tiles held positions by weight", async ({ page }) => {
     await expect(page.getByTestId("trade-message")).toHaveAttribute("data-kind", "success");
   };
 
+  await expect(page.getByTestId("heatmap-empty")).toBeVisible();
+
   await trade("buy", "AAPL", "3");
   await expect(page.getByTestId("position-row-AAPL")).toBeVisible();
   await trade("buy", "MSFT", "2");
@@ -99,4 +101,26 @@ test("the heatmap tiles held positions by weight", async ({ page }) => {
   await trade("sell", "MSFT", "2");
   await expect(page.getByTestId("position-row-AAPL")).toHaveCount(0);
   await expect(page.getByTestId("position-row-MSFT")).toHaveCount(0);
+  await expect(page.getByTestId("heatmap-empty")).toBeVisible();
+});
+
+test("every panel shows its empty state", async ({ page }) => {
+  // Stubs only: deleting seed tickers from the shared E2E database would break smoke.spec.ts.
+  await page.route("**/api/watchlist", (route) =>
+    route.request().method() === "GET" ? route.fulfill({ json: { watchlist: [] } }) : route.continue(),
+  );
+  await page.route("**/api/portfolio", (route) =>
+    route.fulfill({ json: { cash: 10000, total_value: 10000, unrealized_pnl: 0, positions: [] } }),
+  );
+  await page.route("**/api/portfolio/history", (route) =>
+    route.fulfill({ json: { history: [{ total_value: 10000, recorded_at: "2026-10-09T12:00:00Z" }] } }),
+  );
+  await page.goto("/");
+
+  await expect(page.getByTestId("watchlist-empty")).toBeVisible();
+  await expect(page.getByTestId("main-chart-empty")).toBeVisible();
+  await expect(page.getByTestId("positions-empty")).toBeVisible();
+  await expect(page.getByTestId("heatmap-empty")).toBeVisible();
+  await expect(page.getByTestId("pnl-empty")).toBeVisible();
+  await expect(page.getByTestId("main-chart-title")).toHaveText("Price chart");
 });

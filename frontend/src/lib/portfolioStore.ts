@@ -19,6 +19,7 @@ export const usePortfolioStore = create<PortfolioState & Actions>()((set) => ({
   ...initialPortfolioState(),
   load: () => {
     const ticket = ++issued;
+    set({ failed: false });
     getPortfolio()
       .then((portfolio) => {
         if (ticket <= applied) return;
