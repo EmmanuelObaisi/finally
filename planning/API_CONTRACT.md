@@ -158,10 +158,27 @@ one history point; every trade still records its own snapshot.
 Body `{"message": "..."}`.
 `200 {"message": str, "actions": [Action], "portfolio": Portfolio, "watchlist": [WatchlistItem]}`.
 
-- `400 {"error": "..."}` only for an empty message.
+- `400 {"error": "Message must not be empty"}` for an empty or whitespace-only message, and
+  `400 {"error": "Message is too long"}` for a message of more than 2000 characters (Unicode code
+  points, counted after trimming). A missing or non-string `message` is the standard body-validation `400`.
 - An LLM failure (timeout, malformed output, missing key) is not an HTTP error: the response is
-  `200` with an assistant error message in `message` and `"actions": []`.
-- The last 20 stored messages are sent to the LLM as conversation history.
+  `200` with an assistant error message in `message` and `"actions": []`. The message is one of two
+  fixed texts: "The AI assistant is not configured: OPENROUTER_API_KEY is missing." when no key is
+  configured, otherwise "The AI assistant could not complete that request. No trades or watchlist
+  changes were made. Try again in a moment." Provider error text is never returned. The response
+  still carries the current `portfolio` and `watchlist`, and the failed turn (user message and
+  assistant error reply) is stored like any other turn.
+- The last 20 stored messages are sent to the LLM as conversation history, followed by the new
+  message. Each assistant message in that history gets compact outcome lines appended, for example
+  `[Executed: bought 5 AAPL at $190.12]` or `[Failed: sell 20 AAPL - Insufficient shares: you hold 10 AAPL]`;
+  the stored `content` stays the model's raw message.
+- Actions run independently, in order: trades first, then watchlist changes, each through the same
+  service and transaction as its manual counterpart. There is no all-or-nothing batch, and a failed
+  action never blocks the next.
+- At most 10 trades and 10 watchlist changes are executed per reply. Each entry beyond the cap is
+  not executed and is reported as an action with `ok` false and `error`
+  "Too many actions in one reply". `actions` lists the trade results in model order (executed ones first, then over-cap
+  failures), then the watchlist results the same way.
 
 ### GET /api/chat/history
 
@@ -200,7 +217,7 @@ Two variants:
 - Watchlist: `{"type": "watchlist", "ticker", "action": "add" or "remove", "ok": bool, "error": string or null}`
 
 A failed action carries `ok: false` and the reason in `error`; `price` is `null` when no fill
-happened.
+happened. `quantity` is the filled quantity (rounded to 6 dp) on success and the requested quantity on failure.
 
 ### LLM structured output
 
@@ -219,17 +236,21 @@ same validation as a manual trade.
 
 ## Mock LLM (LLM_MOCK=true)
 
-Deterministic keyword rules, frozen now because the E2E suite depends on them. A message is
-matched case-insensitively.
+Deterministic keyword rules, frozen now because the E2E suite depends on them. The latest user
+message is lower-cased and matched by substring; a ticker is upper-cased. The first match wins and
+exactly one rule fires, in the order below. The mock replaces only the model call: its reply goes
+through the same parse, validation, execution and persistence path as a real model reply.
 
 | Message contains | Mock response |
 |------------------|---------------|
+| "malformed" | Non-JSON model output (`not json`): the graceful LLM-failure reply |
+| "broke" | A buy of 1000000 AAPL (always fails with "Insufficient cash") |
+| "add TICKER" or "remove TICKER" (a word of 1 to 10 letters or dots after add or remove) | That watchlist change |
 | "buy" | Buy 1 AAPL |
 | "sell" | Sell 1 AAPL |
-| "add TICKER" or "remove TICKER" | That watchlist change |
-| "broke" | An unaffordable buy (failure path) |
-| "malformed" | Non-JSON model output (error path) |
 | anything else | Message only, no actions |
+
+No quantity or ticker is parsed from buy or sell text.
 
 ## Empty and null cases
 
@@ -238,4 +259,5 @@ matched case-insensitively.
 - An unpriced ticker has `null` in every non-ticker price field of its WatchlistItem.
 - Empty history is `{"history": []}`; empty chat history is `{"messages": []}`.
 - An empty chat message is a `400`.
+- A chat message over 2000 characters is a `400`.
 - Every SSE frame carries the full tracked set, so a reconnecting client needs no replay.
