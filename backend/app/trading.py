@@ -50,6 +50,8 @@ def execute_trade(conn, cache, ticker: str, side: str, quantity: float) -> dict:
         if price is None:
             raise DomainError(f"No price available for {ticker}")
         amount = round(price * quantity, 2)
+        if amount <= 0:
+            raise DomainError("Order value is too small")
         if side == "buy" and amount > cash:
             raise DomainError("Insufficient cash")
         now = now_iso()

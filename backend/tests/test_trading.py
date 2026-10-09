@@ -66,9 +66,10 @@ def test_fractional_quantities_fill(db, cache):
     cache.update("AAPL", 190.12)
     trade(db, cache, "buy", quantity=1.5)
     assert state(db)[0] == round(10000.0 - 285.18, 2)
-    cache.update("AAPL", 100.0)
+    cache.update("AAPL", 10000.0)
     trade(db, cache, "buy", quantity=0.000001)
-    assert state(db)[1] == [("AAPL", 1.500001, pytest.approx(190.11994, abs=1e-6))]
+    expected_avg = (1.5 * 190.12 + 0.000001 * 10000.0) / 1.500001
+    assert state(db)[1] == [("AAPL", 1.500001, pytest.approx(expected_avg, abs=1e-6))]
 
 
 def test_buy_exactly_all_cash_leaves_zero(db, cache):
@@ -127,6 +128,7 @@ def test_non_positive_quantity_is_rejected(db, cache, quantity):
 
 
 def test_micro_quantity_boundaries(db, cache):
+    cache.update("AAPL", 10000.0)
     trade(db, cache, "buy", quantity=0.000001)
     with pytest.raises(DomainError, match="Quantity must be greater than 0"):
         trade(db, cache, "buy", quantity=0.0000004)
@@ -135,6 +137,7 @@ def test_micro_quantity_boundaries(db, cache):
 @pytest.mark.parametrize("side,ticker,quantity,message", [
     ("buy", "ZZZZ", 1, "No price available for ZZZZ"),
     ("buy", "AAPL", 1000, "Insufficient cash"),
+    ("buy", "AAPL", 0.00004, "Order value is too small"),
     ("sell", "AAPL", 1, "Insufficient shares: you hold 0 AAPL"),
     ("sell", "PYPL", 1, "Insufficient shares: you hold 0 PYPL"),
 ])
@@ -142,6 +145,14 @@ def test_rejections_change_nothing(db, cache, side, ticker, quantity, message):
     before = state(db)
     with pytest.raises(DomainError, match=f"^{message}$"):
         trade(db, cache, side, ticker, quantity)
+    assert state(db) == before
+
+
+def test_sub_cent_sell_is_rejected(db, cache):
+    trade(db, cache, "buy", quantity=1)
+    before = state(db)
+    with pytest.raises(DomainError, match="^Order value is too small$"):
+        trade(db, cache, "sell", quantity=0.00004)
     assert state(db) == before
 
 

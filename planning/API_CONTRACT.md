@@ -130,7 +130,9 @@ in this order, with these exact messages:
 3. A sell of more than is held: `{"error": "Insufficient shares: you hold 1.5 AAPL"}` (held
    quantity to 6 dp, trailing zeros dropped; a never-held ticker says `you hold 0 AAPL`).
 4. `{"error": "No price available for AAPL"}`.
-5. A buy that costs more than the cash balance: `{"error": "Insufficient cash"}`.
+5. An order worth less than a cent (`round(price x quantity, 2)` is 0), so no shares change
+   hands for free: `{"error": "Order value is too small"}`.
+6. A buy that costs more than the cash balance: `{"error": "Insufficient cash"}`.
 
 A bad `side`, or a quantity that is non-finite, a string or a boolean, is a body validation 400
 (`{"error": "side: Input should be 'buy' or 'sell'"}`,
