@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 04
 current_phase_name: Charts & Portfolio Visualizations
 status: executing
-stopped_at: Completed 04-02-PLAN.md
-last_updated: "2026-10-09T08:23:28.270Z"
+stopped_at: Completed 04-01-PLAN.md
+last_updated: "2026-10-09T08:27:42.679Z"
 last_activity: 2026-10-09
 last_activity_desc: Phase 04 execution started
-state_head: 90906a9d5b8d5f6be362beffb48c2736ab65a130
+state_head: e508f09bf01305b1608002fe63a23142e0b1e350
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 24
-  completed_plans: 21
+  completed_plans: 22
   percent: 50
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-09)
 ## Current Position
 
 Phase: 04 (Charts & Portfolio Visualizations) — EXECUTING
-Plan: 2 of 4
+Plan: 3 of 4
 Status: Ready to execute
 Last activity: 2026-10-09 — Phase 04 execution started
 
@@ -79,6 +79,7 @@ Progress: [█████░░░░░] 50%
 | Phase 03 P04 | 3 min | 2 tasks | 7 files |
 | Phase 03 P05 | 4 min | 2 tasks | 7 files |
 | Phase 04 P02 | 8 min | 3 tasks | 15 files |
+| Phase 04 P01 | 3 min | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -131,6 +132,7 @@ Recent decisions affecting current work:
 - [Phase 03]: Review fixes: orders that round to $0.00 are rejected except a whole-position sell (WR-01/WR-06); one asyncio tracking_lock serializes tracking changes (WR-03); a failed watchlist remove refreshes the list inside the busy window (WR-05/WR-07)
 - [Phase 04]: 04-02: main-chart testid requires selection status ready, so a watchlist reload never exposes a stale chart
 - [Phase 04]: 04-02: selection lives in a zustand selectionStore synced from WatchlistPanel's view; ChartOverlay, baseChartOptions and toData are shared by the other chart panels
+- [Phase 04]: 04-01: history request snapshots only after 10 s and when the 2 dp total changed; record_if_due takes now as a parameter
 
 ### Pending Todos
 
@@ -153,6 +155,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-09T08:23:28.140Z
-Stopped at: Completed 04-02-PLAN.md
+Last session: 2026-10-09T08:27:42.547Z
+Stopped at: Completed 04-01-PLAN.md
 Resume file: None
