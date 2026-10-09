@@ -1,5 +1,5 @@
 // Typed calls to the FinAlly API. Shapes: planning/API_CONTRACT.md.
-import type { Portfolio, Trade, WatchlistItem } from "./types";
+import type { HistoryPoint, Portfolio, Trade, WatchlistItem } from "./types";
 
 export async function getWatchlist(): Promise<WatchlistItem[]> {
   const res = await fetch("/api/watchlist");
@@ -12,6 +12,13 @@ export async function getPortfolio(): Promise<Portfolio> {
   const res = await fetch("/api/portfolio");
   if (!res.ok) throw new Error("portfolio " + res.status);
   return (await res.json()) as Portfolio;
+}
+
+export async function getPortfolioHistory(): Promise<HistoryPoint[]> {
+  const res = await fetch("/api/portfolio/history");
+  if (!res.ok) throw new Error("history " + res.status);
+  const body = (await res.json()) as { history: HistoryPoint[] };
+  return body.history;
 }
 
 export const NETWORK_ERROR = "Could not reach the server. Check that FinAlly is running, then try again.";

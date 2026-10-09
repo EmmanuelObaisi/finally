@@ -55,3 +55,6 @@ export type Trade = {
 };
 
 export type ConnectionStatus = "connected" | "reconnecting" | "disconnected";
+
+/** One portfolio value snapshot from the history endpoint. */
+export type HistoryPoint = { total_value: number; recorded_at: string };
