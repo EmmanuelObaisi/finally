@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { getPortfolio, NETWORK_ERROR, postTrade } from "./api";
+import { getPortfolio, getPortfolioHistory, NETWORK_ERROR, postTrade } from "./api";
 
 const reply = (ok: boolean, status: number, body: () => Promise<unknown>) => ({ ok, status, json: body });
 
@@ -45,6 +45,21 @@ describe("GET helpers", () => {
   it("getPortfolio never echoes the status body", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => reply(false, 503, async () => ({ error: "secret detail" }))));
     const error = await getPortfolio().catch((e: Error) => e);
+    expect((error as Error).message).not.toContain("secret detail");
+  });
+
+  it("getPortfolioHistory resolves the history array of the body", async () => {
+    const history = [{ total_value: 10000, recorded_at: "2026-10-09T10:00:00Z" }];
+    const fetchFn = vi.fn(async () => reply(true, 200, async () => ({ history })));
+    vi.stubGlobal("fetch", fetchFn);
+    await expect(getPortfolioHistory()).resolves.toEqual(history);
+    expect(fetchFn).toHaveBeenCalledWith("/api/portfolio/history");
+  });
+
+  it("getPortfolioHistory never echoes the status body", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => reply(false, 503, async () => ({ error: "secret detail" }))));
+    const error = await getPortfolioHistory().catch((e: Error) => e);
+    expect((error as Error).message).toBe("history 503");
     expect((error as Error).message).not.toContain("secret detail");
   });
 });
