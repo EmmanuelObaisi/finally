@@ -22,7 +22,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Trading & Watchlist Management** - Buy and sell shares and curate the watchlist, with positions, prices and streams kept consistent (completed 2026-10-09)
 - [x] **Phase 4: Charts & Portfolio Visualizations** - Main ticker chart, P&L treemap heatmap and portfolio value history chart (completed 2026-10-09)
 - [x] **Phase 5: AI Trading Copilot** - Chat with FinAlly, which reads the portfolio and executes trades and watchlist changes (completed 2026-10-09)
-- [ ] **Phase 6: One-Command Launch & Full Verification** - Compose and start/stop scripts, persistent volume, and every §12 unit and E2E scenario green
+- [x] **Phase 6: One-Command Launch & Full Verification** - Compose and start/stop scripts, persistent volume, and every §12 unit and E2E scenario green (completed 2026-10-10)
 
 ## Phase Details
 
@@ -191,7 +191,7 @@ Plans:
   3. The Playwright suite, run from the host against the container with `LLM_MOCK=true`, passes every §12 scenario: fresh start, add/remove ticker, buy, sell, heatmap and P&L chart, mocked AI chat with inline trade, and SSE reconnection. It selects elements by stable `data-testid` hooks
   4. Backend API route tests (status codes, response shapes, error handling) and frontend unit tests (component rendering, price flash, watchlist CRUD, portfolio calculations, chat rendering and loading state) all pass
 
-**Plans**: 5/5 plans executed
+**Plans**: 5/5 plans complete
 Plans:
 **Wave 1**
 - [x] 06-01-PLAN.md — One-command launch: docker-compose.yml, E2E mock-pin override, four start/stop scripts proven on a private project, README Run section (W1)
@@ -218,4 +218,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6. Phases 4 and 5
 | 3. Trading & Watchlist Management | 5/5 | Complete    | 2026-10-09 |
 | 4. Charts & Portfolio Visualizations | 4/4 | Complete    | 2026-10-09 |
 | 5. AI Trading Copilot | 5/5 | Complete    | 2026-10-09 |
-| 6. One-Command Launch & Full Verification | 5/5 | In Progress | - |
+| 6. One-Command Launch & Full Verification | 5/5 | Complete    | 2026-10-10 |
