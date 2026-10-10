@@ -14,7 +14,9 @@ const COMPOSE_ENV = { ...process.env, COMPOSE_PROJECT_NAME: PROJECT, FINALLY_POR
 const COMPOSE = ["compose", "-p", PROJECT, "-f", "docker-compose.yml", "-f", "test/compose.e2e.yml"];
 
 let signal = null;
-for (const name of ["SIGINT", "SIGTERM"]) process.on(name, () => (signal = name));
+// An installed handler keeps Node alive on Ctrl+C, so the finally block below always tears down.
+process.on("SIGINT", () => (signal = "SIGINT"));
+process.on("SIGTERM", () => (signal = "SIGTERM"));
 
 /** Run a compose subcommand at the repo root and return the spawn result. */
 function compose(args, options = {}) {
