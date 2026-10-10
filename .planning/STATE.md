@@ -1,18 +1,18 @@
 ---
 gsd_state_version: "1.0"
-current_phase: 06
-status: completed
-stopped_at: Phase 06 complete — all phases complete
-last_updated: "2026-10-10T04:31:45.752Z"
+status: Awaiting next milestone
+stopped_at: Milestone v1.0 complete and archived
+last_updated: "2026-10-10T05:01:16.513Z"
 last_activity: 2026-10-10
-last_activity_desc: Phase 06 complete
-state_head: b75adc9e774db86b9eae234d48e8f46419a1315f
+last_activity_desc: Milestone v1.0 completed and archived
+state_head: e8890a4d0cb682fdac767d9a42a7f08c13366b53
 progress:
   total_phases: 6
   completed_phases: 6
   total_plans: 34
   completed_plans: 34
   percent: 100
+current_phase: 06
 ---
 
 # Project State
@@ -22,16 +22,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-10)
 
 **Core value:** One command launches a live, data-dense trading terminal where prices stream, trades fill instantly, and the AI copilot can act on the portfolio — and every specified unit and E2E scenario passes to prove it.
-**Current focus:** Milestone complete — ready for /gsd-complete-milestone
+**Current focus:** Planning next milestone (v1.0 MVP shipped 2026-10-10)
 
 ## Current Position
 
-Phase: 06
-Plan: Not started
-Status: All phases complete
-Last activity: 2026-10-10 — Phase 06 complete
-
-Progress: [██████████] 100%
+Phase: Milestone v1.0 complete
+Plan: —
+Status: Awaiting next milestone
+Last activity: 2026-10-10 — Milestone v1.0 completed and archived
 
 ## Performance Metrics
 
@@ -99,71 +97,7 @@ Progress: [██████████] 100%
 
 ### Decisions
 
-Decisions are logged in PROJECT.md Key Decisions table.
-Recent decisions affecting current work:
-
-- [Roadmap]: Vertical MVP slicing in 6 phases. Docker build and host Playwright spike pulled into Phase 1 to surface machine-specific risks early
-- [Roadmap]: PKG-01 (multi-stage Dockerfile) lands in Phase 1 with the skeleton. Volume, compose and scripts land in Phase 6
-- [Roadmap]: Watchlist add/remove lives with trading (Phase 3) because the tracked-ticker rule (watchlist ∪ positions) needs positions to verify
-- [Roadmap]: TEST-01/02/03 verify with their slice. TEST-04/05/06 and the `data-testid` audit close out in Phase 6
-- [Phase 01]: No catch-all text=auto in .gitattributes; core.autocrlf=true is set on this machine and it would renormalize the repo
-- [Phase 01]: Removed unanchored packaging ignores (lib/, build/, dist/) since backend is a uv virtual project; they hid frontend/src/lib/
-- [Phase 01]: change_percent measured from session_start_price (first cached price since process start) for simulator and Massive; change/direction stay tick-over-tick (D-01)
-- [Phase 01]: API contract fixes unknown /api path as 404 {error: Not found}, mock LLM keywords case-insensitive, watchlist re-add idempotent 200
-- [Phase 01]: Backend uses plain httpx as the TestClient transport with the Starlette deprecation warning filtered; httpx2 is not installed (D-02)
-- [Phase 01]: Backend dependencies pinned with == to the human-approved versions (fastapi 0.142.2, uvicorn 0.54.0, python-dotenv 1.2.4; dev pytest 9.1.1, httpx 0.28.1)
-- [Phase 01]: Every backend failure returns the {error} envelope: unknown /api paths 404, validation 400 (never 422), unhandled 500 with fixed text; routers must be included above the /api catch-all
-- [Phase 01]: 01-04: Next 16.4/React 19.3/Tailwind 4.3 frontend hand-written; export build only, /api rewrites spread only in next dev; Next-normalized tsconfig.json and lockfile committed
-- [Phase 01]: UI safety gate overridden for Phase 1 wave 2: placeholder page only (title, API status, dark theme); a UI-SPEC is produced via /gsd-ui-phase 2 before Phase 2 UI work (user decision)
-- [Phase 01]: 01-05: Docker TLS probe showed no interception; image built without extra_ca secret, mechanism proven with a throwaway secret build; host Playwright passes against the container (D-05)
-- [Phase 01]: Empty or whitespace-only config values are unset (env() helper); malformed non-empty values still fail at startup
-- [Phase 01]: Unknown /api paths use add_route with a JSONResponse ASGI app so any HTTP method gets the contract 404
-- [Phase 01]: 01-07: getHealth() throws on non-2xx; page.tsx unchanged because its catch already sets down (WR-04)
-- [Phase 01]: 01-08: runtime image runs as non-root system user app owning /app/db; backend-build RUN uses set -e so a failed uv sync --locked fails the build
-- [Phase 01]: UI safety gate overridden for Phase 1 gap closure: 01-07 changed only a non-visual res.ok check in frontend/src/lib/api.ts; UI-SPEC still deferred to /gsd-ui-phase 2 (user decision)
-- [Phase 02]: 02-01: SSE polls cache.version every 0.1 s (not 0.5 s) to avoid aliasing with the 0.5 s simulator tick; one frame per version change
-- [Phase 02]: 02-01: every uvicorn launch path must pass --timeout-graceful-shutdown (Playwright webServer and tests done; README dev command in 02-07)
-- [Phase 02]: 02-01: Phase 2 packages approved by user; list recorded in 02-01-SUMMARY.md Approved packages (02-04 massive 2.8.0, 02-05 npm set)
-- [Phase 02]: Seed defaults only into a fresh database (no users_profile row): restarts never restore removed tickers or reset cash
-- [Phase 02]: Held ticker with no cached price is valued at avg_cost with an ERROR log, never null
-- [Phase 02]: Wrong method on a known /api path is 404 (contract states it; API never answers 405)
-- [Phase 02]: Unknown tickers start at a sha256-derived price (first 8 bytes big-endian over 2**64), never hash() or the RNG, so start prices are stable across processes and add order
-- [Phase 02]: 02-04: Grouped Daily walk-back is weekday-only and capped at 5 calls, so a free-plan start costs 2 calls
-- [Phase 02]: 02-04: a rejected Massive key fails start() loudly; no silent fallback to simulated prices
-- [Phase 02]: 02-05: All Phase 2 npm packages installed with exact pins in one plan; Phase 1 api-status, getHealth and health-status spec removed together
-- [Phase 02]: 02-05: fmtPct uses the decimal signed formatter plus a literal percent sign because change_percent is already in percent units
-- [Phase 02]: Footer attribution uses the UI-SPEC-quoted NOTICE text because lightweight-charts 5.2.1 ships no NOTICE file — Licence needs notice plus tradingview.com link; compare if a later release adds NOTICE
-- [Phase 02]: Watchlist price and change cells dim at opacity-60 when disconnected, in addition to header numbers — UI-SPEC Connection indicator contract; stale prices must not look live
-- [Phase 02]: 02-07: applyFrame is pure over (state, frame, nowSeconds) and owns flash and sparkline buffers; Sparkline only mirrors the buffer into the chart
-- [Phase 02]: 02-07: docker stop with an open SSE client took 4 s (uvicorn --timeout-graceful-shutdown 3); lifespan-event shutdown recipe disproved and PITFALLS/STACK corrected
-- [Phase 03]: 03-01: quantities rounded to 6 dp and money to 2 dp inside execute_trade so the chat path gets identical rules
-- [Phase 03]: 03-01: sync_ticker in place_trade finally is the single place app code stops tracking a ticker
-- [Phase 03]: 03-02: add_to_watchlist short-circuits an already-watched ticker; DELETE upper-cases ASCII only; routes delegate tracking to sync_ticker (IN-03 fixed)
-- [Phase 03]: 03-03: Header reads usePortfolioStore (ticket guard); TradeBar applies response.portfolio before the confirmation, closing the Header half of IN-01
-- [Phase 03]: 03-04: PositionRow uses plain td cells with position-* testids and no flash; price-{TICKER} stays unique to the watchlist
-- [Phase 03]: 03-04: PositionsTable never loads itself; Header's mount and reconnect loads feed the shared portfolio store
-- [Phase 03]: 03-05: add and remove share one busy lock; input and Add disabled outside the ready state (completes IN-01)
-- [Phase 03]: Review fixes: orders that round to $0.00 are rejected except a whole-position sell (WR-01/WR-06); one asyncio tracking_lock serializes tracking changes (WR-03); a failed watchlist remove refreshes the list inside the busy window (WR-05/WR-07)
-- [Phase 04]: 04-02: main-chart testid requires selection status ready, so a watchlist reload never exposes a stale chart
-- [Phase 04]: 04-02: selection lives in a zustand selectionStore synced from WatchlistPanel's view; ChartOverlay, baseChartOptions and toData are shared by the other chart panels
-- [Phase 04]: 04-01: history request snapshots only after 10 s and when the 2 dp total changed; record_if_due takes now as a parameter
-- [Phase 04]: 04-03: P&L series memo depends on the live total so the chart's live point always matches the header total
-- [Phase 04]: 04-03: P&L empty state means never traded (no positions, at most 1 history point) or fewer than 2 points; closed-out history keeps its chart
-- [Phase 04]: 04-04: buildTiles reads rectangles from the node returned by treemap() (TypeScript 7 types only that node with x0/y0/x1/y1)
-- [Phase 04]: 04-04: portfolioStore.load() sets failed:false on start so every Retry shows its panel loading skeleton; heatmap empty check is independent of measured size
-- [Phase 05]: Plan check passed with override: checker blocker "05-05 redundantly claims CHAT-03" rejected (its evidence was wrong, 05-02 does not claim CHAT-03; 05-05 holds the live real-model CHAT-03 human check)
-- [Phase 05]: 05-03: chat reply refreshes other panels via applyTrade(reply.portfolio) and watchlistStore.publish(reply.watchlist); one request per send, no retry; chatStore never reads stream status
-- [Phase 05]: 05-01: Provider pinned to Cerebras (allow_fallbacks False, require_parameters True); litellm imported lazily in the real branch of complete() only
-- [Phase 05]: 05-01: litellm 1.104.0 approved by user and pinned; installed RECORD has no .pth file
-- [Phase 05]: Chat LLM failures are a 200 with one of two fixed ASCII texts; provider text and API key never reach client or logs
-- [Phase 05]: ChatPanel is always mounted and hidden by class when closed; default-open decided in a mount effect from matchMedia(min-width: 1536px) — Draft, scroll and history survive close and reopen; static export hydrates without a mismatch
-- [Phase 05]: Chat draft limit counts code points after trimming, matching the server (review fix WR-03); slow-reply text appears after 8000 ms; Retry is disabled while a reply is pending
-- [Phase 05]: UAT 29/29 passed (live smoke on Cerebras, real-model grounding and action discipline by user; layout and mock walkthrough via Playwright at 5 widths)
-- [Phase 06]: 06-01: compose publishes on 127.0.0.1 only, pins DB_PATH literally, project-scoped volume finally-data; E2E override uses image finally-e2e with literal mock pins
-- [Phase 06]: 06-05: only the two planned HTTP shape gaps needed new tests; all other TEST-04 rows and all TEST-05 bullets were already covered by named tests
-- [Phase 06]: 06-02: every e2e compose call passes -p finally-test explicitly; mock pins proven inside the container before Playwright; wrapper fails on any skipped, flaky or failed test
-- [Phase 06]: 06-03: reconnect E2E runs only in container mode and asserts cash/total on a flat portfolio; chat action text asserted with toContainText because the Done/Failed tag shares the element
-- [Phase 06]: Persistence check prints only booleans for env_file delivery; broken start proven with a malformed SIM_SEED override
+Decisions are logged in the PROJECT.md Key Decisions table. The full v1.0 per-plan decision log lives in the archived phase summaries (`milestones/v1.0-phases/*/*-SUMMARY.md`) and the milestone summary in `milestones/v1.0-ROADMAP.md`.
 
 ### Pending Todos
 
@@ -171,13 +105,15 @@ None yet.
 
 ### Blockers/Concerns
 
-- [Phase 3]: Six info-level review findings remain open (IN-01..IN-06, see 03-REVIEW-DISPOSITION.md); IN-01 (rejected buy still spends a Massive poll) and IN-06 (cancellation vs final sync_ticker, unproven) touch `place_trade`
-- [Phase 4]: Five info-level review findings remain open (IN-01..IN-05, see 04-REVIEW-DISPOSITION.md); IN-01: a database created before Phase 4 gets no seed snapshot, so its P&L chart is empty until the first trade
-- [Phase 2 carry-over]: IN-08: bad-key detection relies on the "Unknown API Key" message text (WR-07 fixed in dfe4268)
-- [Phase 5]: Four info-level review findings remain open (IN-01..IN-04, see 05-REVIEW-DISPOSITION.md); also a save-time DB failure in finish_turn still returns 500 after actions ran (noted at re-verification, not a reported gap)
-- [Phase 6]: Eight review findings remain open (WR-01..WR-03, IN-01..IN-05, see 06-REVIEW-DISPOSITION.md); WR-01: trade-chat.spec.ts assumes a fresh database
-- [Phase 6]: backend test_llm_failure_no_leak_in_body_or_log (Phase 5) failed once in four full runs at verification; suspected chance "401" substring in timestamp floats, not reproduced
-- [Phase 4 carry-over]: at 1536 px with chat docked, the Portfolio value panel title truncates to "Portfolio va..." and "since start" wraps (cosmetic, seen in Phase 5 UAT)
+Carried into the next milestone as known tech debt (none blocking; full list in `milestones/v1.0-MILESTONE-AUDIT.md`, review dispositions under `milestones/v1.0-phases/`):
+
+- [v1.0 Phase 3]: IN-01 rejected buy still spends a Massive poll; IN-06 cancellation vs final `sync_ticker` (unproven) — both touch `place_trade`
+- [v1.0 Phase 4]: a database created before Phase 4 gets no seed snapshot, so its P&L chart is empty until the first trade
+- [v1.0 Phase 2]: IN-08 bad-key detection relies on the "Unknown API Key" message text
+- [v1.0 Phase 5]: a save-time DB failure in `finish_turn` returns 500 after actions ran
+- [v1.0 Phase 6]: WR-01 `trade-chat.spec.ts` assumes a fresh database; WR-02 broken-start check can pass vacuously; WR-03 reconnect spec leaves a promise unattended
+- [v1.0 Phase 6]: backend `test_llm_failure_no_leak_in_body_or_log` failed once in four full runs; suspected chance "401" substring in timestamp floats, not reproduced
+- [v1.0 Phase 4]: at 1536 px with chat docked, the Portfolio value panel title truncates (cosmetic)
 
 ## Deferred Items
 
@@ -189,6 +125,10 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-10T04:32:13.939Z
-Stopped at: Phase 06 complete (UAT 2/2 passed), milestone ready to close
+Last session: 2026-10-10
+Stopped at: Milestone v1.0 complete and archived (verified closeout, tag v1.0)
 Resume file: None
+
+## Operator Next Steps
+
+- Start the next milestone with /gsd-new-milestone

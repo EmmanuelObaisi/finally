@@ -2,7 +2,7 @@
 
 ## What This Is
 
-FinAlly (Finance Ally) is a Bloomberg-style AI trading workstation that runs in a single Docker container. It streams live (simulated or real) market prices, lets the user trade a $10,000 simulated portfolio with market orders, and has an AI chat copilot that analyzes positions and executes trades and watchlist changes by natural language. It is the capstone of an agentic AI coding course, built entirely by coding agents, and is built exactly as `planning/PLAN.md` specifies (with the PLAN.md §13 review proposals adopted).
+FinAlly (Finance Ally) is a Bloomberg-style AI trading workstation that runs in a single Docker container. It streams live (simulated or real) market prices, lets the user trade a $10,000 simulated portfolio with market orders, and has an AI chat copilot that analyzes positions and executes trades and watchlist changes by natural language. It is the capstone of an agentic AI coding course, built entirely by coding agents exactly as `planning/PLAN.md` specifies (with the PLAN.md §13 review proposals adopted). v1.0 shipped 2026-10-10: one command launches it, and every PLAN.md §12 unit and E2E scenario passes.
 
 ## Core Value
 
@@ -12,27 +12,29 @@ One command launches a live, data-dense trading terminal where prices stream, tr
 
 ### Validated
 
-- ✓ Repo hygiene: committed `backend/static/` and `test/node_modules/` removed and gitignored — Phase 1
-- ✓ Multi-stage Dockerfile (Node 24 -> Python 3.12 + uv `--locked`) serving API + static frontend on port 8000, non-root — Phase 1
-- ✓ Market data subsystem rebuilt from the design docs: GBM simulator (correlated moves, random events, ~500ms ticks), optional Massive REST poller, shared price cache, one abstract interface — Phase 2
-- ✓ SSE stream `GET /api/stream/prices` pushing all tracked tickers on cache change — Phase 2
-- ✓ SQLite database lazily created and seeded (default user with $10,000 cash, 10 default watchlist tickers) — Phase 2
-- ✓ Dark terminal visual design per PLAN.md §2 (UI-SPEC theme tokens; UI audit 23/24) — Phase 2
-- ✓ Watchlist API: list with prices, add (validated), remove; tracked tickers = watchlist ∪ positions — Phase 3
-- ✓ Market-order trades with validation (atomic, 400 `{error}` on rejection), returning updated portfolio state — Phase 3
-- ✓ Trade bar, positions table and watchlist add/remove UI; header total updates immediately after a trade — Phase 3
-- ✓ Portfolio value history API (`GET /api/portfolio/history`, seed snapshot, 10 s + changed-value snapshot guard) — Phase 4
-- ✓ Main ticker chart (click a watchlist row to select), P&L treemap heatmap and portfolio value chart, each with an explicit empty state — Phase 4
-- ✓ AI chat API: LiteLLM → OpenRouter (`openrouter/openai/gpt-oss-120b`, Cerebras provider) with structured outputs; auto-executes trades and watchlist changes; persists history; deterministic mock mode — Phase 5; live smoke and real-model UAT passed
-- ✓ Collapsible AI chat panel (docked at 1536 px and wider, overlay drawer below) with inline action lines and reload restore — Phase 5
-- ✓ SQLite on a named Docker volume (`finally-data`, persists across stop/start; proven by `npm --prefix test run persist`) — Phase 6
-- ✓ Start/stop scripts for macOS/Linux and Windows (thin, idempotent `docker compose` wrappers, loopback-only port) — Phase 6; real launch passed UAT
-- ✓ Backend pytest suite and frontend component tests covering PLAN.md §12 (329 + 345 tests; audit matrix in 06-TEST-AUDIT.md) — Phase 6
-- ✓ Playwright E2E suite covering every PLAN.md §12 scenario with `LLM_MOCK=true`, one command against a throwaway container (`npm --prefix test run e2e`, 20 passed, 0 skipped) — Phase 6
+- ✓ Repo hygiene: committed `backend/static/` and `test/node_modules/` removed and gitignored — v1.0 (Phase 1)
+- ✓ Multi-stage Dockerfile (Node 24 -> Python 3.12 + uv `--locked`) serving API + static frontend on port 8000, non-root — v1.0 (Phase 1)
+- ✓ Market data subsystem rebuilt from the design docs: GBM simulator (correlated moves, random events, ~500ms ticks), optional Massive REST poller, shared price cache, one abstract interface — v1.0 (Phase 2)
+- ✓ SSE stream `GET /api/stream/prices` pushing all tracked tickers on cache change — v1.0 (Phase 2)
+- ✓ SQLite database lazily created and seeded (default user with $10,000 cash, 10 default watchlist tickers) — v1.0 (Phase 2)
+- ✓ Dark terminal visual design per PLAN.md §2 (UI-SPEC theme tokens; UI audit 23/24) — v1.0 (Phase 2)
+- ✓ Watchlist API: list with prices, add (validated), remove; tracked tickers = watchlist ∪ positions — v1.0 (Phase 3)
+- ✓ Market-order trades with validation (atomic, 400 `{error}` on rejection), returning updated portfolio state — v1.0 (Phase 3)
+- ✓ Trade bar, positions table and watchlist add/remove UI; header total updates immediately after a trade — v1.0 (Phase 3)
+- ✓ Portfolio value history API (`GET /api/portfolio/history`, seed snapshot, 10 s + changed-value snapshot guard) — v1.0 (Phase 4)
+- ✓ Main ticker chart (click a watchlist row to select), P&L treemap heatmap and portfolio value chart, each with an explicit empty state — v1.0 (Phase 4)
+- ✓ AI chat API: LiteLLM → OpenRouter (`openrouter/openai/gpt-oss-120b`, Cerebras provider) with structured outputs; auto-executes trades and watchlist changes; persists history; deterministic mock mode — v1.0 (Phase 5); live smoke and real-model UAT passed
+- ✓ Collapsible AI chat panel (docked at 1536 px and wider, overlay drawer below) with inline action lines and reload restore — v1.0 (Phase 5)
+- ✓ SQLite on a named Docker volume (`finally-data`, persists across stop/start; proven by `npm --prefix test run persist`) — v1.0 (Phase 6)
+- ✓ Start/stop scripts for macOS/Linux and Windows (thin, idempotent `docker compose` wrappers, loopback-only port) — v1.0 (Phase 6); real launch passed UAT
+- ✓ Backend pytest suite and frontend component tests covering PLAN.md §12 (329 + 345 tests; audit matrix in 06-TEST-AUDIT.md) — v1.0 (Phase 6)
+- ✓ Playwright E2E suite covering every PLAN.md §12 scenario with `LLM_MOCK=true`, one command against a throwaway container (`npm --prefix test run e2e`, 20 passed, 0 skipped) — v1.0 (Phase 6)
 
 ### Active
 
-(none — all v1 requirements validated)
+(none — next milestone not yet defined; run `/gsd-new-milestone`)
+
+Candidate inputs for the next milestone (not committed): the v1.0 tech-debt list in `milestones/v1.0-MILESTONE-AUDIT.md`, and the PLAN.md §11 stretch goal (Terraform/App Runner deploy in `deploy/`).
 
 ### Out of Scope
 
@@ -47,13 +49,19 @@ One command launches a live, data-dense trading terminal where prices stream, tr
 - Background snapshot task — replaced by snapshot-after-trade + on history request (§13 #20)
 - Dedicated Playwright container / `docker-compose.test.yml` — Playwright runs on the host against the container (§13 #23)
 
+## Current State
+
+**Shipped:** v1.0 MVP (2026-10-10) — 6 phases, 34 plans, 88 tasks over 4 days. See `MILESTONES.md`.
+
+- **Codebase:** ~4.5k lines Python (FastAPI, SQLite, market data, LiteLLM chat) and ~7.3k lines TypeScript (Next.js 16.4 static export, zustand, Lightweight Charts v5, d3-hierarchy, Vitest, Playwright).
+- **Proof:** 329 backend + 345 frontend unit tests; 20 Playwright E2E tests against a throwaway mock-pinned container; persistence and start/stop scripts proven in both shells.
+- **Known issues:** info/warning-level review findings only (no requirement gaps), listed in `milestones/v1.0-MILESTONE-AUDIT.md`. Most visible: a pre-Phase-4 database shows an empty P&L chart until the first trade; `trade-chat.spec.ts` assumes a fresh database; one rare flaky backend test (`test_llm_failure_no_leak_in_body_or_log`).
+
 ## Context
 
 - **Spec:** `planning/PLAN.md` is the source of truth. Detailed market data design lives in `planning/MARKET_INTERFACE.md`, `planning/MARKET_SIMULATOR.md`, `planning/MASSIVE_API.md` (module layout, data model, cache, interface, tracking rule, ticker validation, tests).
-- **Repo state after Phase 1 (2026-10-08):** walking skeleton in place: FastAPI app factory with `/api/health`, JSON error envelope and an all-method `/api` catch-all 404; Next.js static-export placeholder page; three-stage Docker image (non-root, healthcheck, CA secret only in build stages); host Playwright smoke test; frozen contract in `planning/API_CONTRACT.md`. README/CLAUDE.md describe the real state.
-- **Repo state at init (2026-10-06):** effectively greenfield. `README.md`/`CLAUDE.md` claim market data is done, but no `.py` source exists (only stale `__pycache__`); `planning/MARKET_DATA_SUMMARY.md` and `planning/archive/` referenced by `CLAUDE.md` do not exist. `frontend/` is empty. Stale committed artifacts: `backend/static/` (old Next.js export), `test/node_modules/` (Playwright). README/CLAUDE.md status lines must be corrected as work lands.
 - **Agents coordinate through files in `planning/`** (and now `.planning/`).
-- **Dev machine:** Windows 11 with Avast TLS interception — every TLS stack (uv, Python/certifi, Node, Next.js) needs its own opt-in to the OS trust store (`UV_SYSTEM_CERTS=1`, `truststore`, `turbopackUseSystemTlsCerts`). Never disable verification.
+- **Dev machine:** Windows 11 with Avast TLS interception — every TLS stack (uv, Python/certifi, Node, Next.js) needs its own opt-in to the OS trust store (`UV_SYSTEM_CERTS=1`, `NODE_EXTRA_CA_CERTS`; the Docker build takes the CA only as a build secret). `turbopackUseSystemTlsCerts` does not exist in Next 16.4, and certifi verifies fine here, so no `truststore` was needed. Never disable verification.
 - **pytest is blocked by App Control here:** run tests as `uv run python -m pytest`; dev deps via `uv sync --extra dev`.
 - **LLM calls** must use the project `cerebras` skill (`.claude/skills/cerebras/SKILL.md`).
 
@@ -91,8 +99,8 @@ One command launches a live, data-dense trading terminal where prices stream, tr
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Build exactly per PLAN.md | User's explicit direction | — Pending |
-| Adopt all PLAN.md §13 proposals (see Context) | Closes contract gaps and simplifies before work starts | — Pending |
+| Build exactly per PLAN.md | User's explicit direction | ✓ Good — v1.0 shipped to spec; 65/65 requirements, all §12 scenarios green |
+| Adopt all PLAN.md §13 proposals (see Context) | Closes contract gaps and simplifies before work starts | ✓ Good — v1.0; every proposal landed and no contract gap reopened |
 | Rebuild market data from planning docs | Source code is gone; docs are detailed enough to rebuild | ✓ Good — Phase 2; simulator and Massive poller behind one interface, real Massive key verified in UAT |
 | Done = one docker command + all §12 unit and E2E scenarios green | User's definition of done for the capstone | ✓ Good — Phase 6; one-command launch passed UAT, all suites green |
 | Remove committed build artifacts and node_modules | Regenerated by builds; stale and noisy in git | ✓ Good — done in Phase 1 |
@@ -129,4 +137,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-10-10 after Phase 6*
+*Last updated: 2026-10-10 after v1.0 milestone*
