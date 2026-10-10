@@ -14,7 +14,7 @@ Phase 4 (charts): main price chart, P&L heatmap, portfolio value chart and `GET 
 
 Phase 5 (AI copilot): `POST /api/chat` and `GET /api/chat/history` through LiteLLM to OpenRouter to Cerebras `gpt-oss-120b` with structured output, the `LLM_MOCK=true` keyword mock, and the collapsible chat panel.
 
-Not built yet: compose and start/stop scripts, the Docker volume, and the full Playwright suite (Phase 6). See `.planning/ROADMAP.md` and [planning/PLAN.md](planning/PLAN.md).
+Phase 6 (one-command launch and full verification): `docker-compose.yml` with the named data volume, start/stop scripts, and the full test suite (backend pytest, frontend Vitest, Playwright E2E against a throwaway container, and a persistence check). See `.planning/ROADMAP.md` and [planning/PLAN.md](planning/PLAN.md).
 
 ## Run
 
@@ -63,13 +63,17 @@ npm test
 npm run build
 ```
 
-Local full stack plus browser smoke test (starts the backend itself; port 8000 must be free):
+Docker: see [Run](#run); tests: see [Testing](#testing). On a TLS-intercepting machine, pass the interception root as a build secret (used only in throwaway build stages, never in the final image): `docker build --secret id=extra_ca,src=<path-to-root.pem> -t finally .` and then start without `--build`, because compose reuses the `finally` image.
 
-```bash
-npm --prefix test run smoke
-```
+## Testing
 
-Docker: see [Run](#run). On a TLS-intercepting machine, pass the interception root as a build secret (used only in throwaway build stages, never in the final image): `docker build --secret id=extra_ca,src=<path-to-root.pem> -t finally .` and then start without `--build`, because compose reuses the `finally` image.
+First-time setup: `npm --prefix test ci` and `npx --prefix test playwright install chromium`.
+
+- Backend: `uv run --directory backend python -m pytest`
+- Frontend: `npm --prefix frontend test`
+- Official E2E: `npm --prefix test run e2e` builds and starts a throwaway container (project `finally-test`, port 8001, mock LLM, fresh database), runs every Playwright spec from the host, then removes it. It never touches the app on port 8000.
+- Fast local loop: `npm --prefix test run smoke` starts its own backend on port 8000 against `frontend/out` with a temporary database (port 8000 must be free).
+- Persistence: `npm --prefix test run persist` drives the real start and stop scripts under project `finally-persist` on port 8002 and checks that data survives a restart. `PERSIST_SHELL=bash` drives the `.sh` scripts through Git Bash on Windows.
 
 ## Environment Variables
 
