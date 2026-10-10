@@ -27,10 +27,11 @@ test("keyboard Enter on a ticker selects it", async ({ page }) => {
   await expect(page.getByTestId("select-GOOGL")).toHaveAttribute("aria-current", "true");
 });
 
-// This test and the heatmap test assume zero positions and one seed snapshot. That holds only for the
-// default throwaway DB_PATH, with this file sorting before smoke, trade and watchlist (workers: 1).
+// This test and the heatmap test assume zero positions and one seed snapshot. That holds for the local
+// throwaway DB_PATH and for the e2e container (fresh volume, E2E_FRESH_DB=1), with this file sorting
+// before smoke, trade and watchlist (workers: 1).
 test("a trade adds points to the portfolio value chart", async ({ page }) => {
-  test.skip(!!process.env.BASE_URL, "needs a pristine database");
+  test.skip(!!process.env.BASE_URL && !process.env.E2E_FRESH_DB, "needs a pristine database");
   await page.goto("/");
   await expect(page.getByTestId("header-cash")).toHaveText(/^\$[\d,]+\.\d{2}$/);
 
@@ -62,7 +63,7 @@ test("a trade adds points to the portfolio value chart", async ({ page }) => {
 });
 
 test("the heatmap tiles held positions by weight", async ({ page }) => {
-  test.skip(!!process.env.BASE_URL, "needs a pristine database");
+  test.skip(!!process.env.BASE_URL && !process.env.E2E_FRESH_DB, "needs a pristine database");
   await page.goto("/");
   await expect(page.getByTestId("header-cash")).toHaveText(/^\$[\d,]+\.\d{2}$/);
 
