@@ -1,0 +1,5 @@
+# Used only by test/persist.mjs to prove a start that cannot become healthy exits non-zero.
+services:
+  finally:
+    environment:
+      SIM_SEED: "not-a-number"

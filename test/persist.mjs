@@ -1,6 +1,7 @@
 // Persistence and launch check: drives the real start and stop scripts under project finally-persist
 // (port 8002, mock pins layered through COMPOSE_FILE) and removes only its own project and volume.
 import { spawnSync } from "node:child_process";
+import fs from "node:fs";
 import path from "node:path";
 
 const PROJECT = "finally-persist";
@@ -94,6 +95,34 @@ function assertMockPins() {
   log("LLM_MOCK=true and MASSIVE_API_KEY empty inside the container");
 }
 
+/** Whether the root .env holds a non-empty OPENROUTER_API_KEY; the value is never printed. */
+function hostHasKey() {
+  const envFile = path.join(ROOT, ".env");
+  if (!fs.existsSync(envFile)) return false;
+  return /^OPENROUTER_API_KEY=\s*\S/m.test(fs.readFileSync(envFile, "utf8"));
+}
+
+function assertEnvDelivery() {
+  const inside = compose(["exec", "-T", "finally", "sh", "-c", 'test -n "$OPENROUTER_API_KEY"']).status === 0;
+  const onHost = hostHasKey();
+  check(inside === onHost, `the root .env (${onHost}) and the container (${inside}) disagree about OPENROUTER_API_KEY`);
+  log(
+    inside
+      ? "env_file delivered OPENROUTER_API_KEY to the container"
+      : "no OPENROUTER_API_KEY in the root .env, env_file delivery not exercised",
+  );
+}
+
+/** A start that cannot become healthy must exit non-zero and print no URL. */
+function assertBrokenStartFails() {
+  const broken = path.join(ROOT, "test", "compose.broken.yml");
+  const env = { ...ENV, COMPOSE_FILE: [...COMPOSE_FILES, broken].join(path.delimiter) };
+  const run = runStart({ build: false, env });
+  check(run.status !== 0, "a broken start exited 0");
+  check(!run.stdout.includes("FinAlly is running at"), "a broken start printed a URL");
+  log("a broken start exits non-zero and prints no URL");
+}
+
 async function main() {
   try {
     compose(["down", "-v"], { stdio: "inherit" });
@@ -105,7 +134,14 @@ async function main() {
     const health = await fetch(`${BASE_URL}/api/health`);
     check(health.status === 200, `/api/health returned ${health.status}`);
 
+    const containerId = compose(["ps", "-q", "finally"]).stdout.trim();
+    const again = runStart({ build: false });
+    check(again.status === 0 && printedUrl(again.stdout) === BASE_URL, "the second start failed or printed another URL");
+    check(compose(["ps", "-q", "finally"]).stdout.trim() === containerId, "the second start replaced the container");
+    log("second start kept the same container");
+
     assertMockPins();
+    assertEnvDelivery();
     await api("POST", "/api/portfolio/trade", { ticker: "MSFT", quantity: 2, side: "buy" });
     const chat = await api("POST", "/api/chat", { message: "please buy" });
     check(chat.actions[0]?.ok === true, "the mock chat buy did not succeed");
@@ -121,6 +157,8 @@ async function main() {
     }).stdout.trim();
     check(volumes === `${PROJECT}_finally-data`, "stop did not keep the data volume");
     log("stop removed the container and kept the volume");
+    check(runStop().status === 0, "the second stop failed");
+    log("second stop is harmless");
 
     const second = runStart({ build: false });
     check(second.status === 0, "the restart failed");
@@ -130,6 +168,9 @@ async function main() {
     check(JSON.stringify(after.positions) === JSON.stringify(before.positions), "positions changed");
     check(JSON.stringify(after.messageIds) === JSON.stringify(before.messageIds), "chat history changed");
     log("cash, positions and chat history survived stop and start");
+
+    compose(["down", "-v"], { stdio: "inherit" });
+    assertBrokenStartFails();
 
     log(`all checks passed (${SHELL_NAME})`);
   } catch (error) {
