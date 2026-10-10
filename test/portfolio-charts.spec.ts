@@ -102,6 +102,27 @@ test("the heatmap tiles held positions by weight", async ({ page }) => {
     )
     .toBeLessThan(0.1);
 
+  // Once a tile has left flat, up tiles must be green and down tiles red (the fill glides for 300 ms).
+  const tiles = page.locator('[data-testid^="heatmap-tile-"]');
+  await expect
+    .poll(async () => (await tiles.evaluateAll((els) => els.map((el) => el.getAttribute("data-pnl")))).some((d) => d !== "flat"), {
+      timeout: 10_000,
+    })
+    .toBe(true);
+  await expect
+    .poll(
+      () =>
+        tiles.evaluateAll((els) =>
+          els.every((el) => {
+            const dir = el.getAttribute("data-pnl");
+            const [r, g] = getComputedStyle(el).backgroundColor.match(/[\d.]+/g)!.map(Number);
+            return dir === "up" ? g > r : dir === "down" ? r > g : true;
+          }),
+        ),
+      { timeout: 5_000 },
+    )
+    .toBe(true);
+
   await trade("sell", "AAPL", "3");
   await trade("sell", "MSFT", "2");
   await expect(page.getByTestId("position-row-AAPL")).toHaveCount(0);
