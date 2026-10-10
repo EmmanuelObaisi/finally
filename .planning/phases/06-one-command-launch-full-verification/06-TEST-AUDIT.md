@@ -49,3 +49,44 @@ Thresholds and rounding are pinned by these existing tests, by title:
 | change_percent is already in percent units | `lib/format.test.ts` "treats change_percent as already in percent units" |
 | Cost basis that rounds to zero gives a finite 0% | `lib/positions.test.ts` "gives a finite zero percent when the cost basis rounds to zero" |
 | Missing live price falls back to the server price, not cost | `lib/totals.test.ts` "falls back to the server's current price, not average cost, when there is no live price" |
+
+## TEST-06 E2E scenarios
+
+Every row runs in the throwaway container through `npm --prefix test run e2e` (20 tests: passed 20, skipped 0, failed 0, flaky 0). Specs run alphabetically with one worker against one database per run.
+
+| §12 scenario | Spec::test | Runs in container | Status |
+|--------------|------------|-------------------|--------|
+| Fresh start: default watchlist, $10k balance, prices streaming | `connection.spec.ts::fresh start shows $10,000 and a live connection`, `smoke.spec.ts::fresh start streams the seeded watchlist` | yes | pass |
+| Add and remove a ticker | `watchlist.spec.ts::adding a ticker from the panel streams it`, `watchlist.spec.ts::removing a held ticker keeps its position streaming` | yes | pass |
+| Buy shares: cash decreases, position appears | `trade.spec.ts::buying from the trade bar fills the order`, `trade.spec.ts::buying an unwatched ticker adds a streaming position row` | yes | pass |
+| Sell shares: cash increases, position updates or disappears | `trade-sell.spec.ts::selling raises cash by the fill and reduces then removes the position`; rejected oversell: `trade.spec.ts::a rejected oversell shows the reason inline and leaves cash unchanged` | yes | pass |
+| Portfolio visualization: heatmap with correct colors | `portfolio-charts.spec.ts::the heatmap tiles held positions by weight` (area ratio and up-green / down-red fill) | yes | pass |
+| Portfolio visualization: P&L chart has data points | `portfolio-charts.spec.ts::a trade adds points to the portfolio value chart` | yes | pass |
+| AI chat (mocked): response and inline trade execution | `trade-chat.spec.ts::the AI copilot trades from chat and the conversation survives a reload` (buy line, failed line, restored history, sell back) | yes | pass |
+| SSE resilience: disconnect and verify reconnection | `zz-reconnect.spec.ts::the stream reconnects after a server restart without a reload and the data survives` (real `docker restart`, container mode only); browser-level check kept in `connection.spec.ts::a failing stream shows Offline and dims the header` | yes | pass |
+
+## PUI-08 data-testid hooks
+
+Audit: every `getByTestId("...")` literal in `test/*.spec.ts` (54 distinct ids) exists in `frontend/src` as a quoted `data-testid` id or as a quoted prefix concatenated with the ticker or role; none missing. Prefix hooks are written as `prefix-` below.
+
+| Hook id or prefix | Rendered by |
+|-------------------|-------------|
+| `app-title`, `header-cash`, `header-total-value` | `components/Header.tsx` |
+| `connection-dot` (`data-status`), `connection-label` | `components/ConnectionDot.tsx` |
+| `chat-toggle` | `components/ChatToggle.tsx` |
+| `chat-panel` (`data-open`), `chat-input`, `chat-send`, `chat-messages` | `components/ChatPanel.tsx` |
+| `chat-message-` (+ role) | `components/ChatMessageRow.tsx` |
+| `chat-action` (`data-ok`) | `components/ChatActionLine.tsx` |
+| `watchlist-add-input`, `watchlist-add-button`, `watchlist-empty`, `watchlist-message` | `components/WatchlistPanel.tsx` |
+| `watchlist-row-`, `select-`, `change-`, `watchlist-remove-` (+ ticker) | `components/WatchlistRow.tsx` |
+| `price-` (+ ticker) | `components/PriceCell.tsx` |
+| `sparkline-` (+ ticker) | `components/Sparkline.tsx` |
+| `main-chart`, `main-chart-title`, `main-chart-empty` | `components/MainChartPanel.tsx` |
+| `pnl-chart`, `pnl-value`, `pnl-delta`, `pnl-empty` | `components/PnlChartPanel.tsx` |
+| `heatmap-empty` | `components/HeatmapPanel.tsx` |
+| `heatmap-tile-` (+ ticker; `data-pnl`, `data-weight`) | `components/HeatmapTile.tsx` |
+| `trade-ticker`, `trade-quantity`, `trade-buy`, `trade-sell`, `trade-message` (`data-kind`) | `components/TradeBar.tsx` |
+| `positions-empty` | `components/PositionsTable.tsx` |
+| `position-row-`, `position-qty-`, `position-price-` (+ ticker) | `components/PositionRow.tsx` |
+
+No `data-testid` was added in this plan.
