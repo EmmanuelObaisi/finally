@@ -84,7 +84,7 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 - [x] **PUI-05**: Collapsible AI chat panel with message input (Enter to send), scrolling history restored on load, auto-scroll, and loading indicator
 - [x] **PUI-06**: Executed trades and watchlist changes (and their failures) appear inline in the chat; portfolio and watchlist views refresh from the response
 - [x] **PUI-07**: Watchlist, positions, heatmap and P&L chart have explicit empty states
-- [ ] **PUI-08**: Key elements carry stable `data-testid` attributes for E2E
+- [x] **PUI-08**: Key elements carry stable `data-testid` attributes for E2E
 
 ### Packaging
 
@@ -100,7 +100,7 @@ Requirements for initial release. Each maps to roadmap phases. Source of truth: 
 - [x] **TEST-03**: Backend pytest covers LLM (structured output parsing, malformed responses, trade validation in chat flow)
 - [x] **TEST-04**: Backend pytest covers API routes (status codes, response shapes, error handling)
 - [x] **TEST-05**: Frontend unit tests cover component rendering, price flash triggering, watchlist CRUD, portfolio calculations, chat rendering and loading state
-- [ ] **TEST-06**: Playwright E2E (host against container, `LLM_MOCK=true`) covers: fresh start (watchlist, $10k, streaming), add/remove ticker, buy, sell, heatmap and P&L chart, mocked AI chat with inline trade, SSE reconnection
+- [x] **TEST-06**: Playwright E2E (host against container, `LLM_MOCK=true`) covers: fresh start (watchlist, $10k, streaming), add/remove ticker, buy, sell, heatmap and P&L chart, mocked AI chat with inline trade, SSE reconnection
 
 ## v2 Requirements
 
@@ -190,7 +190,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PUI-05 | Phase 5 | Complete |
 | PUI-06 | Phase 5 | Complete |
 | PUI-07 | Phase 4 | Complete |
-| PUI-08 | Phase 6 | Pending |
+| PUI-08 | Phase 6 | Complete |
 | PKG-01 | Phase 1 | Complete |
 | PKG-02 | Phase 6 | Pending |
 | PKG-03 | Phase 6 | Pending |
@@ -200,7 +200,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TEST-03 | Phase 5 | Complete |
 | TEST-04 | Phase 6 | Complete |
 | TEST-05 | Phase 6 | Complete |
-| TEST-06 | Phase 6 | Pending |
+| TEST-06 | Phase 6 | Complete |
 
 **Coverage:**
 - v1 requirements: 65 total

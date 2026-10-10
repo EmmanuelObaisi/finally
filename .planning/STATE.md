@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 06
 current_phase_name: One-Command Launch & Full Verification
 status: executing
-stopped_at: Completed 06-02-PLAN.md
-last_updated: "2026-10-10T02:55:57.641Z"
+stopped_at: Completed 06-03-PLAN.md
+last_updated: "2026-10-10T03:02:41.717Z"
 last_activity: 2026-10-10
 last_activity_desc: Phase 06 execution started
-state_head: 927d50d4a29c109d35ee03bd60db18a16bca180f
+state_head: b0a73dae6da265fbc729b026b664cba2ac2ed7b7
 progress:
   total_phases: 6
   completed_phases: 5
   total_plans: 34
-  completed_plans: 32
+  completed_plans: 33
   percent: 83
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-09)
 ## Current Position
 
 Phase: 06 (One-Command Launch & Full Verification) — EXECUTING
-Plan: 4 of 5
+Plan: 5 of 5
 Status: Ready to execute
 Last activity: 2026-10-10 — Phase 06 execution started
 
@@ -92,6 +92,7 @@ Progress: [████████░░] 83%
 | Phase 06 P01 | 12 min | 3 tasks | 7 files |
 | Phase 06 P05 | 8 min | 2 tasks | 3 files |
 | Phase 06 P02 | 25 min | 2 tasks | 3 files |
+| Phase 06 P03 | 25 min | 3 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -160,6 +161,7 @@ Recent decisions affecting current work:
 - [Phase 06]: 06-01: compose publishes on 127.0.0.1 only, pins DB_PATH literally, project-scoped volume finally-data; E2E override uses image finally-e2e with literal mock pins
 - [Phase 06]: 06-05: only the two planned HTTP shape gaps needed new tests; all other TEST-04 rows and all TEST-05 bullets were already covered by named tests
 - [Phase 06]: 06-02: every e2e compose call passes -p finally-test explicitly; mock pins proven inside the container before Playwright; wrapper fails on any skipped, flaky or failed test
+- [Phase 06]: 06-03: reconnect E2E runs only in container mode and asserts cash/total on a flat portfolio; chat action text asserted with toContainText because the Done/Failed tag shares the element
 
 ### Pending Todos
 
@@ -184,6 +186,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-10T02:55:57.456Z
-Stopped at: Completed 06-02-PLAN.md
+Last session: 2026-10-10T03:02:41.539Z
+Stopped at: Completed 06-03-PLAN.md
 Resume file: None

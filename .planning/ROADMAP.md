@@ -191,7 +191,7 @@ Plans:
   3. The Playwright suite, run from the host against the container with `LLM_MOCK=true`, passes every §12 scenario: fresh start, add/remove ticker, buy, sell, heatmap and P&L chart, mocked AI chat with inline trade, and SSE reconnection. It selects elements by stable `data-testid` hooks
   4. Backend API route tests (status codes, response shapes, error handling) and frontend unit tests (component rendering, price flash, watchlist CRUD, portfolio calculations, chat rendering and loading state) all pass
 
-**Plans**: 3/5 plans executed
+**Plans**: 4/5 plans executed
 Plans:
 **Wave 1**
 - [x] 06-01-PLAN.md — One-command launch: docker-compose.yml, E2E mock-pin override, four start/stop scripts proven on a private project, README Run section (W1)
@@ -201,7 +201,7 @@ Plans:
 - [x] 06-02-PLAN.md — `npm --prefix test run e2e`: throwaway mock-pinned container, Playwright from the host, zero skips, guaranteed teardown (W2)
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 06-03-PLAN.md — New specs: real-restart SSE reconnect, sell with cash delta, heatmap colors, mocked AI chat; data-testid audit (W3)
+- [x] 06-03-PLAN.md — New specs: real-restart SSE reconnect, sell with cash delta, heatmap colors, mocked AI chat; data-testid audit (W3)
 
 **Wave 4** *(blocked on Wave 3 completion)*
 - [ ] 06-04-PLAN.md — Persistence check through the real scripts (both shells), README Testing section, full phase gate and human launch check (W4)
@@ -218,4 +218,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6. Phases 4 and 5
 | 3. Trading & Watchlist Management | 5/5 | Complete    | 2026-10-09 |
 | 4. Charts & Portfolio Visualizations | 4/4 | Complete    | 2026-10-09 |
 | 5. AI Trading Copilot | 5/5 | Complete    | 2026-10-09 |
-| 6. One-Command Launch & Full Verification | 3/5 | In Progress | - |
+| 6. One-Command Launch & Full Verification | 4/5 | In Progress | - |
