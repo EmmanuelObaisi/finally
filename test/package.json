@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "smoke": "playwright test",
+    "persist": "node persist.mjs",
     "e2e": "node e2e.mjs"
   },
   "devDependencies": {
