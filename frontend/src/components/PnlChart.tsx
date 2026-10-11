@@ -9,7 +9,7 @@ export const PnlChart = ({ data }: { data: PortfolioSnapshot[] }) => {
   const start = values[0] ?? 10000;
 
   return (
-    <Panel title="Portfolio P&L" className="flex h-full min-h-0 flex-col" contentClassName="flex min-h-0 flex-1">
+    <Panel title="Portfolio P&L" className="flex h-full min-h-0 flex-col overflow-hidden" contentClassName="flex min-h-0 flex-1" testId="panel-pnl">
       <div className="flex h-full min-h-0 flex-1 flex-col rounded border border-terminal-border bg-terminal-bg/40 p-3">
         <div className="min-h-0 flex-1">
           <Sparkline values={values.length > 1 ? values : [start, latest]} stroke="#ecad0a" height={180} className="h-full" />

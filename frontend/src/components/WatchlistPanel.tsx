@@ -3,6 +3,7 @@ import { memo, useEffect, useMemo, useState } from 'react';
 import { Panel } from '@/src/components/Panel';
 import { Sparkline } from '@/src/components/Sparkline';
 import { money, pct } from '@/src/lib/format';
+import { SECURITY_NAMES } from '@/src/lib/securityNames';
 import { WatchlistItem } from '@/src/types/trading';
 
 interface WatchlistPanelProps {
@@ -118,7 +119,7 @@ export const WatchlistPanel = ({
                 return (
                   <div
                     key={`${column.label}-${index}`}
-                    className="h-[52px] rounded border border-dashed border-terminal-border/45 bg-terminal-panelAlt/10"
+                    className="h-[80px] rounded border border-dashed border-terminal-border/45 bg-terminal-panelAlt/10"
                     aria-hidden="true"
                   />
                 );
@@ -164,6 +165,7 @@ const WatchlistRow = memo(function WatchlistRow({
   onSelectTicker,
   onRemoveTicker,
 }: WatchlistRowProps) {
+  const name = SECURITY_NAMES[item.ticker] ?? item.ticker;
   return (
   <div
     role="button"
@@ -176,25 +178,15 @@ const WatchlistRow = memo(function WatchlistRow({
         onSelectTicker(item.ticker);
       }
     }}
-    className={`grid h-[52px] w-full min-w-0 cursor-pointer grid-cols-[1fr_56px_16px] items-center gap-2 rounded border px-2 text-left transition ${
+    title={`${item.ticker} — ${name}`}
+    aria-label={`${item.ticker} — ${name}`}
+    className={`grid h-[80px] w-full min-w-0 cursor-pointer grid-cols-[minmax(0,1fr)_12px] items-center gap-x-1 rounded border px-2 py-1 text-left transition ${
       isActive
         ? 'border-terminal-blue bg-terminal-panelAlt/70'
         : 'border-terminal-border bg-terminal-panelAlt/30 hover:border-terminal-blue/60'
     } ${flashClass}`}
   >
-    <div className="min-w-0">
-      <span className="block truncate text-xs font-semibold text-terminal-text">{item.ticker}</span>
-      <Sparkline
-        values={series}
-        stroke={item.changePercent >= 0 ? '#2cc57f' : '#eb5d5d'}
-        height={14}
-        className="mt-1 h-[14px]"
-      />
-    </div>
-    <span className={`text-right text-[10px] font-medium ${item.changePercent >= 0 ? 'text-terminal-positive' : 'text-terminal-negative'}`}>
-      <span className="block">{money(item.price)}</span>
-      <span className="block">{pct(item.changePercent)}</span>
-    </span>
+    <span className="block truncate text-xs font-semibold text-terminal-text">{item.ticker}</span>
     <button
       type="button"
       onClick={(event) => {
@@ -207,6 +199,16 @@ const WatchlistRow = memo(function WatchlistRow({
     >
       x
     </button>
+    <span className="col-span-2 block truncate text-[10px] text-terminal-dim" title={name}>{name}</span>
+    <div className="col-span-2 flex min-w-0 items-center gap-1">
+      <div className="min-w-0 flex-1">
+        <Sparkline values={series} stroke={item.changePercent >= 0 ? '#2cc57f' : '#eb5d5d'} height={14} className="h-[14px]" />
+      </div>
+      <span className={`shrink-0 text-right text-[10px] font-medium ${item.changePercent >= 0 ? 'text-terminal-positive' : 'text-terminal-negative'}`}>
+        <span className="block">{money(item.price)}</span>
+        <span className="block">{pct(item.changePercent)}</span>
+      </span>
+    </div>
   </div>
   );
 }, (prev, next) => (

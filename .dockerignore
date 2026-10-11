@@ -7,6 +7,11 @@ backend/__pycache__
 db/finally.db
 test
 .env
+.env.*
+.checkout-backup-*
+.aws
+.codex
+.claude
 *.md
 .pytest_cache
 .ruff_cache

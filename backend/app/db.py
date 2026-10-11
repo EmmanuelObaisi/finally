@@ -107,6 +107,7 @@ def ensure_db_initialized() -> None:
 
 
 def _create_schema(conn: sqlite3.Connection) -> None:
+    _migrate_legacy_identifiers(conn)
     conn.execute(
         """
         CREATE TABLE IF NOT EXISTS users_profile (
@@ -185,6 +186,23 @@ def _create_schema(conn: sqlite3.Connection) -> None:
         )
         """
     )
+
+
+def _migrate_legacy_identifiers(conn: sqlite3.Connection) -> None:
+    """Preserve databases created before profile and row identifiers changed."""
+    profile_columns = {row[1] for row in conn.execute("PRAGMA table_info(users_profile)")}
+    if "user_id" in profile_columns and "id" not in profile_columns:
+        conn.execute("ALTER TABLE users_profile RENAME COLUMN user_id TO id")
+
+    for table in ("watchlist", "positions"):
+        columns = {row[1] for row in conn.execute(f"PRAGMA table_info({table})")}
+        if columns and "id" not in columns:
+            conn.execute(f"ALTER TABLE {table} ADD COLUMN id TEXT")
+            for (rowid,) in conn.execute(f"SELECT rowid FROM {table}").fetchall():
+                conn.execute(
+                    f"UPDATE {table} SET id = ? WHERE rowid = ?", (str(uuid4()), rowid)
+                )
+            conn.execute(f"CREATE UNIQUE INDEX {table}_id_unique ON {table}(id)")
 
 
 def _seed_defaults(conn: sqlite3.Connection) -> None:

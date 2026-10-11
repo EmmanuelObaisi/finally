@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import asyncio
-import json
 import logging
 import os
 import sqlite3
@@ -15,6 +14,8 @@ from uuid import uuid4
 from fastapi import FastAPI, HTTPException, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
+
+from .auth import AuthMiddleware, router as auth_router
 
 from .db import (
     CUSTOM_GROUP_KEY,
@@ -28,7 +29,13 @@ from .db import (
     now_iso,
 )
 from .llm import generate_chat_response
-from .market import PriceCache, create_market_data_source, create_specific_source, create_stream_router, has_massive_api_key
+from .market import (
+    PriceCache,
+    create_market_data_source,
+    create_specific_source,
+    create_stream_router,
+    has_massive_api_key,
+)
 from .market.seed_prices import SEED_PRICES
 
 logger = logging.getLogger(__name__)
@@ -36,7 +43,7 @@ logger = logging.getLogger(__name__)
 
 class TradeRequest(BaseModel):
     ticker: str = Field(min_length=1, max_length=10)
-    quantity: float = Field(gt=0)
+    quantity: float = Field(gt=0, allow_inf_nan=False)
     side: Literal["buy", "sell"]
 
 
@@ -72,6 +79,28 @@ def _fetch_watchlist_tickers(conn: sqlite3.Connection) -> list[str]:
         (DEFAULT_USER_ID,),
     ).fetchall()
     return [row["ticker"] for row in rows]
+
+
+def _fetch_market_tickers(conn: sqlite3.Connection) -> list[str]:
+    """Track watched stocks and holdings, including after a restart."""
+    rows = conn.execute(
+        "SELECT ticker FROM watchlist WHERE user_id = ? "
+        "UNION SELECT ticker FROM positions WHERE user_id = ? ORDER BY ticker",
+        (DEFAULT_USER_ID, DEFAULT_USER_ID),
+    ).fetchall()
+    return [row["ticker"] for row in rows]
+
+
+async def _sync_market_tickers(state: AppState) -> None:
+    if state.market_source is None:
+        return
+    with get_connection() as conn:
+        required = set(_fetch_market_tickers(conn))
+    tracked = set(state.market_source.get_tickers())
+    for ticker in sorted(required - tracked):
+        await state.market_source.add_ticker(ticker)
+    for ticker in sorted(tracked - required):
+        await state.market_source.remove_ticker(ticker)
 
 
 def _next_custom_item_order(conn: sqlite3.Connection) -> int:
@@ -286,7 +315,7 @@ def create_app() -> FastAPI:
         ensure_db_initialized()
 
         with get_connection() as conn:
-            watchlist = _fetch_watchlist_tickers(conn)
+            watchlist = _fetch_market_tickers(conn)
 
         state.market_source = create_market_data_source(state.price_cache)
         await state.market_source.start(watchlist)
@@ -307,6 +336,8 @@ def create_app() -> FastAPI:
                 await state.market_source.stop()
 
     app = FastAPI(title="FinAlly Backend", version="0.1.0", lifespan=lifespan)
+    app.add_middleware(AuthMiddleware)
+    app.include_router(auth_router)
     app.include_router(create_stream_router(state.price_cache))
 
     @app.get("/api/health")
@@ -348,7 +379,7 @@ def create_app() -> FastAPI:
 
         # Get current watchlist tickers
         with get_connection() as conn:
-            tickers = _fetch_watchlist_tickers(conn)
+            tickers = _fetch_market_tickers(conn)
 
         # Stop current source
         if state.market_source:
@@ -440,8 +471,7 @@ def create_app() -> FastAPI:
             if cursor.rowcount == 0:
                 raise HTTPException(status_code=404, detail="Ticker not in watchlist")
 
-        if state.market_source:
-            await state.market_source.remove_ticker(clean)
+        await _sync_market_tickers(state)
         return Response(status_code=204)
 
     @app.get("/api/portfolio")
@@ -458,10 +488,7 @@ def create_app() -> FastAPI:
             portfolio = _build_portfolio(state.price_cache, conn)
             conn.commit()
 
-        # Ensure market source tracks this ticker for live price updates
-        ticker = _ticker(request.ticker)
-        if state.market_source and ticker not in (state.market_source.get_tickers() or []):
-            await state.market_source.add_ticker(ticker)
+        await _sync_market_tickers(state)
 
         return {"trade": executed, "portfolio": portfolio}
 
@@ -490,6 +517,11 @@ def create_app() -> FastAPI:
         ensure_db_initialized()
 
         with get_connection() as conn:
+            history_rows = conn.execute(
+                "SELECT role, content FROM chat_messages WHERE user_id = ? ORDER BY created_at DESC LIMIT 10",
+                (DEFAULT_USER_ID,),
+            ).fetchall()
+            history = [{"role": row["role"], "content": row["content"]} for row in reversed(history_rows)]
             conn.execute(
                 "INSERT INTO chat_messages (id, user_id, role, content, actions, created_at) VALUES (?, ?, ?, ?, ?, ?)",
                 (str(uuid4()), DEFAULT_USER_ID, "user", request.message, None, now_iso()),
@@ -497,11 +529,6 @@ def create_app() -> FastAPI:
 
             portfolio = _build_portfolio(state.price_cache, conn)
             watchlist = _fetch_watchlist_tickers(conn)
-            history_rows = conn.execute(
-                "SELECT role, content FROM chat_messages WHERE user_id = ? ORDER BY created_at DESC LIMIT 10",
-                (DEFAULT_USER_ID,),
-            ).fetchall()
-            history = [{"role": row["role"], "content": row["content"]} for row in reversed(history_rows)]
             conn.commit()
 
         context = {
@@ -539,21 +566,15 @@ def create_app() -> FastAPI:
                             ),
                         )
                     )
-                    # Ensure market source tracks traded tickers for live prices
-                    traded_ticker = _ticker(trade.ticker)
-                    if state.market_source and traded_ticker not in (state.market_source.get_tickers() or []):
-                        await state.market_source.add_ticker(traded_ticker)
                 except HTTPException as exc:
                     errors.append(f"trade {trade.side} {trade.ticker}: {exc.detail}")
 
             for change in llm_response.watchlist_changes:
-                ticker = _ticker(change.ticker)
                 action = change.action
                 try:
+                    ticker = _ticker(change.ticker)
                     if action == "add":
                         _insert_watchlist_ticker(conn, ticker)
-                        if state.market_source:
-                            await state.market_source.add_ticker(ticker)
                     else:
                         cursor = conn.execute(
                             "DELETE FROM watchlist WHERE user_id = ? AND ticker = ?",
@@ -561,14 +582,12 @@ def create_app() -> FastAPI:
                         )
                         if cursor.rowcount == 0:
                             raise HTTPException(status_code=404, detail="Ticker not in watchlist")
-                        if state.market_source:
-                            await state.market_source.remove_ticker(ticker)
 
                     executed_watchlist_changes.append({"ticker": ticker, "action": action})
                 except sqlite3.IntegrityError:
                     errors.append(f"watchlist {action} {ticker}: already exists")
                 except HTTPException as exc:
-                    errors.append(f"watchlist {action} {ticker}: {exc.detail}")
+                    errors.append(f"watchlist {action} {change.ticker}: {exc.detail}")
 
             actions_payload = {
                 "trades": executed_trades,
@@ -588,6 +607,7 @@ def create_app() -> FastAPI:
             )
             conn.commit()
 
+        await _sync_market_tickers(state)
         return {
             "message": llm_response.message,
             "actions": {

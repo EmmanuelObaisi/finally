@@ -4,11 +4,71 @@ from __future__ import annotations
 
 import pytest
 from fastapi.testclient import TestClient
+
 from app import llm as llm_module
-from app.db import LEGACY_DEFAULT_WATCHLIST
+from app import main as main_module
+from app.db import LEGACY_DEFAULT_WATCHLIST, get_connection
+from app.llm import ChatResponse, WatchlistAction
 from app.main import create_app
 from app.market import PriceCache
 from app.market.stream import _generate_events
+
+
+def test_holdings_remain_tracked_after_watchlist_removal_and_restart(client, monkeypatch):
+    sources = []
+    factory = main_module.create_market_data_source
+
+    def capture_source(cache):
+        source = factory(cache)
+        sources.append(source)
+        return source
+
+    monkeypatch.setattr(main_module, "create_market_data_source", capture_source)
+    with TestClient(create_app()) as local_client:
+        assert local_client.post("/api/portfolio/trade", json={
+            "ticker": "SHOP", "quantity": 1, "side": "buy",
+        }).status_code == 200
+        assert local_client.post("/api/watchlist", json={"ticker": "SHOP"}).status_code == 201
+        assert local_client.delete("/api/watchlist/SHOP").status_code == 204
+        assert "SHOP" in sources[-1].get_tickers()
+
+    with TestClient(create_app()) as local_client:
+        assert "SHOP" in sources[-1].get_tickers()
+        assert local_client.post("/api/market-source", json={"source": "simulator"}).status_code == 200
+        assert local_client.post("/api/portfolio/trade", json={
+            "ticker": "SHOP", "quantity": 1, "side": "sell",
+        }).status_code == 200
+        assert "SHOP" not in sources[-1].get_tickers()
+
+
+def test_chat_history_excludes_current_message_and_invalid_action_is_reported(client, monkeypatch):
+    calls = []
+
+    async def fake_response(user_message, history, context):
+        calls.append((user_message, history))
+        return ChatResponse(message="Reviewed", watchlist_changes=[
+            WatchlistAction(ticker="???", action="add"),
+            WatchlistAction(ticker="SHOP", action="add"),
+        ])
+
+    monkeypatch.setattr(main_module, "generate_chat_response", fake_response)
+    response = client.post("/api/chat", json={"message": "first request"})
+    assert response.status_code == 200
+    assert calls[0] == ("first request", [])
+    assert response.json()["actions"]["errors"] == ["watchlist add ???: Ticker must be alphanumeric"]
+    assert response.json()["actions"]["watchlist_changes"] == [{"ticker": "SHOP", "action": "add"}]
+    client.post("/api/chat", json={"message": "second request"})
+    assert [item["content"] for item in calls[1][1]] == ["first request", "Reviewed"]
+
+
+def test_trade_rejects_infinite_quantity_without_changing_account(client):
+    response = client.post("/api/portfolio/trade", json={
+        "ticker": "AAPL", "quantity": "Infinity", "side": "buy",
+    })
+    assert response.status_code == 422
+    with get_connection() as conn:
+        assert conn.execute("SELECT COUNT(*) FROM trades").fetchone()[0] == 0
+    assert client.get("/api/portfolio").json()["cash_balance"] == 10000
 
 
 @pytest.fixture

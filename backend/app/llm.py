@@ -109,7 +109,6 @@ async def generate_chat_response(
             api_key=api_key,
             messages=messages,
             response_format=ChatResponse,
-            reasoning_effort="low",
             extra_body=EXTRA_BODY,
         )
     except Exception as exc:

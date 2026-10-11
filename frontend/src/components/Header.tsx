@@ -29,6 +29,10 @@ export const Header = ({ totalValue, cash, connectionState, onSourceSwitch }: He
       <MarketSourceToggle onSwitch={onSourceSwitch} />
       <ThemeToggle />
       <ConnectionDot state={connectionState} />
+      <button type="button" className="text-xs text-terminal-dim hover:text-terminal-text" onClick={async () => {
+        const response = await fetch('/api/auth/logout', { method: 'POST' });
+        if (response.ok) window.location.reload();
+      }}>Sign out</button>
     </div>
   </header>
 );

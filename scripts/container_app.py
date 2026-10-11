@@ -44,7 +44,11 @@ def _load_target_app() -> Any | None:
 
 
 def _build_fallback_app() -> FastAPI:
+    from app.auth import AuthMiddleware, router as auth_router
+
     app = FastAPI(title="FinAlly Container Fallback")
+    app.add_middleware(AuthMiddleware)
+    app.include_router(auth_router)
 
     @app.get("/api/health")
     async def health() -> dict[str, str]:

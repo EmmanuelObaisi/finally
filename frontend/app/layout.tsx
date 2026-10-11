@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { IBM_Plex_Mono } from 'next/font/google';
 
 import { ThemeProvider } from '@/src/context/ThemeContext';
+import { AuthGate } from '@/src/components/AuthGate';
 
 import './globals.css';
 
@@ -23,7 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className={terminalFont.className}>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider><AuthGate>{children}</AuthGate></ThemeProvider>
       </body>
     </html>
   );

@@ -1,0 +1,20 @@
+/** Readable names for the default watchlist and commonly watched securities. */
+export const SECURITY_NAMES: Record<string, string> = {
+  AAPL: 'Apple', MSFT: 'Microsoft', GOOGL: 'Alphabet', GOOG: 'Alphabet',
+  AMZN: 'Amazon', NVDA: 'NVIDIA', META: 'Meta Platforms', ORCL: 'Oracle',
+  CRM: 'Salesforce', ADBE: 'Adobe', INTC: 'Intel', AMD: 'Advanced Micro Devices',
+  IBM: 'IBM', JPM: 'JPMorgan Chase', BAC: 'Bank of America', WFC: 'Wells Fargo',
+  C: 'Citigroup', GS: 'Goldman Sachs', MS: 'Morgan Stanley', V: 'Visa',
+  MA: 'Mastercard', AXP: 'American Express', BLK: 'BlackRock', SCHW: 'Charles Schwab',
+  PGR: 'Progressive', JNJ: 'Johnson & Johnson', PFE: 'Pfizer', MRK: 'Merck',
+  UNH: 'UnitedHealth Group', ABBV: 'AbbVie', LLY: 'Eli Lilly', TMO: 'Thermo Fisher Scientific',
+  ABT: 'Abbott Laboratories', DHR: 'Danaher', BMY: 'Bristol Myers Squibb',
+  AMGN: 'Amgen', GILD: 'Gilead Sciences', WMT: 'Walmart', COST: 'Costco',
+  HD: 'Home Depot', MCD: "McDonald's", NKE: 'Nike', SBUX: 'Starbucks',
+  KO: 'Coca-Cola', PEP: 'PepsiCo', DIS: 'Walt Disney', NFLX: 'Netflix',
+  TGT: 'Target', LOW: "Lowe's", XOM: 'Exxon Mobil', CVX: 'Chevron',
+  CAT: 'Caterpillar', DE: 'Deere & Company', BA: 'Boeing', GE: 'GE Aerospace',
+  RTX: 'RTX', UPS: 'United Parcel Service', UNP: 'Union Pacific', HON: 'Honeywell',
+  LMT: 'Lockheed Martin', ETN: 'Eaton', TSLA: 'Tesla',
+  VTI: 'Vanguard Total Stock Market ETF', SHOP: 'Shopify', PYPL: 'PayPal',
+};

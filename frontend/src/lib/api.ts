@@ -33,6 +33,7 @@ const request = async <T>(input: string, init?: RequestInit): Promise<T> => {
   });
 
   if (!response.ok) {
+    if (response.status === 401) window.dispatchEvent(new Event('finally-session-expired'));
     let detail = response.statusText;
     try {
       const body = await response.json();

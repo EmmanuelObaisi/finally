@@ -1,0 +1,43 @@
+{
+  "contract": "1.0.0",
+  "flavor": "core",
+  "milestone": null,
+  "phases": [
+    {
+      "number": "1",
+      "name": "Walking Skeleton",
+      "status": "complete"
+    },
+    {
+      "number": "2",
+      "name": "Live Market Terminal",
+      "status": "complete"
+    },
+    {
+      "number": "3",
+      "name": "Trading & Watchlist Management",
+      "status": "complete"
+    },
+    {
+      "number": "4",
+      "name": "Charts & Portfolio Visualizations",
+      "status": "complete"
+    },
+    {
+      "number": "5",
+      "name": "AI Trading Copilot",
+      "status": "complete"
+    },
+    {
+      "number": "6",
+      "name": "One-Command Launch & Full Verification",
+      "status": "complete"
+    }
+  ],
+  "next": {
+    "command": "/gsd:progress",
+    "label": "Show progress",
+    "reason": "Unsure of state — showing progress"
+  },
+  "updated_at": "2026-10-10T05:01:16.581Z"
+}

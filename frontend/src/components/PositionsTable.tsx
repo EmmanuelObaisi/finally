@@ -3,8 +3,8 @@ import { money, pct } from '@/src/lib/format';
 import { Position } from '@/src/types/trading';
 
 export const PositionsTable = ({ positions }: { positions: Position[] }) => (
-  <Panel title="Positions" className="h-full" testId="panel-positions">
-    <div className="max-h-[170px] overflow-auto">
+  <Panel title="Positions" className="flex h-full min-h-0 flex-col overflow-hidden" contentClassName="flex min-h-0 flex-1" testId="panel-positions">
+    <div className="min-h-0 min-w-0 flex-1 overflow-auto">
       <table className="w-full text-sm">
         <thead className="text-xs uppercase text-terminal-dim">
           <tr>
